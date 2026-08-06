@@ -61,7 +61,7 @@ SCL の開発には、次の方法で参加できます。
 
 ## 貢献者
 
-2015 年以来、120 人を超える貢献者が SCL に参加しています。ご協力ありがとうございます。
+SCL は HMCL (Hello Minecraft! Launcher) をベースに、2026 年より Lively Studio が開発・保守しています。
 
 [![Contributors](https://contrib.rocks/image?repo=lively-Studio/Slime-Craft-Launcher)](https://github.com/lively-Studio/Slime-Craft-Launcher/graphs/contributors)
 

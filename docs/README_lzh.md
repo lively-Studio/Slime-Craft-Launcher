@@ -58,7 +58,7 @@ SCL 乃社群共驅之開源項目，迎諸君獻碼或建言。
 
 ## 貢獻者
 
-自乙未年（2015）始，百二十余人參與 SCL，謝其勤勞！
+SCL 基於 HMCL (Hello Minecraft! Launcher)，自丙午年（2026）始由「零」影製作組維護，謝諸貢獻者！
 
 [![Contributors](https://contrib.rocks/image?repo=lively-Studio/Slime-Craft-Launcher)](https://github.com/lively-Studio/Slime-Craft-Launcher/graphs/contributors)
 

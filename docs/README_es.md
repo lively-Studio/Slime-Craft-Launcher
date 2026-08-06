@@ -58,7 +58,7 @@ Antes de contribuir, lee la [guía de contribución](./Contributing.md), que inc
 
 ## Colaboradores
 
-Desde 2015, más de 120 colaboradores han participado en SCL. Gracias por su trabajo.
+SCL está basado en HMCL (Hello Minecraft! Launcher), desarrollado y mantenido por Lively Studio desde 2026. ¡Gracias a todos!
 
 [![Contributors](https://contrib.rocks/image?repo=lively-Studio/Slime-Craft-Launcher)](https://github.com/lively-Studio/Slime-Craft-Launcher/graphs/contributors)
 

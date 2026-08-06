@@ -57,7 +57,7 @@ SCL — це відкритий проект, який розвиває спіл
 
 ## Учасники
 
-З 2015 року в розробці SCL взяли участь понад 120 людей. Дякуємо за вашу працю!
+SCL базується на HMCL (Hello Minecraft! Launcher), розробляється та підтримується Lively Studio з 2026 року. Дякуємо!
 
 [![Contributors](https://contrib.rocks/image?repo=lively-Studio/Slime-Craft-Launcher)](https://github.com/lively-Studio/Slime-Craft-Launcher/graphs/contributors)
 

@@ -61,7 +61,7 @@ SCL — это открытый проект, развиваемый сообщ�
 
 ## Участники
 
-С 2015 года в разработке SCL участвовали более 120 человек. Спасибо за ваш труд!
+SCL основан на HMCL (Hello Minecraft! Launcher), разрабатывается и поддерживается Lively Studio с 2026 года. Спасибо!
 
 [![Contributors](https://contrib.rocks/image?repo=lively-Studio/Slime-Craft-Launcher)](https://github.com/lively-Studio/Slime-Craft-Launcher/graphs/contributors)
 
