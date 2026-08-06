@@ -38,7 +38,7 @@ public final class ThemePackManifestTest {
     public void invalidOptionalManifestFieldsAreIgnored() {
         ThemePackManifest manifest = Objects.requireNonNull(JsonUtils.fromJson("""
                 {
-                  "$schema": "https://schemas.glavo.site/hmcl/theme-pack/1.0.0",
+                  "$schema": "https://raw.githubusercontent.com/lively-Studio/Slime-Craft-Launcher/main/docs/schemas/theme-pack/1.0.0",
                   "id": "example.invalid-optionals",
                   "version": "1.0.0",
                   "name": "Example",
@@ -70,7 +70,7 @@ public final class ThemePackManifestTest {
     public void emptyThemeUsesDefaultBackgroundAfterApplying() throws Exception {
         ThemePackManifest manifest = Objects.requireNonNull(JsonUtils.fromJson("""
                 {
-                  "$schema": "https://schemas.glavo.site/hmcl/theme-pack/1.0.0",
+                  "$schema": "https://raw.githubusercontent.com/lively-Studio/Slime-Craft-Launcher/main/docs/schemas/theme-pack/1.0.0",
                   "id": "example.empty-theme",
                   "version": "1.0.0",
                   "name": "Example",

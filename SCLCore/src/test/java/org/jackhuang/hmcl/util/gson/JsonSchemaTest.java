@@ -158,6 +158,6 @@ public final class JsonSchemaTest {
 
     /// Creates a schema URL string.
     private static String schemaUrl(String id, String version) {
-        return "https://schemas.glavo.site/hmcl/" + id + "/" + version;
+        return "https://raw.githubusercontent.com/lively-Studio/Slime-Craft-Launcher/main/docs/schemas/" + id + "/" + version;
     }
 }
