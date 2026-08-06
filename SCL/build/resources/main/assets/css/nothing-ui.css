@@ -1,0 +1,131 @@
+/**
+ * NOTHING-UI-1 Design Token System
+ * Based on Open-code-Studio/NOTHING-UI-1 DESIGN_SPEC.md v1.0
+ *
+ * Philosophy: Subtract, don't add. Structure is ornament.
+ * Default: Light mode. Accent: Cyan. Radius: 2px. Duration: ≤200ms.
+ */
+* {
+    /* === Surface Layer System (Light Default, 6 layers, ΔL 1.0-2.5) === */
+    -nothing-surface-0: #F5F5F5;
+    -nothing-surface-1: #EEEEEE;
+    -nothing-surface-2: #E8E8E8;
+    -nothing-surface-3: #E0E0E0;
+    -nothing-surface-4: #DADADA;
+    -nothing-surface-5: #D4D4D4;
+
+    /* === Surface Layer System (Dark) === */
+    -nothing-dark-surface-0: #0A0A0A;
+    -nothing-dark-surface-1: #141414;
+    -nothing-dark-surface-2: #1A1A1A;
+    -nothing-dark-surface-3: #1F1F1F;
+    -nothing-dark-surface-4: #222222;
+    -nothing-dark-surface-5: #252525;
+
+    /* Default Reference: Light layers */
+    -nothing-surface: -nothing-surface-0;
+    -nothing-surface-higher: -nothing-surface-1;
+    -nothing-surface-card: -nothing-surface-2;
+    -nothing-surface-elevated: -nothing-surface-3;
+    -nothing-surface-overlay: -nothing-surface-4;
+
+    /* === Text Opacity Levels (4-tier hierarchy, light default) === */
+    -nothing-text-display: rgba(0,0,0,1.0);
+    -nothing-text-primary: rgba(0,0,0,0.90);
+    -nothing-text-secondary: rgba(0,0,0,0.60);
+    -nothing-text-disabled: rgba(0,0,0,0.35);
+
+    /* Dark text overrides */
+    -nothing-dark-text-display: rgba(255,255,255,1.0);
+    -nothing-dark-text-primary: rgba(255,255,255,0.90);
+    -nothing-dark-text-secondary: rgba(255,255,255,0.60);
+    -nothing-dark-text-disabled: rgba(255,255,255,0.35);
+
+    /* Default reference */
+    -nothing-on-surface: -nothing-text-primary;
+    -nothing-on-surface-variant: -nothing-text-secondary;
+
+    /* === Accent Colors === */
+    -nothing-accent-cyan: #00BCD4;
+    -nothing-accent-green: #4CAF50;
+    -nothing-accent-orange: #FF9800;
+    -nothing-accent: -nothing-accent-cyan;
+
+    /* === Error (Red #D71921 — Signal only, not a participant in regular hierarchy) === */
+    -nothing-error: #D71921;
+    -nothing-error-container: rgba(215,25,33,0.12);
+    -nothing-on-error: #FFFFFF;
+
+    /* === Success & Warning Data Status Colors === */
+    -nothing-success: #4CAF50;
+    -nothing-warning: #FF9800;
+
+    /* === Outline / Border === */
+    -nothing-outline: rgba(0,0,0,0.12);
+    -nothing-outline-strong: rgba(0,0,0,0.20);
+    -nothing-dark-outline: rgba(255,255,255,0.12);
+    -nothing-dark-outline-strong: rgba(255,255,255,0.20);
+
+    /* === Dynamic Color Tokens (swapped by brightness CSS for dark mode) === */
+    -nothing-ripple-fill: rgba(0,0,0,0.08);
+    -nothing-hover-bg: rgba(0,0,0,0.06);
+    -nothing-scrollbar-thumb: rgba(0,0,0,0.15);
+    -nothing-scrollbar-arrow: rgba(0,0,0,0.30);
+    -nothing-overlay-bg: rgba(245,245,245,0.50);
+    -nothing-card-bg: rgba(245,245,245,0.80);
+    -nothing-bubble-bg: rgba(230,230,230,0.90);
+    -nothing-accent-fill: -nothing-accent;
+    -nothing-accent-selected-bg: rgba(0,188,212,0.15);
+    -nothing-accent-track-bg: rgba(0,188,212,0.20);
+    -nothing-toolbar-bg: -nothing-surface-higher;
+    -nothing-toolbar-second-bg: -nothing-surface-higher;
+    -nothing-toolbar-second-label: -nothing-on-surface;
+
+    /* === Corner Radius (2px default, 4px overlays) === */
+    -nothing-radius-sm: 2px;
+    -nothing-radius-md: 4px;
+
+    /* === Spacing (4px base grid) === */
+    -nothing-spacing-xs: 4px;
+    -nothing-spacing-sm: 8px;
+    -nothing-spacing-md: 12px;
+    -nothing-spacing-lg: 16px;
+    -nothing-spacing-xl: 20px;
+    -nothing-spacing-2xl: 24px;
+    -nothing-spacing-3xl: 32px;
+    -nothing-spacing-4xl: 40px;
+
+    /* === Component Heights === */
+    -nothing-height-btn: 32px;
+    -nothing-height-list-item: 32px;
+    -nothing-height-list-item-compact: 28px;
+    -nothing-height-tab: 36px;
+    -nothing-height-search: 32px;
+    -nothing-height-status-bar: 28px;
+    -nothing-height-progress: 4px;
+    -nothing-height-scrollbar: 6px;
+
+    /* === Transition (≤200ms, no bounce, no spring) === */
+    -nothing-transition-fast: 100ms;
+    -nothing-transition-normal: 150ms;
+    -nothing-transition-slow: 200ms;
+    -nothing-easing-standard: linear;
+    -nothing-easing-decelerate: linear;
+    -nothing-easing-accelerate: linear;
+
+    /* === Shadow System (5 levels, no blur for subtle layers) === */
+    -nothing-shadow-1: dropshadow(gaussian, rgba(0,0,0,0.40), 2, 0, 0, 1);
+    -nothing-shadow-2: dropshadow(gaussian, rgba(0,0,0,0.35), 4, 0, 0, 2);
+    -nothing-shadow-3: dropshadow(gaussian, rgba(0,0,0,0.30), 6, 0, 0, 4);
+    -nothing-shadow-4: dropshadow(gaussian, rgba(0,0,0,0.25), 8, 0, 0, 6);
+    -nothing-shadow-5: dropshadow(gaussian, rgba(0,0,0,0.20), 12, 0, 0, 8);
+
+    /* === Typography Scale (11px-24px, never >24px for titles) === */
+    -nothing-font-display: 24px;
+    -nothing-font-title: 18px;
+    -nothing-font-headline: 16px;
+    -nothing-font-body: 14px;
+    -nothing-font-label: 13px;
+    -nothing-font-caption: 12px;
+    -nothing-font-overline: 11px;
+}

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/lively-Studio/Slime-Craft-Launcher/main/docs/schemas/accounts/1.0.0",
+  "title": "SCL Accounts",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "$schema"
+  ],
+  "patternProperties": {
+    "^\\$schema$": {
+      "enum": [
+        "https://raw.githubusercontent.com/lively-Studio/Slime-Craft-Launcher/main/docs/schemas/accounts/1.0.0"
+      ]
+    }
+  },
+  "properties": {
+    "accounts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "accountID",
+          "type"
+        ],
+        "properties": {
+          "accountID": {
+            "$ref": "#/$defs/accountID"
+          },
+          "type": {
+            "enum": [
+              "offline",
+              "microsoft",
+              "authlibInjector"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "accountID": {
+      "type": "string",
+      "pattern": "^account:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    }
+  }
+}

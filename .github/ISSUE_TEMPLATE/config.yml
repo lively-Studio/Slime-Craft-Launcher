@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: QQ 群 | QQ Group
+    url: https://qm.qq.com/q/RGrOTIdLq4
+    about: Slime Craft Launcher 的官方 QQ 交流群。| The official QQ group of Slime Craft Launcher.
+  - name: Discord 服务器 | Discord Server
+    url: https://discord.gg/FdEkjJR9P
+    about: Slime Craft Launcher 的官方 Discord 服务器。| The official Discord server of Slime Craft Launcher.
+  - name: 其他反馈 | Others
+    url: https://github.com/lively-Studio/Slime-Craft-Launcher/discussions/new/choose
+    about: 通过 Discussions 反馈其他问题。| Report other problems in Discussions.

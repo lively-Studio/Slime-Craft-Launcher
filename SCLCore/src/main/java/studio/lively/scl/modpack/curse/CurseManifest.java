@@ -1,0 +1,49 @@
+/*
+ * Slime Craft Launcher
+ * Copyright (C) 2026 lively-Studio <X_CODER_ocs2008@126.com> and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+package studio.lively.scl.modpack.curse;
+
+import com.google.gson.annotations.SerializedName;
+import studio.lively.scl.modpack.ModpackManifest;
+import studio.lively.scl.modpack.ModpackProvider;
+import studio.lively.scl.util.gson.JsonSerializable;
+import org.jetbrains.annotations.Unmodifiable;
+
+import java.util.List;
+
+/// @author lively-Studio
+@JsonSerializable
+public record CurseManifest(@SerializedName("manifestType") String manifestType,
+                            @SerializedName("manifestVersion") int manifestVersion,
+                            @SerializedName("name") String name,
+                            @SerializedName("version") String version,
+                            @SerializedName("author") String author,
+                            @SerializedName("overrides") String overrides,
+                            @SerializedName("minecraft") CurseManifestMinecraft minecraft,
+                            @SerializedName("files") @Unmodifiable List<CurseManifestFile> files) implements ModpackManifest {
+
+    public CurseManifest setFiles(List<CurseManifestFile> files) {
+        return new CurseManifest(manifestType, manifestVersion, name, version, author, overrides, minecraft, files);
+    }
+
+    @Override
+    public ModpackProvider getProvider() {
+        return CurseModpackProvider.INSTANCE;
+    }
+
+    public static final String MINECRAFT_MODPACK = "minecraftModpack";
+}

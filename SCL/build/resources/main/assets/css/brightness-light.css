@@ -1,0 +1,51 @@
+/* NOTHING-UI-1 Light Mode */
+* {
+    /* Surface */
+    -nothing-surface: #F5F5F5;
+    -nothing-surface-higher: #EEEEEE;
+    -nothing-surface-card: #E8E8E8;
+    -nothing-surface-elevated: #E0E0E0;
+    -nothing-surface-overlay: #DADADA;
+
+    /* Text */
+    -nothing-on-surface: rgba(0,0,0,0.90);
+    -nothing-on-surface-variant: rgba(0,0,0,0.60);
+
+    /* Outline */
+    -nothing-outline: rgba(0,0,0,0.12);
+    -nothing-outline-strong: rgba(0,0,0,0.20);
+
+    /* Dynamic tokens */
+    -nothing-ripple-fill: rgba(0,0,0,0.08);
+    -nothing-hover-bg: rgba(0,0,0,0.06);
+    -nothing-scrollbar-thumb: rgba(0,0,0,0.15);
+    -nothing-scrollbar-arrow: rgba(0,0,0,0.30);
+    -nothing-overlay-bg: rgba(245,245,245,0.50);
+    -nothing-card-bg: rgba(245,245,245,0.80);
+    -nothing-bubble-bg: rgba(230,230,230,0.90);
+    -nothing-toolbar-bg: -nothing-surface-higher;
+    -nothing-toolbar-second-bg: -nothing-surface-higher;
+    -nothing-toolbar-second-label: -nothing-on-surface;
+
+    -nothing-accent-track-bg: rgba(0,0,0,0.06);
+}
+
+.hint {
+    -fx-hyperlink-fill: #00838F;
+}
+
+.log-window {
+    -fixed-log-background: #F5F5F5;
+    -fixed-log-toggle-selected: rgba(0,0,0,0.90);
+    -fixed-log-toggle-unselected: rgba(0,0,0,0.40);
+    -fixed-log-text-fill: rgba(0,0,0,0.85);
+    -fixed-log-trace-background: #EEEEEE;
+    -fixed-log-debug-background: #E8E8E8;
+    -fixed-log-info-background: #F5F5F5;
+    -fixed-log-warn-background: rgba(255,152,0,0.08);
+    -fixed-log-warn-text-fill: #E65100;
+    -fixed-log-error-background: rgba(215,25,33,0.06);
+    -fixed-log-error-text-fill: #C62828;
+    -fixed-log-fatal-background: rgba(215,25,33,0.12);
+    -fixed-log-selected: #E0E0E0;
+}
