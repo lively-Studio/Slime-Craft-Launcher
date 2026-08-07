@@ -21,10 +21,6 @@ import com.jfoenix.controls.JFXPopup;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ChangeListener;
-import javafx.geometry.Insets;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 import studio.lively.scl.setting.*;
 import studio.lively.scl.terracotta.TerracottaMetadata;
 import studio.lively.scl.ui.Controllers;
@@ -61,22 +57,15 @@ public class TerracottaPage extends DecoratorAnimatedPage implements DecoratorPa
         tab = new TabHeader(transitionPane, statusPage);
         tab.select(statusPage);
 
-        BorderPane left = new BorderPane();
-        FXUtils.setLimitWidth(left, 200);
-        VBox.setVgrow(left, Priority.ALWAYS);
-        setLeft(left);
-
-        AdvancedListBox sideBar = new AdvancedListBox()
-                .addNavigationDrawerTab(tab, statusPage, i18n("terracotta.status"), SVG.TUNE);
-        left.setTop(sideBar);
+        AdvancedListBox sideBar = new AdvancedListBox(true /* horizontal */);
+        sideBar.addNavigationDrawerTab(tab, statusPage, i18n("terracotta.status"), SVG.TUNE);
 
         AccountAdvancedListItem accountListItem = new AccountAdvancedListItem();
         accountListItem.setOnAction(e -> Controllers.navigate(Controllers.getAccountListPage()));
         accountListItem.accountProperty().bind(Accounts.selectedAccountProperty());
         FXUtils.onSecondaryButtonClicked(accountListItem, () -> AccountListPopupMenu.show(accountListItem, JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT, accountListItem.getWidth(), 0));
 
-        AdvancedListBox toolbar = new AdvancedListBox()
-                .add(accountListItem)
+        sideBar.add(accountListItem)
                 .addNavigationDrawerItem(i18n("version.launch"), SVG.ROCKET_LAUNCH, () -> {
                     var repository = GameDirectoryManager.getSelectedRepository();
                     Versions.launch(repository, repository.getSelectedInstance(), launcherHelper -> {
@@ -102,8 +91,7 @@ public class TerracottaPage extends DecoratorAnimatedPage implements DecoratorPa
                             mainPage.getRepository(), mainPage.getVersions()));
                 })
                 .addNavigationDrawerItem(i18n("terracotta.feedback.title"), SVG.FEEDBACK, () -> {});
-        BorderPane.setMargin(toolbar, new Insets(0, 0, 12, 0));
-        left.setBottom(toolbar);
+        setLeft(sideBar);
 
         setCenter(transitionPane);
     }

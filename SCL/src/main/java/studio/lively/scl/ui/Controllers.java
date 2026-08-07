@@ -93,8 +93,8 @@ public final class Controllers {
     private static final int CUSTOM_DECORATION_SHADOW_SIZE = 8;
     private static final int CUSTOM_DECORATION_SHADOW_EXTENT = CUSTOM_DECORATION_SHADOW_SIZE * 2;
 
-    public static final int MIN_CONTENT_WIDTH = 800 + 2; // bg width + border width*2
-    public static final int MIN_CONTENT_HEIGHT = 450 + 2 + 40; // bg height + border width*2 + toolbar height
+    public static final int MIN_CONTENT_WIDTH = 420 + 2; // mobile portrait width + border width*2
+    public static final int MIN_CONTENT_HEIGHT = 680 + 2 + 40; // mobile portrait height + border width*2 + toolbar height
     public static final int MIN_WIDTH = MIN_CONTENT_WIDTH + CUSTOM_DECORATION_SHADOW_EXTENT;
     public static final int MIN_HEIGHT = MIN_CONTENT_HEIGHT + CUSTOM_DECORATION_SHADOW_EXTENT;
     public static final Rectangle2D PRIMARY_SCREEN_BOUNDS = Screen.getPrimary().getBounds();

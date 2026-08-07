@@ -125,7 +125,6 @@ public final class AccountListPage extends DecoratorAnimatedPage implements Deco
                 VBox boxMethods = new VBox();
                 {
                     boxMethods.getStyleClass().add("advanced-list-box-content");
-                    FXUtils.setLimitWidth(boxMethods, 200);
 
                     AdvancedListItem microsoftItem = new AdvancedListItem();
                     microsoftItem.getStyleClass().add("navigation-drawer-item");

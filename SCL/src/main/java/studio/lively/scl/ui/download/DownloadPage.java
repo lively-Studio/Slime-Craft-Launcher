@@ -57,7 +57,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.function.Supplier;
@@ -116,16 +115,14 @@ public class DownloadPage extends DecoratorAnimatedPage implements DecoratorPage
 
         tab.select(newGameTab);
 
-        AdvancedListBox sideBar = new AdvancedListBox()
-                .startCategory(i18n("download.game").toUpperCase(Locale.ROOT))
-                .addNavigationDrawerTab(tab, newGameTab, i18n("game"), SVG.STADIA_CONTROLLER, SVG.STADIA_CONTROLLER_FILL)
+        AdvancedListBox sideBar = new AdvancedListBox(true /* horizontal */);
+        sideBar.setSpacing(4);
+        sideBar.addNavigationDrawerTab(tab, newGameTab, i18n("game"), SVG.STADIA_CONTROLLER, SVG.STADIA_CONTROLLER_FILL)
                 .addNavigationDrawerTab(tab, modpackTab, i18n("modpack"), SVG.PACKAGE2, SVG.PACKAGE2_FILL)
-                .startCategory(i18n("download.content").toUpperCase(Locale.ROOT))
                 .addNavigationDrawerTab(tab, modTab, i18n("mods"), SVG.EXTENSION, SVG.EXTENSION_FILL)
                 .addNavigationDrawerTab(tab, resourcePackTab, i18n("resourcepack"), SVG.TEXTURE)
                 .addNavigationDrawerTab(tab, shaderTab, i18n("download.shader"), SVG.WB_SUNNY, SVG.WB_SUNNY_FILL)
                 .addNavigationDrawerTab(tab, worldTab, i18n("world"), SVG.PUBLIC);
-        FXUtils.setLimitWidth(sideBar, 200);
         setLeft(sideBar);
 
         setCenter(transitionPane);

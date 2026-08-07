@@ -199,9 +199,6 @@ public final class WorldManagePage extends DecoratorAnimatedPage implements Deco
         private BorderPane getSidebar() {
             BorderPane sidebar = new BorderPane();
             {
-                FXUtils.setLimitWidth(sidebar, 200);
-                VBox.setVgrow(sidebar, Priority.ALWAYS);
-            }
 
             sidebar.setTop(getTabBar());
             sidebar.setBottom(getToolBar());

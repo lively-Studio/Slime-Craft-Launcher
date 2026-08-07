@@ -102,11 +102,10 @@ public class GameListPage extends DecoratorAnimatedPage implements DecoratorPage
                 pane.setContent(wrapper);
             }
 
-            AdvancedListBox bottomLeftCornerList = new AdvancedListBox()
-                    .addNavigationDrawerItem(i18n("install.new_game"), SVG.ADD_CIRCLE, Versions::addNewGame)
+            AdvancedListBox bottomLeftCornerList = new AdvancedListBox(true /* horizontal */);
+            bottomLeftCornerList.addNavigationDrawerItem(i18n("install.new_game"), SVG.ADD_CIRCLE, Versions::addNewGame)
                     .addNavigationDrawerItem(i18n("install.modpack"), SVG.PACKAGE2, Versions::importModpack)
                     .addNavigationDrawerItem(i18n("settings.type.global.manage"), SVG.SETTINGS, this::modifyGlobalGameSettings);
-            FXUtils.setLimitHeight(bottomLeftCornerList, 40 * 3 + 12 * 2);
             setLeft(pane, bottomLeftCornerList);
         }
 

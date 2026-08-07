@@ -230,8 +230,9 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
             nbtItem.setTitle(i18n("nbt.viewer"));
             nbtItem.setOnAction(e -> Controllers.openNbtEditor());
 
-            // the left sidebar
-            AdvancedListBox sideBar = new AdvancedListBox()
+            // the bottom navigation bar
+            AdvancedListBox sideBar = new AdvancedListBox(true /* horizontal */);
+            sideBar.setSpacing(4);
                     .startCategory(i18n("account").toUpperCase(Locale.ROOT))
                     .add(accountListItem)
                     .startCategory(i18n("version").toUpperCase(Locale.ROOT))

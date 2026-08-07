@@ -285,8 +285,8 @@ public class VersionPage extends DecoratorAnimatedPage implements DecoratorPage 
             super(control);
 
             {
-                AdvancedListBox sideBar = new AdvancedListBox()
-                        .addNavigationDrawerTab(control.tab, control.versionSettingsTab, i18n("settings.game"), SVG.SETTINGS, SVG.SETTINGS_FILL)
+                AdvancedListBox sideBar = new AdvancedListBox(true /* horizontal */);
+                sideBar.addNavigationDrawerTab(control.tab, control.versionSettingsTab, i18n("settings.game"), SVG.SETTINGS, SVG.SETTINGS_FILL)
                         .addNavigationDrawerTab(control.tab, control.installerListTab, i18n("settings.tabs.installers"), SVG.DEPLOYED_CODE, SVG.DEPLOYED_CODE_FILL)
                         .addNavigationDrawerTab(control.tab, control.modListTab, i18n("mods.manage"), SVG.EXTENSION, SVG.EXTENSION_FILL)
                         .addNavigationDrawerTab(control.tab, control.resourcePackTab, i18n("resourcepack.manage"), SVG.TEXTURE)
@@ -326,8 +326,8 @@ public class VersionPage extends DecoratorAnimatedPage implements DecoratorPage 
                         new IconedMenuItem(null, i18n("version.manage.clean"), control::clearJunkFiles, managementPopup).addTooltip(i18n("version.manage.clean.tooltip"))
                 );
 
-                AdvancedListBox toolbar = new AdvancedListBox()
-                        .addNavigationDrawerItem(i18n("version.update"), SVG.UPDATE, control::updateGame, upgradeItem -> {
+                AdvancedListBox toolbar = new AdvancedListBox(true /* horizontal */);
+                toolbar.addNavigationDrawerItem(i18n("version.update"), SVG.UPDATE, control::updateGame, upgradeItem -> {
                             upgradeItem.visibleProperty().bind(control.currentVersionUpgradable);
                         })
                         .addNavigationDrawerItem(i18n("version.launch.test"), SVG.ROCKET_LAUNCH, control::testGame)
@@ -338,7 +338,6 @@ public class VersionPage extends DecoratorAnimatedPage implements DecoratorPage 
                             managementItem.setOnAction(e -> managementPopup.show(managementItem, JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT, managementItem.getWidth(), 0));
                         });
                 toolbar.getStyleClass().add("advanced-list-box-clear-padding");
-                FXUtils.setLimitHeight(toolbar, 40 * 4 + 12 * 2);
 
                 setLeft(sideBar, toolbar);
             }

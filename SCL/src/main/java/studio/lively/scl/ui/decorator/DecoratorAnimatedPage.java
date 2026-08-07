@@ -22,29 +22,32 @@ import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import studio.lively.scl.ui.FXUtils;
 
 public class DecoratorAnimatedPage extends Control {
 
-    protected final VBox left = new VBox();
+    protected final HBox bottomNav = new HBox();
     protected final StackPane center = new StackPane();
 
     {
         getStyleClass().add("gray-background");
+        bottomNav.getStyleClass().add("bottom-navigation");
+        bottomNav.setFillHeight(true);
+        HBox.setHgrow(bottomNav, Priority.ALWAYS);
     }
 
     protected void setLeft(Node... children) {
-        left.getChildren().setAll(children);
+        bottomNav.getChildren().setAll(children);
     }
 
     protected void setCenter(Node... children) {
         center.getChildren().setAll(children);
     }
 
-    public VBox getLeft() {
-        return left;
+    public HBox getLeft() {
+        return bottomNav;
     }
 
     public StackPane getCenter() {
@@ -62,8 +65,7 @@ public class DecoratorAnimatedPage extends Control {
             super(control);
 
             BorderPane pane = new BorderPane();
-            pane.setLeft(control.left);
-            FXUtils.setLimitWidth(control.left, 200);
+            pane.setBottom(control.bottomNav);
             pane.setCenter(control.center);
             getChildren().setAll(pane);
         }

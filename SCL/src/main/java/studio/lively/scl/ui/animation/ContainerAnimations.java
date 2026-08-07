@@ -222,11 +222,11 @@ public enum ContainerAnimations implements TransitionPane.AnimationProducer {
                 Node center = prevPage.getCenter();
 
                 timeline.getKeyFrames().add(new KeyFrame(Duration.ZERO,
-                        new KeyValue(left.translateXProperty(), 0, interpolator),
-                        new KeyValue(center.translateXProperty(), 0, interpolator)));
+                        new KeyValue(left.translateYProperty(), 0, interpolator),
+                        new KeyValue(center.translateYProperty(), 0, interpolator)));
                 timeline.getKeyFrames().add(new KeyFrame(halfDuration,
-                        new KeyValue(left.translateXProperty(), -30, interpolator),
-                        new KeyValue(center.translateXProperty(), 30, interpolator)));
+                        new KeyValue(left.translateYProperty(), 30, interpolator),
+                        new KeyValue(center.translateYProperty(), -30, interpolator)));
             }
 
             timeline.getKeyFrames().add(new KeyFrame(Duration.ZERO,
@@ -240,11 +240,11 @@ public enum ContainerAnimations implements TransitionPane.AnimationProducer {
                 Node center = nextPage.getCenter();
 
                 timeline.getKeyFrames().add(new KeyFrame(halfDuration,
-                        new KeyValue(left.translateXProperty(), -30, interpolator),
-                        new KeyValue(center.translateXProperty(), 30, interpolator)));
+                        new KeyValue(left.translateYProperty(), 30, interpolator),
+                        new KeyValue(center.translateYProperty(), -30, interpolator)));
                 timeline.getKeyFrames().add(new KeyFrame(duration,
-                        new KeyValue(left.translateXProperty(), 0, interpolator),
-                        new KeyValue(center.translateXProperty(), 0, interpolator)));
+                        new KeyValue(left.translateYProperty(), 0, interpolator),
+                        new KeyValue(center.translateYProperty(), 0, interpolator)));
             }
 
             return timeline;

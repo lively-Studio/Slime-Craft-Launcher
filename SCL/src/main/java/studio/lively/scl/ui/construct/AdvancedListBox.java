@@ -22,6 +22,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -33,9 +34,25 @@ import studio.lively.scl.ui.animation.Motion;
 import java.util.function.Consumer;
 
 public class AdvancedListBox extends ScrollPane {
-    private final VBox container = new VBox();
+    private final Pane container;
+    private final boolean horizontal;
 
-    {
+    public AdvancedListBox() {
+        this(false);
+    }
+
+    public AdvancedListBox(boolean horizontal) {
+        this.horizontal = horizontal;
+
+        if (horizontal) {
+            HBox hBox = new HBox();
+            hBox.setAlignment(Pos.CENTER);
+            hBox.setFillHeight(true);
+            container = hBox;
+        } else {
+            container = new VBox();
+        }
+
         setContent(container);
 
         FXUtils.smoothScrolling(this);
@@ -47,12 +64,21 @@ public class AdvancedListBox extends ScrollPane {
 
         container.getStyleClass().add("advanced-list-box-content");
 
-        this.addEventFilter(MouseEvent.MOUSE_ENTERED, event -> {
-            if (container.getHeight() > getHeight())
-                setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
-        });
-        this.addEventFilter(MouseEvent.MOUSE_EXITED,
-                event -> setVbarPolicy(ScrollBarPolicy.NEVER));
+        if (horizontal) {
+            this.addEventFilter(MouseEvent.MOUSE_ENTERED, event -> {
+                if (container.getWidth() > getWidth())
+                    setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+            });
+            this.addEventFilter(MouseEvent.MOUSE_EXITED,
+                    event -> setHbarPolicy(ScrollBarPolicy.NEVER));
+        } else {
+            this.addEventFilter(MouseEvent.MOUSE_ENTERED, event -> {
+                if (((VBox) container).getHeight() > getHeight())
+                    setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+            });
+            this.addEventFilter(MouseEvent.MOUSE_EXITED,
+                    event -> setVbarPolicy(ScrollBarPolicy.NEVER));
+        }
     }
 
     public AdvancedListBox add(Node child) {
@@ -152,7 +178,11 @@ public class AdvancedListBox extends ScrollPane {
     }
 
     public void setSpacing(double spacing) {
-        container.setSpacing(spacing);
+        if (container instanceof VBox vBox) {
+            vBox.setSpacing(spacing);
+        } else if (container instanceof HBox hBox) {
+            hBox.setSpacing(spacing);
+        }
     }
 
     public void clear() {
