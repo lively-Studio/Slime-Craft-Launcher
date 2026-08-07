@@ -1987,6 +1987,7 @@
 
 .update-pane:active .subtitle-label {
     -fx-text-fill: #FF9800;
+}
 
 /* ===== Mobile Bottom Navigation ===== */
 .bottom-navigation {
