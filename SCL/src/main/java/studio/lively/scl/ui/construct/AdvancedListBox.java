@@ -21,6 +21,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -100,6 +101,7 @@ public class AdvancedListBox extends ScrollPane {
         if (leftGraphic != null) {
             item.setLeftIcon(leftGraphic);
         }
+        FXUtils.installFastTooltip(item, new Tooltip(title));
         return item;
     }
 
