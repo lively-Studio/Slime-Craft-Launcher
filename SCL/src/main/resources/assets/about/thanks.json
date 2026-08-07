@@ -7,5 +7,10 @@
   {
     "image" : "/assets/img/lively_studio.jpg",
     "title" : "「零」影制作组(Lively Studio)"
+  },
+  {
+    "image" : "/assets/img/icon.png",
+    "titleLocalized" : "about.thanks_to.users",
+    "subtitleLocalized" : "about.thanks_to.users.statement"
   }
 ]
