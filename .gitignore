@@ -1,7 +1,11 @@
-.scl_signature_key.pkcs8
-scl_signature_key.pem
+.DS_Store
+.idea/
 .scl/
 build/
 .gradle/
 *.log
 hs_err_pid*.log
+.scl_signature_key.pkcs8
+scl_signature_key.pem
+*.jpg.meta
+*.png.meta
