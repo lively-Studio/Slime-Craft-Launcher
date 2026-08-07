@@ -2001,48 +2001,65 @@
 .bottom-navigation .advanced-list-box-content {
     -fx-padding: 4 8 4 8;
     -fx-spacing: 2;
-}
-
-.bottom-navigation .navigation-drawer-item {
-    -fx-padding: 4 6 4 6;
     -fx-alignment: center;
 }
 
-.bottom-navigation .navigation-drawer-item .container {
+/* Remove all padding from AdvancedListItem containers in bottom nav */
+.bottom-navigation .advanced-list-item > .rippler-container > .container,
+.bottom-navigation .advanced-list-item > .rippler-container > .container > .two-line-list-item,
+.bottom-navigation .advanced-list-item > .rippler-container > .container > VBox {
     -fx-padding: 0;
+    -fx-max-width: 0;
+    -fx-min-width: 0;
+    -fx-pref-width: 0;
 }
 
-.bottom-navigation .two-line-list-item,
-.bottom-navigation .two-line-list-item .first-line {
+.bottom-navigation .advanced-list-item > .rippler-container > .container > .two-line-list-item > .first-line,
+.bottom-navigation .advanced-list-item > .rippler-container > .container > VBox > .first-line {
     -fx-padding: 0;
     -fx-spacing: 0;
+    -fx-max-height: 0;
+    -fx-min-height: 0;
+    -fx-pref-height: 0;
 }
 
-.bottom-navigation .first-line,
-.bottom-navigation .two-line-list-item > * {
+.bottom-navigation .advanced-list-item > .rippler-container > .container .title {
+    -fx-font-size: 0;
+    -fx-padding: 0;
     -fx-pref-height: 0;
     -fx-min-height: 0;
     -fx-max-height: 0;
 }
 
-.bottom-navigation .navigation-drawer-item .first-line,
-.bottom-navigation .navigation-drawer-item .subtitle,
-.bottom-navigation .advanced-list-box-content .first-line,
-.bottom-navigation .advanced-list-box-content .subtitle {
-    -fx-pref-height: 0;
-    -fx-min-height: 0;
+/* navigation-drawer-item: same treatment */
+.bottom-navigation .navigation-drawer-item > .rippler-container > .container {
+    -fx-padding: 0;
+}
+
+.bottom-navigation .navigation-drawer-item > .rippler-container > .container > .two-line-list-item,
+.bottom-navigation .navigation-drawer-item > .rippler-container > .container > VBox {
+    -fx-padding: 0;
+    -fx-max-width: 0;
+    -fx-min-width: 0;
+    -fx-pref-width: 0;
+}
+
+.bottom-navigation .navigation-drawer-item > .rippler-container > .container > .two-line-list-item > .first-line,
+.bottom-navigation .navigation-drawer-item > .rippler-container > .container > VBox > .first-line {
+    -fx-padding: 0;
+    -fx-spacing: 0;
     -fx-max-height: 0;
-    -fx-opacity: 0;
+    -fx-min-height: 0;
+    -fx-pref-height: 0;
 }
 
 .bottom-navigation .navigation-drawer-item .title,
-.bottom-navigation .advanced-list-box-content .title {
+.bottom-navigation .navigation-drawer-item .subtitle {
     -fx-font-size: 0;
+    -fx-padding: 0;
     -fx-pref-height: 0;
     -fx-min-height: 0;
     -fx-max-height: 0;
-    -fx-padding: 0;
-    -fx-opacity: 0;
 }
 
 /* ===== Mobile Account Button (Center) ===== */
