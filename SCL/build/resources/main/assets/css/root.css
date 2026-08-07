@@ -2008,15 +2008,12 @@
     -fx-alignment: center;
 }
 
-.bottom-navigation .navigation-drawer-item .title {
-    -fx-font-size: 10px;
-    -fx-text-alignment: center;
-    -fx-wrap-text: true;
-    -fx-opacity: 0;
-}
-
-.bottom-navigation .navigation-drawer-item:hover .title {
-    -fx-opacity: 1;
+.bottom-navigation .navigation-drawer-item .title,
+.bottom-navigation .navigation-drawer-item .subtitle {
+    -fx-font-size: 0;
+    -fx-max-height: 0;
+    -fx-min-height: 0;
+    -fx-padding: 0;
 }
 
 /* ===== Mobile Account Button (Center) ===== */

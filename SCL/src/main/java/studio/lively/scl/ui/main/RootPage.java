@@ -24,6 +24,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import studio.lively.scl.Metadata;
@@ -242,12 +243,14 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
                 FXUtils.prepareOnMouseEnter(gameListItem, Controllers::prepareVersionPage);
             }
             FXUtils.onSecondaryButtonClicked(gameListItem, () -> showGameListPopupMenu(gameListItem));
+            FXUtils.installFastTooltip(gameListItem, new Tooltip(i18n("version.manage")));
 
             AdvancedListItem gameItem = new AdvancedListItem();
             gameItem.setLeftIcon(SVG.FORMAT_LIST_BULLETED);
             gameItem.setTitle(i18n("version.manage"));
             gameItem.setOnAction(e -> Controllers.navigate(Controllers.getGameListPage()));
             FXUtils.onSecondaryButtonClicked(gameItem, () -> showGameListPopupMenu(gameItem));
+            FXUtils.installFastTooltip(gameItem, new Tooltip(i18n("version.manage")));
 
             AdvancedListItem downloadItem = new AdvancedListItem();
             downloadItem.setLeftIcon(SVG.DOWNLOAD);
@@ -259,6 +262,7 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
             if (AnimationUtils.isAnimationEnabled()) {
                 FXUtils.prepareOnMouseEnter(downloadItem, Controllers::prepareDownloadPage);
             }
+            FXUtils.installFastTooltip(downloadItem, new Tooltip(i18n("download")));
 
             AdvancedListItem launcherSettingsItem = new AdvancedListItem();
             launcherSettingsItem.setLeftIcon(SVG.SETTINGS);
@@ -270,6 +274,7 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
             if (AnimationUtils.isAnimationEnabled()) {
                 FXUtils.prepareOnMouseEnter(launcherSettingsItem, Controllers::prepareSettingsPage);
             }
+            FXUtils.installFastTooltip(launcherSettingsItem, new Tooltip(i18n("settings")));
 
             AdvancedListBox bottomNav = new AdvancedListBox(true /* horizontal */);
             bottomNav.setSpacing(4);
