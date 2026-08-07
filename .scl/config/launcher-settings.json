@@ -4,8 +4,17 @@
     "packId": "scl.classic",
     "themeId": "2021-08-26"
   },
-  "logFontFamily": "Arial Narrow",
-  "launcherFontFamily": "Apple Symbols",
-  "selectedGameDirectory": "game-directory:7105bc1f-490e-5e8c-878c-f5844c3d4bc3",
-  "defaultGameSettingsPreset": "game-settings-preset:019fdb73-46d8-7b7e-a330-889713976bf1"
+  "themeAppearanceOverrides": [
+    "background"
+  ],
+  "customThemeColor": "#5C6BC0",
+  "themeColorType": "CUSTOM",
+  "backgroundType": "BUILTIN",
+  "builtinBackgroundId": "2016-02-25",
+  "selectedGameDirectory": "game-directory:019fd721-9135-700e-85fd-dde30a5f46b1",
+  "defaultGameSettingsPreset": "game-settings-preset:019fdb73-46d8-7b7e-a330-889713976bf1",
+  "selectedInstance": {
+    "game-directory:019fd721-9135-700e-85fd-dde30a5f46b1": "1.21.11-Fabric-CODER"
+  },
+  "selectedAccount": "account:019fd71d-a63b-7a3d-84ea-33e1fa8a45bf"
 }

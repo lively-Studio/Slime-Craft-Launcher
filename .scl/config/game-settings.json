@@ -4,7 +4,11 @@
     {
       "id": "game-settings-preset:019fdb73-46d8-7b7e-a330-889713976bf1",
       "autoNameNumber": 1,
-      "defaultIsolationType": "ALWAYS"
+      "defaultIsolationType": "ALWAYS",
+      "launcherVisibility": "KEEP",
+      "allowAutoAgent": true,
+      "showLogs": true,
+      "enableDebugLogOutput": true
     }
   ]
 }

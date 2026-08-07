@@ -101,7 +101,7 @@ fun attachSignature(jar: File) {
     ZipFile(jar).use { zip ->
         zip.stream()
             .sorted(Comparator.comparing { it.name })
-            .filter { it.name != "META-INF/hmcl_signature" }
+            .filter { it.name != "META-INF/scl_signature" }
             .forEach {
                 signer.update(digest("SHA-512", it.name.toByteArray()))
                 signer.update(digest("SHA-512", zip.getInputStream(it).readBytes()))
@@ -109,7 +109,7 @@ fun attachSignature(jar: File) {
     }
     val signature = signer.sign()
     FileSystems.newFileSystem(URI.create("jar:" + jar.toURI()), emptyMap<String, Any>()).use { zipfs ->
-        Files.newOutputStream(zipfs.getPath("META-INF/hmcl_signature")).use { it.write(signature) }
+        Files.newOutputStream(zipfs.getPath("META-INF/scl_signature")).use { it.write(signature) }
     }
 }
 

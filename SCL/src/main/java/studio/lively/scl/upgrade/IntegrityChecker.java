@@ -47,8 +47,8 @@ public final class IntegrityChecker {
 
     public static final boolean DISABLE_SELF_INTEGRITY_CHECK = "true".equals(System.getProperty("scl.self_integrity_check.disable"));
 
-    private static final String SIGNATURE_FILE = "META-INF/hmcl_signature";
-    private static final String PUBLIC_KEY_FILE = "assets/hmcl_signature_publickey.der";
+    private static final String SIGNATURE_FILE = "META-INF/scl_signature";
+    private static final String PUBLIC_KEY_FILE = "assets/scl_signature_publickey.der";
 
     private static PublicKey getPublicKey() throws IOException {
         try (InputStream in = IntegrityChecker.class.getResourceAsStream("/" + PUBLIC_KEY_FILE)) {
