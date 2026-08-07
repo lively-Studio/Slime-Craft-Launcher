@@ -21,7 +21,6 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
 import javafx.animation.PauseTransition;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,7 +28,6 @@ import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
 import javafx.scene.input.KeyCode;
@@ -83,30 +81,27 @@ public class GameListPage extends DecoratorAnimatedPage implements DecoratorPage
         });
 
         {
-            ScrollPane pane = new ScrollPane();
-            VBox.setVgrow(pane, Priority.ALWAYS);
-            {
-                AdvancedListItem addGameDirectoryItem = new AdvancedListItem();
-                addGameDirectoryItem.getStyleClass().add("navigation-drawer-item");
-                addGameDirectoryItem.setTitle(i18n("game_directory.new"));
-                addGameDirectoryItem.setLeftIcon(SVG.ADD_CIRCLE);
-                addGameDirectoryItem.setOnAction(e -> Controllers.navigate(new GameDirectoryPage(null)));
+            AdvancedListBox bottomBar = new AdvancedListBox(true /* horizontal */);
+            bottomBar.setSpacing(4);
 
-                pane.setFitToWidth(true);
-                VBox wrapper = new VBox();
-                wrapper.getStyleClass().add("advanced-list-box-content");
-                VBox box = new VBox();
-                box.setFillWidth(true);
-                Bindings.bindContent(box.getChildren(), gameDirectoryListItems);
-                wrapper.getChildren().setAll(box, addGameDirectoryItem);
-                pane.setContent(wrapper);
+            // Game directory items as tabs
+            for (GameDirectoryListItem item : gameDirectoryListItems) {
+                bottomBar.add(item);
             }
 
-            AdvancedListBox bottomLeftCornerList = new AdvancedListBox(true /* horizontal */);
-            bottomLeftCornerList.addNavigationDrawerItem(i18n("install.new_game"), SVG.ADD_CIRCLE, Versions::addNewGame)
+            // Add new game directory
+            AdvancedListItem addGameDirectoryItem = new AdvancedListItem();
+            addGameDirectoryItem.getStyleClass().add("navigation-drawer-item");
+            addGameDirectoryItem.setTitle(i18n("game_directory.new"));
+            addGameDirectoryItem.setLeftIcon(SVG.ADD_CIRCLE);
+            addGameDirectoryItem.setOnAction(e -> Controllers.navigate(new GameDirectoryPage(null)));
+            bottomBar.add(addGameDirectoryItem);
+
+            // Action buttons
+            bottomBar.addNavigationDrawerItem(i18n("install.new_game"), SVG.ADD_CIRCLE, Versions::addNewGame)
                     .addNavigationDrawerItem(i18n("install.modpack"), SVG.PACKAGE2, Versions::importModpack)
                     .addNavigationDrawerItem(i18n("settings.type.global.manage"), SVG.SETTINGS, this::modifyGlobalGameSettings);
-            setLeft(pane, bottomLeftCornerList);
+            setLeft(bottomBar);
         }
 
         setCenter(new GameList());
