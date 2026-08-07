@@ -27,6 +27,7 @@ jobs:
       run: ./gradlew build --no-daemon --parallel
       env:
         MICROSOFT_AUTH_ID: ${{ secrets.MICROSOFT_AUTH_ID }}
+        SCL_VERSION: DEV2026.1.0-SNAPSHOT-1
     - name: Get short SHA
       run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
     - name: Upload JAR
