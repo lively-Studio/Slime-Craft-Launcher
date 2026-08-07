@@ -172,7 +172,7 @@ public final class AboutPage extends SpinnerPane {
                             button.setOnMouseClicked(e -> {
                                 javafx.animation.RotateTransition rt = new javafx.animation.RotateTransition(
                                     javafx.util.Duration.millis(300), imageView);
-                                rt.setByAngle(45);
+                                rt.setByAngle(90);
                                 rt.play();
                             });
                         }
