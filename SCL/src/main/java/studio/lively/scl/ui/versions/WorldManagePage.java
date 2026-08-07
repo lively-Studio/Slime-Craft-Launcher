@@ -198,11 +198,8 @@ public final class WorldManagePage extends DecoratorAnimatedPage implements Deco
 
         private BorderPane getSidebar() {
             BorderPane sidebar = new BorderPane();
-            {
-
             sidebar.setTop(getTabBar());
             sidebar.setBottom(getToolBar());
-
             return sidebar;
         }
 
