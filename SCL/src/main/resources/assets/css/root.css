@@ -2012,6 +2012,19 @@
     -fx-padding: 0;
 }
 
+.bottom-navigation .two-line-list-item,
+.bottom-navigation .two-line-list-item .first-line {
+    -fx-padding: 0;
+    -fx-spacing: 0;
+}
+
+.bottom-navigation .first-line,
+.bottom-navigation .two-line-list-item > * {
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+    -fx-max-height: 0;
+}
+
 .bottom-navigation .navigation-drawer-item .first-line,
 .bottom-navigation .navigation-drawer-item .subtitle,
 .bottom-navigation .advanced-list-box-content .first-line,
