@@ -102,6 +102,10 @@ public class AdvancedListBox extends ScrollPane {
             item.setLeftIcon(leftGraphic);
         }
         FXUtils.installFastTooltip(item, new Tooltip(title));
+        if (horizontal) {
+            item.setCompact(true);
+            item.getStyleClass().add("compact-item");
+        }
         return item;
     }
 

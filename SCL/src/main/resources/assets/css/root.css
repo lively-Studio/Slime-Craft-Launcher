@@ -2004,18 +2004,26 @@
     -fx-alignment: center;
 }
 
-/* Remove all padding from AdvancedListItem containers in bottom nav */
-.bottom-navigation .advanced-list-item > .rippler-container > .container,
-.bottom-navigation .advanced-list-item > .rippler-container > .container > .two-line-list-item,
-.bottom-navigation .advanced-list-item > .rippler-container > .container > VBox {
+/* Compact items: icon-only, centered */
+.bottom-navigation .compact-item > .rippler-container > .container {
+    -fx-padding: 6 12;
+}
+
+/* Non-compact items in bottom nav: collapse text */
+.bottom-navigation .advanced-list-item:not(.compact-item) > .rippler-container > .container {
+    -fx-padding: 0;
+}
+
+.bottom-navigation .advanced-list-item:not(.compact-item) > .rippler-container > .container > .two-line-list-item,
+.bottom-navigation .advanced-list-item:not(.compact-item) > .rippler-container > .container > VBox {
     -fx-padding: 0;
     -fx-max-width: 0;
     -fx-min-width: 0;
     -fx-pref-width: 0;
 }
 
-.bottom-navigation .advanced-list-item > .rippler-container > .container > .two-line-list-item > .first-line,
-.bottom-navigation .advanced-list-item > .rippler-container > .container > VBox > .first-line {
+.bottom-navigation .advanced-list-item:not(.compact-item) > .rippler-container > .container > .two-line-list-item > .first-line,
+.bottom-navigation .advanced-list-item:not(.compact-item) > .rippler-container > .container > VBox > .first-line {
     -fx-padding: 0;
     -fx-spacing: 0;
     -fx-max-height: 0;
@@ -2023,38 +2031,8 @@
     -fx-pref-height: 0;
 }
 
-.bottom-navigation .advanced-list-item > .rippler-container > .container .title {
-    -fx-font-size: 0;
-    -fx-padding: 0;
-    -fx-pref-height: 0;
-    -fx-min-height: 0;
-    -fx-max-height: 0;
-}
-
-/* navigation-drawer-item: same treatment */
-.bottom-navigation .navigation-drawer-item > .rippler-container > .container {
-    -fx-padding: 0;
-}
-
-.bottom-navigation .navigation-drawer-item > .rippler-container > .container > .two-line-list-item,
-.bottom-navigation .navigation-drawer-item > .rippler-container > .container > VBox {
-    -fx-padding: 0;
-    -fx-max-width: 0;
-    -fx-min-width: 0;
-    -fx-pref-width: 0;
-}
-
-.bottom-navigation .navigation-drawer-item > .rippler-container > .container > .two-line-list-item > .first-line,
-.bottom-navigation .navigation-drawer-item > .rippler-container > .container > VBox > .first-line {
-    -fx-padding: 0;
-    -fx-spacing: 0;
-    -fx-max-height: 0;
-    -fx-min-height: 0;
-    -fx-pref-height: 0;
-}
-
-.bottom-navigation .navigation-drawer-item .title,
-.bottom-navigation .navigation-drawer-item .subtitle {
+.bottom-navigation .advanced-list-item:not(.compact-item) .title,
+.bottom-navigation .advanced-list-item:not(.compact-item) .subtitle {
     -fx-font-size: 0;
     -fx-padding: 0;
     -fx-pref-height: 0;

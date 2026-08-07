@@ -38,14 +38,19 @@ public class AdvancedListItemSkin extends SkinBase<AdvancedListItem> {
 
         RipplerContainer container = new RipplerContainer(root);
 
-        TwoLineListItem item = new TwoLineListItem();
-        root.setCenter(item);
-        item.setMouseTransparent(true);
-        item.titleProperty().bind(skinnable.titleProperty());
-        item.subtitleProperty().bind(skinnable.subtitleProperty());
+        if (skinnable.isCompact()) {
+            // Compact mode: icon centered, no text
+            root.centerProperty().bind(skinnable.leftGraphicProperty());
+        } else {
+            TwoLineListItem item = new TwoLineListItem();
+            root.setCenter(item);
+            item.setMouseTransparent(true);
+            item.titleProperty().bind(skinnable.titleProperty());
+            item.subtitleProperty().bind(skinnable.subtitleProperty());
 
-        root.leftProperty().bind(skinnable.leftGraphicProperty());
-        root.rightProperty().bind(skinnable.rightGraphicProperty());
+            root.leftProperty().bind(skinnable.leftGraphicProperty());
+            root.rightProperty().bind(skinnable.rightGraphicProperty());
+        }
 
         getChildren().setAll(container);
     }

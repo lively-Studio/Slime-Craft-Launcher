@@ -47,6 +47,14 @@ public class AdvancedListItem extends Control {
         FXUtils.onClicked(this, () -> fireEvent(new ActionEvent()));
     }
 
+    /// When true, the icon is centered in the item and text is not shown.
+    /// Used for compact bottom-navigation tabs.
+    private final BooleanProperty compact = new SimpleBooleanProperty(this, "compact", false);
+
+    public BooleanProperty compactProperty() { return compact; }
+    public boolean isCompact() { return compact.get(); }
+    public void setCompact(boolean compact) { this.compact.set(compact); }
+
     private final ObjectProperty<Node> leftGraphic = new SimpleObjectProperty<>(this, "leftGraphic");
 
     public ObjectProperty<Node> leftGraphicProperty() {
