@@ -227,6 +227,7 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
 
             // ===== Bottom navigation bar =====
             GameAdvancedListItem gameListItem = new GameAdvancedListItem();
+            gameListItem.getStyleClass().add("navigation-drawer-item");
             gameListItem.setOnAction(e -> {
                 String version = GameDirectoryManager.getSelectedRepository().getSelectedInstance();
                 if (version == null) {

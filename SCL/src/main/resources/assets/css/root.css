@@ -2013,14 +2013,17 @@
 }
 
 .bottom-navigation .navigation-drawer-item .first-line,
-.bottom-navigation .navigation-drawer-item .subtitle {
+.bottom-navigation .navigation-drawer-item .subtitle,
+.bottom-navigation .advanced-list-box-content .first-line,
+.bottom-navigation .advanced-list-box-content .subtitle {
     -fx-pref-height: 0;
     -fx-min-height: 0;
     -fx-max-height: 0;
     -fx-opacity: 0;
 }
 
-.bottom-navigation .navigation-drawer-item .title {
+.bottom-navigation .navigation-drawer-item .title,
+.bottom-navigation .advanced-list-box-content .title {
     -fx-font-size: 0;
     -fx-pref-height: 0;
     -fx-min-height: 0;
