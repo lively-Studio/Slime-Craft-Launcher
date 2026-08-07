@@ -285,15 +285,6 @@ public class VersionPage extends DecoratorAnimatedPage implements DecoratorPage 
             super(control);
 
             {
-                AdvancedListBox sideBar = new AdvancedListBox(true /* horizontal */);
-                sideBar.addNavigationDrawerTab(control.tab, control.versionSettingsTab, i18n("settings.game"), SVG.SETTINGS, SVG.SETTINGS_FILL)
-                        .addNavigationDrawerTab(control.tab, control.installerListTab, i18n("settings.tabs.installers"), SVG.DEPLOYED_CODE, SVG.DEPLOYED_CODE_FILL)
-                        .addNavigationDrawerTab(control.tab, control.modListTab, i18n("mods.manage"), SVG.EXTENSION, SVG.EXTENSION_FILL)
-                        .addNavigationDrawerTab(control.tab, control.resourcePackTab, i18n("resourcepack.manage"), SVG.TEXTURE)
-                        .addNavigationDrawerTab(control.tab, control.worldListTab, i18n("world.manage"), SVG.PUBLIC)
-                        .addNavigationDrawerTab(control.tab, control.schematicsTab, i18n("schematics.manage"), SVG.SCHEMA, SVG.SCHEMA_FILL);
-                VBox.setVgrow(sideBar, Priority.ALWAYS);
-
                 PopupMenu browseList = new PopupMenu();
                 JFXPopup browsePopup = new JFXPopup(browseList);
                 browseList.getContent().setAll(
@@ -326,8 +317,14 @@ public class VersionPage extends DecoratorAnimatedPage implements DecoratorPage 
                         new IconedMenuItem(null, i18n("version.manage.clean"), control::clearJunkFiles, managementPopup).addTooltip(i18n("version.manage.clean.tooltip"))
                 );
 
-                AdvancedListBox toolbar = new AdvancedListBox(true /* horizontal */);
-                toolbar.addNavigationDrawerItem(i18n("version.update"), SVG.UPDATE, control::updateGame, upgradeItem -> {
+                AdvancedListBox bottomBar = new AdvancedListBox(true /* horizontal */);
+                bottomBar.addNavigationDrawerTab(control.tab, control.versionSettingsTab, i18n("settings.game"), SVG.SETTINGS, SVG.SETTINGS_FILL)
+                        .addNavigationDrawerTab(control.tab, control.installerListTab, i18n("settings.tabs.installers"), SVG.DEPLOYED_CODE, SVG.DEPLOYED_CODE_FILL)
+                        .addNavigationDrawerTab(control.tab, control.modListTab, i18n("mods.manage"), SVG.EXTENSION, SVG.EXTENSION_FILL)
+                        .addNavigationDrawerTab(control.tab, control.resourcePackTab, i18n("resourcepack.manage"), SVG.TEXTURE)
+                        .addNavigationDrawerTab(control.tab, control.worldListTab, i18n("world.manage"), SVG.PUBLIC)
+                        .addNavigationDrawerTab(control.tab, control.schematicsTab, i18n("schematics.manage"), SVG.SCHEMA, SVG.SCHEMA_FILL)
+                        .addNavigationDrawerItem(i18n("version.update"), SVG.UPDATE, control::updateGame, upgradeItem -> {
                             upgradeItem.visibleProperty().bind(control.currentVersionUpgradable);
                         })
                         .addNavigationDrawerItem(i18n("version.launch.test"), SVG.ROCKET_LAUNCH, control::testGame)
@@ -337,9 +334,8 @@ public class VersionPage extends DecoratorAnimatedPage implements DecoratorPage 
                         .addNavigationDrawerItem(i18n("settings.game.management"), SVG.MENU, null, managementItem -> {
                             managementItem.setOnAction(e -> managementPopup.show(managementItem, JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT, managementItem.getWidth(), 0));
                         });
-                toolbar.getStyleClass().add("advanced-list-box-clear-padding");
-
-                setLeft(sideBar, toolbar);
+                bottomBar.getStyleClass().add("advanced-list-box-clear-padding");
+                setLeft(bottomBar);
             }
 
             control.state.bind(Bindings.createObjectBinding(() ->

@@ -192,6 +192,11 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
             accountButton.getChildren().setAll(avatarCanvas, playerNameLabel);
             accountButton.setOnMouseClicked(e -> Controllers.navigate(Controllers.getAccountListPage()));
 
+            // Version management button
+            JFXButton versionManageButton = new JFXButton(i18n("version.manage"));
+            versionManageButton.getStyleClass().add("secondary-button");
+            versionManageButton.setOnAction(e -> Controllers.navigate(Controllers.getGameListPage()));
+
             // Launch button
             JFXButton launchButton = new JFXButton();
             launchButton.getStyleClass().add("launch-button");
@@ -222,7 +227,7 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
                 launchButton.setGraphic(graphic);
             }
 
-            centerContent.getChildren().addAll(accountButton, launchButton);
+            centerContent.getChildren().addAll(accountButton, versionManageButton, launchButton);
             VBox.setVgrow(accountButton, javafx.scene.layout.Priority.ALWAYS);
 
             // ===== Bottom navigation bar =====
