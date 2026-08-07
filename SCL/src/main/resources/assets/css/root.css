@@ -2005,10 +2005,13 @@
 
 .bottom-navigation .navigation-drawer-item {
     -fx-padding: 4 6 4 6;
+    -fx-alignment: center;
 }
 
-.bottom-navigation .navigation-drawer-item .title-label {
+.bottom-navigation .navigation-drawer-item .title {
     -fx-font-size: 10px;
+    -fx-text-alignment: center;
+    -fx-wrap-text: true;
 }
 
 /* ===== Mobile Account Button (Center) ===== */

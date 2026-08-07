@@ -45,6 +45,7 @@ public class TwoLineListItem extends VBox {
 
         lblTitle = new Label();
         lblTitle.getStyleClass().add("title");
+        lblTitle.setWrapText(true);
 
         this.firstLine = new HBox(lblTitle);
         firstLine.getStyleClass().add("first-line");
