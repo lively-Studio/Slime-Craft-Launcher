@@ -17,26 +17,31 @@
  */
 package studio.lively.scl.ui.main;
 
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPopup;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import studio.lively.scl.Metadata;
+import studio.lively.scl.auth.Account;
 import studio.lively.scl.event.EventBus;
 import studio.lively.scl.event.RefreshedVersionsEvent;
 import studio.lively.scl.game.SCLGameRepository;
 import studio.lively.scl.game.ModpackHelper;
+import studio.lively.scl.game.TexturesLoader;
 import studio.lively.scl.game.Version;
 import studio.lively.scl.setting.Accounts;
 import studio.lively.scl.setting.GameDirectory;
 import studio.lively.scl.setting.GameDirectoryManager;
 import studio.lively.scl.task.Schedulers;
 import studio.lively.scl.task.Task;
-import studio.lively.scl.terracotta.TerracottaMetadata;
 import studio.lively.scl.ui.Controllers;
 import studio.lively.scl.ui.FXUtils;
 import studio.lively.scl.ui.SVG;
-import studio.lively.scl.ui.account.AccountAdvancedListItem;
-import studio.lively.scl.ui.account.AccountListPopupMenu;
 import studio.lively.scl.ui.animation.AnimationUtils;
 import studio.lively.scl.ui.construct.AdvancedListBox;
 import studio.lively.scl.ui.construct.AdvancedListItem;
@@ -55,6 +60,7 @@ import studio.lively.scl.util.StringUtils;
 import studio.lively.scl.util.TaskCancellationAction;
 import studio.lively.scl.util.io.CompressingUtils;
 import studio.lively.scl.util.io.FileUtils;
+import studio.lively.scl.util.javafx.BindingMapping;
 import studio.lively.scl.util.platform.*;
 import studio.lively.scl.util.versioning.VersionNumber;
 
@@ -66,6 +72,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import static javafx.beans.binding.Bindings.createStringBinding;
 import static studio.lively.scl.ui.FXUtils.runInFX;
 import static studio.lively.scl.util.i18n.I18n.i18n;
 import static studio.lively.scl.util.logging.Logger.LOG;
@@ -145,13 +152,79 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
         protected Skin(RootPage control) {
             super(control);
 
-            // first item in left sidebar
-            AccountAdvancedListItem accountListItem = new AccountAdvancedListItem();
-            accountListItem.setOnAction(e -> Controllers.navigate(Controllers.getAccountListPage()));
-            FXUtils.onSecondaryButtonClicked(accountListItem, () -> AccountListPopupMenu.show(accountListItem, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, accountListItem.getWidth(), 0));
-            accountListItem.accountProperty().bind(Accounts.selectedAccountProperty());
+            // ===== Center: Account avatar + name in the middle, launch button at the bottom =====
+            VBox centerContent = new VBox();
+            centerContent.setAlignment(Pos.CENTER);
+            centerContent.setSpacing(24);
+            centerContent.setPadding(new Insets(40, 20, 20, 20));
 
-            // second item in left sidebar
+            // Player avatar canvas (72x72, larger than sidebar version)
+            Canvas avatarCanvas = new Canvas(72, 72);
+            avatarCanvas.getStyleClass().add("avatar-large");
+            TexturesLoader.drawAvatar(avatarCanvas, TexturesLoader.getDefaultSkinImage());
+
+            // Player name label
+            Label playerNameLabel = new Label(i18n("account.missing"));
+            playerNameLabel.getStyleClass().add("player-name-label");
+            playerNameLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+            // Bind avatar and name to selected account
+            FXUtils.onChangeAndOperate(Accounts.selectedAccountProperty(), account -> {
+                if (account == null) {
+                    TexturesLoader.unbindAvatar(avatarCanvas);
+                    TexturesLoader.drawAvatar(avatarCanvas, TexturesLoader.getDefaultSkinImage());
+                    playerNameLabel.setText(i18n("account.missing"));
+                } else {
+                    TexturesLoader.bindAvatar(avatarCanvas, account);
+                    playerNameLabel.textProperty().bind(createStringBinding(() -> {
+                        String profileName = account.getProfileName();
+                        return StringUtils.isBlank(profileName) ? account.getProfileID().toString() : profileName;
+                    }, account));
+                }
+            });
+
+            // Account button: avatar + name, click to navigate to account page
+            VBox accountButton = new VBox();
+            accountButton.setAlignment(Pos.CENTER);
+            accountButton.setSpacing(12);
+            accountButton.getStyleClass().add("account-button");
+            accountButton.getChildren().setAll(avatarCanvas, playerNameLabel);
+            accountButton.setOnMouseClicked(e -> Controllers.navigate(Controllers.getAccountListPage()));
+
+            // Launch button
+            JFXButton launchButton = new JFXButton();
+            launchButton.getStyleClass().add("launch-button");
+            launchButton.setDefaultButton(true);
+            launchButton.setMaxWidth(250);
+            {
+                VBox graphic = new VBox();
+                graphic.setAlignment(Pos.CENTER);
+                Label launchLabel = new Label();
+                launchLabel.setStyle("-fx-font-size: 18px;");
+                Label currentLabel = new Label();
+                currentLabel.setStyle("-fx-font-size: 12px;");
+
+                FXUtils.onChangeAndOperate(getSkinnable().getMainPage().currentGameProperty(), currentGame -> {
+                    if (currentGame == null) {
+                        launchLabel.setText(i18n("version.launch.empty"));
+                        currentLabel.setText(null);
+                        graphic.getChildren().setAll(launchLabel);
+                        FXUtils.setOnActionWithCooldown(launchButton, getSkinnable().getMainPage()::launchNoGame);
+                    } else {
+                        launchLabel.setText(i18n("version.launch"));
+                        currentLabel.setText(currentGame);
+                        graphic.getChildren().setAll(launchLabel, currentLabel);
+                        FXUtils.setOnActionWithCooldown(launchButton, getSkinnable().getMainPage()::launch);
+                    }
+                });
+
+                launchButton.setGraphic(graphic);
+            }
+
+            centerContent.getChildren().addAll(accountButton, launchButton);
+            VBox.setVgrow(accountButton, javafx.scene.layout.Priority.ALWAYS);
+
+            // ===== Bottom navigation bar =====
             GameAdvancedListItem gameListItem = new GameAdvancedListItem();
             gameListItem.setOnAction(e -> {
                 String version = GameDirectoryManager.getSelectedRepository().getSelectedInstance();
@@ -170,14 +243,12 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
             }
             FXUtils.onSecondaryButtonClicked(gameListItem, () -> showGameListPopupMenu(gameListItem));
 
-            // third item in left sidebar
             AdvancedListItem gameItem = new AdvancedListItem();
             gameItem.setLeftIcon(SVG.FORMAT_LIST_BULLETED);
             gameItem.setTitle(i18n("version.manage"));
             gameItem.setOnAction(e -> Controllers.navigate(Controllers.getGameListPage()));
             FXUtils.onSecondaryButtonClicked(gameItem, () -> showGameListPopupMenu(gameItem));
 
-            // forth item in left sidebar
             AdvancedListItem downloadItem = new AdvancedListItem();
             downloadItem.setLeftIcon(SVG.DOWNLOAD);
             downloadItem.setTitle(i18n("download"));
@@ -189,7 +260,6 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
                 FXUtils.prepareOnMouseEnter(downloadItem, Controllers::prepareDownloadPage);
             }
 
-            // fifth item in left sidebar
             AdvancedListItem launcherSettingsItem = new AdvancedListItem();
             launcherSettingsItem.setLeftIcon(SVG.SETTINGS);
             launcherSettingsItem.setTitle(i18n("settings"));
@@ -201,56 +271,15 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
                 FXUtils.prepareOnMouseEnter(launcherSettingsItem, Controllers::prepareSettingsPage);
             }
 
-            // sixth item in left sidebar
-            AdvancedListItem terracottaItem = new AdvancedListItem();
-            terracottaItem.setLeftIcon(SVG.GRAPH2);
-            terracottaItem.setTitle(i18n("terracotta"));
-            terracottaItem.setOnAction(e -> {
-                if (TerracottaMetadata.PROVIDER != null) {
-                    Controllers.navigate(Controllers.getTerracottaPage());
-                } else {
-                    String message;
-                    if (Architecture.SYSTEM_ARCH.getBits() == Bits.BIT_32)
-                        message = i18n("terracotta.unsupported.arch.32bit");
-                    else if (OperatingSystem.CURRENT_OS == OperatingSystem.WINDOWS
-                            && !OperatingSystem.SYSTEM_VERSION.isAtLeast(OSVersion.WINDOWS_10))
-                        message = i18n("terracotta.unsupported.os.windows.old");
-                    else if (Platform.SYSTEM_PLATFORM.equals(OperatingSystem.LINUX, Architecture.LOONGARCH64_OW))
-                        message = i18n("terracotta.unsupported.arch.loongarch64_ow");
-                    else
-                        message = i18n("terracotta.unsupported");
-
-                    Controllers.dialog(message, null, MessageDialogPane.MessageType.WARNING);
-                }
-            });
-
-            // seventh item in left sidebar
-            AdvancedListItem nbtItem = new AdvancedListItem();
-            nbtItem.setLeftIcon(SVG.DEPLOYED_CODE);
-            nbtItem.setTitle(i18n("nbt.viewer"));
-            nbtItem.setOnAction(e -> Controllers.openNbtEditor());
-
-            // the bottom navigation bar
-            AdvancedListBox sideBar = new AdvancedListBox(true /* horizontal */);
-            sideBar.setSpacing(4);
-                    .startCategory(i18n("account").toUpperCase(Locale.ROOT))
-                    .add(accountListItem)
-                    .startCategory(i18n("version").toUpperCase(Locale.ROOT))
-                    .add(gameListItem)
+            AdvancedListBox bottomNav = new AdvancedListBox(true /* horizontal */);
+            bottomNav.setSpacing(4);
+            bottomNav.add(gameListItem)
                     .add(gameItem)
                     .add(downloadItem)
-                    .startCategory(i18n("settings.launcher.general").toUpperCase(Locale.ROOT))
-                    .add(launcherSettingsItem)
-                    .add(terracottaItem)
-                    .add(nbtItem)
-                    .addNavigationDrawerItem(i18n("contact.chat"), SVG.CHAT, () -> {
-                        Controllers.getSettingsPage().showFeedback();
-                        Controllers.navigate(Controllers.getSettingsPage());
-                    });
+                    .add(launcherSettingsItem);
 
-            // the root page, with the sidebar in left, navigator in center.
-            setLeft(sideBar);
-            setCenter(getSkinnable().getMainPage());
+            setLeft(bottomNav);
+            setCenter(centerContent);
         }
 
         public void showGameListPopupMenu(Region gameListItem) {

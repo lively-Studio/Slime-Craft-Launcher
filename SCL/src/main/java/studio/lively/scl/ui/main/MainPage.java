@@ -345,12 +345,12 @@ public final class MainPage extends StackPane implements DecoratorPage {
         }
     }
 
-    private void launch() {
+    void launch() {
         SCLGameRepository repository = GameDirectoryManager.getSelectedRepository();
         Versions.launch(repository, repository.getSelectedInstance());
     }
 
-    private void launchNoGame() {
+    void launchNoGame() {
         DownloadProvider downloadProvider = DownloadProviders.getDownloadProvider();
         VersionList<?> versionList = downloadProvider.getVersionListById("game");
 

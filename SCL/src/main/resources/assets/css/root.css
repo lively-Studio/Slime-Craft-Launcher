@@ -2009,4 +2009,22 @@
 .bottom-navigation .navigation-drawer-item .title-label {
     -fx-font-size: 10px;
 }
+
+/* ===== Mobile Account Button (Center) ===== */
+.account-button {
+    -fx-cursor: hand;
+    -fx-padding: 16;
+}
+
+.account-button:hover {
+    -fx-background-color: -nothing-surface-2;
+    -fx-background-radius: 8px;
+}
+
+.avatar-large {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 8, 0, 0, 2);
+}
+
+.player-name-label {
+    -fx-text-fill: -nothing-on-surface;
 }
