@@ -151,6 +151,15 @@ public final class SettingsPage extends ScrollPane {
                     previewPane.selectedProperty().addListener(checkUpdateListener);
 
                     updatePaneList.getContent().add(previewPane);
+
+                    // "Check for Updates" button
+                    JFXButton checkUpdateButton = new JFXButton(i18n("update.check"));
+                    checkUpdateButton.getStyleClass().add("dialog-accept");
+                    checkUpdateButton.setMaxWidth(Double.MAX_VALUE);
+                    checkUpdateButton.setOnAction(e -> {
+                        UpdateChecker.requestCheckUpdate(updateChannel.get(), previewPane.isSelected());
+                    });
+                    updatePaneList.getContent().add(checkUpdateButton);
                 }
 
                 {
