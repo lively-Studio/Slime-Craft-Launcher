@@ -2008,12 +2008,25 @@
     -fx-alignment: center;
 }
 
-.bottom-navigation .navigation-drawer-item .title,
-.bottom-navigation .navigation-drawer-item .subtitle {
-    -fx-font-size: 0;
-    -fx-max-height: 0;
-    -fx-min-height: 0;
+.bottom-navigation .navigation-drawer-item .container {
     -fx-padding: 0;
+}
+
+.bottom-navigation .navigation-drawer-item .first-line,
+.bottom-navigation .navigation-drawer-item .subtitle {
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+    -fx-max-height: 0;
+    -fx-opacity: 0;
+}
+
+.bottom-navigation .navigation-drawer-item .title {
+    -fx-font-size: 0;
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+    -fx-max-height: 0;
+    -fx-padding: 0;
+    -fx-opacity: 0;
 }
 
 /* ===== Mobile Account Button (Center) ===== */
