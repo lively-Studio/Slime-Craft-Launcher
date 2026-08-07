@@ -245,13 +245,6 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
             FXUtils.onSecondaryButtonClicked(gameListItem, () -> showGameListPopupMenu(gameListItem));
             FXUtils.installFastTooltip(gameListItem, new Tooltip(i18n("version.manage")));
 
-            AdvancedListItem gameItem = new AdvancedListItem();
-            gameItem.setLeftIcon(SVG.FORMAT_LIST_BULLETED);
-            gameItem.setTitle(i18n("version.manage"));
-            gameItem.setOnAction(e -> Controllers.navigate(Controllers.getGameListPage()));
-            FXUtils.onSecondaryButtonClicked(gameItem, () -> showGameListPopupMenu(gameItem));
-            FXUtils.installFastTooltip(gameItem, new Tooltip(i18n("version.manage")));
-
             AdvancedListItem downloadItem = new AdvancedListItem();
             downloadItem.setLeftIcon(SVG.DOWNLOAD);
             downloadItem.setTitle(i18n("download"));
