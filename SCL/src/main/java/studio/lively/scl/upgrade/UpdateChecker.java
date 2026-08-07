@@ -85,9 +85,12 @@ public final class UpdateChecker {
         throw new IOException("Update checking disabled");
     }
 
+    /// Returns true if the version string indicates a development build.
+    /// Development versions contain either "@" (unbuilt, e.g. "@develop@")
+    /// or "SNAPSHOT" (development snapshot, e.g. "DEV2026.1.0-SNAPSHOT-2").
     private static boolean isDevelopmentVersion(String version) {
         return version.contains("@") || // eg. @develop@
-                version.contains("SNAPSHOT"); // eg. 3.5.SNAPSHOT
+                version.contains("SNAPSHOT"); // eg. DEV2026.1.0-SNAPSHOT-2
     }
 
     public static void requestCheckUpdate(UpdateChannel channel, boolean preview) {

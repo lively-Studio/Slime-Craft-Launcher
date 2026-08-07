@@ -28,6 +28,20 @@ import java.util.EnumSet;
 
 /**
  * Stores metadata about this application.
+ *
+ * <h3>Version Format (since 2026)</h3>
+ * <pre>{@code
+ * DEV{year}.{major}.{minor}-SNAPSHOT-{build}
+ * }</pre>
+ * <table>
+ *   <tr><td>DEV</td><td>Development version (开发版)</td></tr>
+ *   <tr><td>{year}</td><td>Development year (开发时间-年)</td></tr>
+ *   <tr><td>{major}</td><td>Major version of the year (该年第几版)</td></tr>
+ *   <tr><td>{minor}</td><td>Minor version, 0 if none (没有小版本信息)</td></tr>
+ *   <tr><td>SNAPSHOT</td><td>Advanced development build (高级开发版)</td></tr>
+ *   <tr><td>{build}</td><td>Build package version (高级开发版包版本号)</td></tr>
+ * </table>
+ * <p>Example: {@code DEV2026.1.0-SNAPSHOT-2}</p>
  */
 public final class Metadata {
     private Metadata() {
@@ -35,6 +49,9 @@ public final class Metadata {
 
     public static final String NAME = "SCL";
     public static final String FULL_NAME = "Slime Craft Launcher";
+
+    /// Version format: DEV{year}.{major}.{minor}-SNAPSHOT-{build}
+    /// See class-level Javadoc for detailed explanation of each segment.
     public static final String VERSION = System.getProperty("scl.version.override", JarUtils.getAttribute("scl.version", "@develop@"));
 
     public static final String TITLE = NAME + " " + VERSION;
