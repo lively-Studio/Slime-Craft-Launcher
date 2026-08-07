@@ -89,11 +89,12 @@ public class GameListPage extends DecoratorAnimatedPage implements DecoratorPage
                 bottomBar.add(item);
             }
 
-            // Add new game directory
+            // Add new game directory (not compact, show full text)
             AdvancedListItem addGameDirectoryItem = new AdvancedListItem();
             addGameDirectoryItem.getStyleClass().add("navigation-drawer-item");
             addGameDirectoryItem.setTitle(i18n("game_directory.new"));
             addGameDirectoryItem.setLeftIcon(SVG.ADD_CIRCLE);
+            addGameDirectoryItem.setCompact(false);
             addGameDirectoryItem.setOnAction(e -> Controllers.navigate(new GameDirectoryPage(null)));
             bottomBar.add(addGameDirectoryItem);
 
