@@ -1,5 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/lively-Studio/Slime-Craft-Launcher/main/docs/schemas/launcher-settings/1.0.0",
+  "acceptPreviewUpdate": true,
   "selectedTheme": {
     "packId": "scl.classic",
     "themeId": "2021-08-26"

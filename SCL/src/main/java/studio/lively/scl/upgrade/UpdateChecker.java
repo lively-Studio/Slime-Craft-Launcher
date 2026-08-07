@@ -86,11 +86,17 @@ public final class UpdateChecker {
     }
 
     /// Returns true if the version string indicates a development build.
-    /// Development versions contain either "@" (unbuilt, e.g. "@develop@")
-    /// or "SNAPSHOT" (development snapshot, e.g. "DEV2026.1.0-SNAPSHOT-2").
+    /// Development versions start with "DEV" (e.g. "DEV2026.1.0-SNAPSHOT-2"),
+    /// or contain "@" (unbuilt, e.g. "@develop@").
     private static boolean isDevelopmentVersion(String version) {
-        return version.contains("@") || // eg. @develop@
-                version.contains("SNAPSHOT"); // eg. DEV2026.1.0-SNAPSHOT-2
+        return version.contains("@")  // eg. @develop@
+                || version.startsWith("DEV"); // eg. DEV2026.1.0-SNAPSHOT-2
+    }
+
+    /// Returns true if the version string indicates a stable release.
+    /// Stable versions start with "V" (e.g. "V3.17.1").
+    private static boolean isStableVersion(String version) {
+        return version.startsWith("V");
     }
 
     public static void requestCheckUpdate(UpdateChannel channel, boolean preview) {

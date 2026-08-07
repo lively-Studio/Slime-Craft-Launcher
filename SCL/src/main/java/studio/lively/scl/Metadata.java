@@ -31,8 +31,15 @@ import java.util.EnumSet;
  *
  * <h3>Version Format (since 2026)</h3>
  * <pre>{@code
- * DEV{year}.{major}.{minor}-SNAPSHOT-{build}
+ * DEV{year}.{major}.{minor}-SNAPSHOT-{build}  (development)
+ * V{major}.{minor}.{patch}                     (stable)
  * }</pre>
+ * The prefix identifies the version type:
+ * <ul>
+ *   <li><b>DEV</b> — Development version (开发版)</li>
+ *   <li><b>V</b>    — Stable/regular release (普通版)</li>
+ * </ul>
+ * <h4>DEV segments</h4>
  * <table>
  *   <tr><td>DEV</td><td>Development version (开发版)</td></tr>
  *   <tr><td>{year}</td><td>Development year (开发时间-年)</td></tr>
@@ -41,7 +48,15 @@ import java.util.EnumSet;
  *   <tr><td>SNAPSHOT</td><td>Advanced development build (高级开发版)</td></tr>
  *   <tr><td>{build}</td><td>Build package version (高级开发版包版本号)</td></tr>
  * </table>
- * <p>Example: {@code DEV2026.1.0-SNAPSHOT-2}</p>
+ * <h4>V segments (stable)</h4>
+ * <table>
+ *   <tr><td>V</td><td>Stable release (普通版)</td></tr>
+ *   <tr><td>{major}</td><td>Major version</td></tr>
+ *   <tr><td>{minor}</td><td>Minor version</td></tr>
+ *   <tr><td>{patch}</td><td>Patch version</td></tr>
+ * </table>
+ * <p>Example DEV: {@code DEV2026.1.0-SNAPSHOT-2}</p>
+ * <p>Example V:   {@code V3.17.1}</p>
  */
 public final class Metadata {
     private Metadata() {
@@ -50,7 +65,7 @@ public final class Metadata {
     public static final String NAME = "SCL";
     public static final String FULL_NAME = "Slime Craft Launcher";
 
-    /// Version format: DEV{year}.{major}.{minor}-SNAPSHOT-{build}
+    /// Version format: DEV{year}.{major}.{minor}-SNAPSHOT-{build} or V{major}.{minor}.{patch}
     /// See class-level Javadoc for detailed explanation of each segment.
     public static final String VERSION = System.getProperty("scl.version.override", JarUtils.getAttribute("scl.version", "@develop@"));
 

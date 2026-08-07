@@ -10,12 +10,14 @@ This document describes the SCL version release schedule starting from October 2
 
 ### Development Version Format (Current)
 
-Since 2026, SCL development builds use the following version format:
+Since 2026, SCL uses prefixed version strings to distinguish version types:
 
-```
-DEV{year}.{major}.{minor}-SNAPSHOT-{build}
-```
+| Type   | Prefix | Format                                     | Example               |
+|--------|--------|--------------------------------------------|-----------------------|
+| Dev    | `DEV`  | `DEV{year}.{major}.{minor}-SNAPSHOT-{build}` | `DEV2026.1.0-SNAPSHOT-2` |
+| Stable | `V`    | `V{major}.{minor}.{patch}`                   | `V3.17.1`             |
 
+#### `DEV` Segments
 | Segment     | Meaning                                     | Example |
 |-------------|---------------------------------------------|---------|
 | `DEV`       | Development version (开发版)                  | `DEV`   |
@@ -25,7 +27,13 @@ DEV{year}.{major}.{minor}-SNAPSHOT-{build}
 | `SNAPSHOT`  | Advanced development build (高级开发版)        | `SNAPSHOT` |
 | `{build}`   | Build package version (高级开发版包版本号)       | `2`     |
 
-Example: `DEV2026.1.0-SNAPSHOT-2`
+#### `V` Segments (Stable)
+| Segment     | Meaning              | Example |
+|-------------|----------------------|---------|
+| `V`         | Stable release (普通版)| `V`     |
+| `{major}`   | Major version        | `3`     |
+| `{minor}`   | Minor version        | `17`    |
+| `{patch}`   | Patch version        | `1`     |
 
 ### Legacy Version Branches
 
