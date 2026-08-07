@@ -35,4 +35,4 @@ jobs:
       with:
         name: SCL-${{ env.SHORT_SHA }}-jar
         path: SCL/build/libs/SCL-*.jar
-        archive: false
+
