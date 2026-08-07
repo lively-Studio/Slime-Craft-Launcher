@@ -2012,6 +2012,11 @@
     -fx-font-size: 10px;
     -fx-text-alignment: center;
     -fx-wrap-text: true;
+    -fx-opacity: 0;
+}
+
+.bottom-navigation .navigation-drawer-item:hover .title {
+    -fx-opacity: 1;
 }
 
 /* ===== Mobile Account Button (Center) ===== */
