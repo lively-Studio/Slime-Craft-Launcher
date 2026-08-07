@@ -17,6 +17,7 @@
  */
 package studio.lively.scl.ui.account;
 
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialogLayout;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -43,6 +44,7 @@ import studio.lively.scl.auth.authlibinjector.AuthlibInjectorServer;
 import studio.lively.scl.setting.Accounts;
 import studio.lively.scl.setting.SettingsManager;
 import studio.lively.scl.ui.Controllers;
+import studio.lively.scl.ui.DialogUtils;
 import studio.lively.scl.ui.FXUtils;
 import studio.lively.scl.ui.SVG;
 import studio.lively.scl.ui.construct.AdvancedListItem;
@@ -116,55 +118,12 @@ public final class AccountListPage extends DecoratorAnimatedPage implements Deco
 
     private static class AccountListPageSkin extends DecoratorAnimatedPageSkin<AccountListPage> {
 
-        private final ObservableList<AdvancedListItem> authServerItems;
-
         public AccountListPageSkin(AccountListPage skinnable) {
             super(skinnable);
 
             {
                 VBox boxMethods = new VBox();
-                {
-                    boxMethods.getStyleClass().add("advanced-list-box-content");
-
-                    VBox boxAuthServers = new VBox();
-                    authServerItems = MappedObservableList.create(skinnable.authServersProperty(), server -> {
-                        AdvancedListItem item = new AdvancedListItem();
-                        item.getStyleClass().add("navigation-drawer-item");
-                        item.setLeftIcon(SVG.DRESSER);
-                        item.setOnAction(e -> {
-                            if (SettingsManager.isUserGameAccountsReadOnly()) {
-                                confirmOverwriteUserAccounts(() -> Controllers.dialog(new CreateAccountPane(server)));
-                            } else {
-                                Controllers.dialog(new CreateAccountPane(server));
-                            }
-                        });
-                        item.setRightAction(SVG.CLOSE, () -> {
-                            if (SettingsManager.isAuthlibInjectorServersReadOnly()) {
-                                confirmOverwriteAuthlibInjectorServers(() -> confirmRemoveAuthlibInjectorServer(skinnable, server));
-                            } else {
-                                confirmRemoveAuthlibInjectorServer(skinnable, server);
-                            }
-                        });
-
-                        ObservableValue<String> title = BindingMapping.of(server, AuthlibInjectorServer::getName);
-                        item.titleProperty().bind(title);
-                        String host = "";
-                        try {
-                            host = NetworkUtils.toURI(server.getUrl()).getHost();
-                        } catch (IllegalArgumentException e) {
-                            LOG.warning("Unparsable authlib-injector server url " + server.getUrl(), e);
-                        }
-                        item.subtitleProperty().set(host);
-                        Tooltip tooltip = new Tooltip();
-                        tooltip.textProperty().bind(Bindings.format("%s (%s)", title, server.getUrl()));
-                        FXUtils.installFastTooltip(item, tooltip);
-
-                        return item;
-                    });
-                    Bindings.bindContent(boxAuthServers.getChildren(), authServerItems);
-
-                    boxMethods.getChildren().setAll(boxAuthServers);
-                }
+                boxMethods.getStyleClass().add("advanced-list-box-content");
 
                 // Single "Add Account" button opens popup to choose type
                 AdvancedListItem addAccountItem = new AdvancedListItem();
@@ -172,13 +131,15 @@ public final class AccountListPage extends DecoratorAnimatedPage implements Deco
                     addAccountItem.getStyleClass().add("navigation-drawer-item");
                     addAccountItem.setTitle(i18n("account.create"));
                     addAccountItem.setLeftIcon(SVG.ADD_CIRCLE);
-                    addAccountItem.setOnAction(e -> showAddAccountPopup());
+                    addAccountItem.setOnAction(e -> showAddAccountPopup(skinnable));
                     VBox.setMargin(addAccountItem, new Insets(0, 0, 12, 0));
                 }
 
+                boxMethods.getChildren().setAll(addAccountItem);
+
                 ScrollPane scrollPane = new ScrollPane(boxMethods);
                 VBox.setVgrow(scrollPane, Priority.ALWAYS);
-                setLeft(scrollPane, addAccountItem);
+                setLeft(scrollPane);
             }
 
             ScrollPane scrollPane = new ScrollPane();
@@ -199,8 +160,8 @@ public final class AccountListPage extends DecoratorAnimatedPage implements Deco
             }
         }
 
-        /// Shows a popup dialog to choose account type (Microsoft / Offline / Authlib-Injector)
-        private void showAddAccountPopup() {
+        /// Shows a popup dialog to choose account type (Microsoft / Offline / Authlib-Injector servers)
+        private void showAddAccountPopup(AccountListPage skinnable) {
             JFXDialogLayout layout = new JFXDialogLayout();
             layout.setHeading(new Label(i18n("account.create")));
 
@@ -210,53 +171,82 @@ public final class AccountListPage extends DecoratorAnimatedPage implements Deco
             AdvancedListItem microsoftOption = new AdvancedListItem();
             microsoftOption.setLeftIcon(SVG.MICROSOFT);
             microsoftOption.setTitle(i18n("account.methods.microsoft"));
-            microsoftOption.setOnAction(e -> {
-                if (SettingsManager.isUserGameAccountsReadOnly()) {
-                    confirmOverwriteUserAccounts(() -> Controllers.dialog(new MicrosoftAccountLoginPane()));
-                } else {
-                    Controllers.dialog(new MicrosoftAccountLoginPane());
-                }
-            });
+            microsoftOption.setOnAction(e -> openMicrosoftLogin());
 
             // Offline
             AdvancedListItem offlineOption = new AdvancedListItem();
             offlineOption.setLeftIcon(SVG.PERSON);
             offlineOption.setTitle(i18n("account.methods.offline"));
-            offlineOption.setOnAction(e -> {
-                if (SettingsManager.isUserGameAccountsReadOnly()) {
-                    confirmOverwriteUserAccounts(() -> Controllers.dialog(new CreateAccountPane(Accounts.FACTORY_OFFLINE)));
-                } else {
-                    Controllers.dialog(new CreateAccountPane(Accounts.FACTORY_OFFLINE));
-                }
-            });
+            offlineOption.setOnAction(e -> openOfflineAccount());
 
-            // Authlib-Injector
-            AdvancedListItem authlibOption = new AdvancedListItem();
-            authlibOption.setLeftIcon(SVG.DRESSER);
-            authlibOption.setTitle(i18n("account.methods.authlib_injector"));
-            authlibOption.setSubtitle(i18n("account.injector.add"));
-            authlibOption.setOnAction(e -> {
-                if (SettingsManager.isAuthlibInjectorServersReadOnly()) {
-                    confirmOverwriteAuthlibInjectorServers(
-                            () -> Controllers.dialog(new AddAuthlibInjectorServerPane()));
-                } else {
-                    Controllers.dialog(new AddAuthlibInjectorServerPane());
-                }
-            });
+            // Existing authlib-injector servers
+            body.getChildren().addAll(microsoftOption, offlineOption);
+            for (AuthlibInjectorServer server : skinnable.authServersProperty().get()) {
+                AdvancedListItem serverItem = new AdvancedListItem();
+                serverItem.setLeftIcon(SVG.DRESSER);
+                serverItem.titleProperty().bind(BindingMapping.of(server, AuthlibInjectorServer::getName));
+                serverItem.setOnAction(e -> openAuthlibInjectorAccount(server));
+                body.getChildren().add(serverItem);
+            }
 
-            body.getChildren().setAll(microsoftOption, offlineOption, authlibOption);
+            // Add new authlib-injector server
+            AdvancedListItem newAuthlibOption = new AdvancedListItem();
+            newAuthlibOption.setLeftIcon(SVG.ADD_CIRCLE);
+            newAuthlibOption.setTitle(i18n("account.injector.add"));
+            newAuthlibOption.setSubtitle(i18n("account.methods.authlib_injector"));
+            newAuthlibOption.setOnAction(e -> openAddAuthlibInjectorServer());
+            body.getChildren().add(newAuthlibOption);
 
             if (RESTRICTED.get()) {
                 offlineOption.setDisable(true);
-                authlibOption.setDisable(true);
+                newAuthlibOption.setDisable(true);
                 HBox restrictedHint = new HBox();
                 restrictedHint.setPadding(new Insets(8, 0, 0, 0));
                 restrictedHint.getChildren().add(new Label(i18n("account.login.restricted")));
                 body.getChildren().add(restrictedHint);
             }
 
+            // Cancel button
+            JFXButton cancelButton = new JFXButton(i18n("button.cancel"));
+            cancelButton.getStyleClass().add("dialog-accept");
+            cancelButton.setOnAction(e -> DialogUtils.close(layout));
+
             layout.setBody(body);
+            layout.setActions(cancelButton);
             Controllers.dialog(layout);
+        }
+
+        private void openMicrosoftLogin() {
+            if (SettingsManager.isUserGameAccountsReadOnly()) {
+                confirmOverwriteUserAccounts(() -> Controllers.dialog(new MicrosoftAccountLoginPane()));
+            } else {
+                Controllers.dialog(new MicrosoftAccountLoginPane());
+            }
+        }
+
+        private void openOfflineAccount() {
+            if (SettingsManager.isUserGameAccountsReadOnly()) {
+                confirmOverwriteUserAccounts(() -> Controllers.dialog(new CreateAccountPane(Accounts.FACTORY_OFFLINE)));
+            } else {
+                Controllers.dialog(new CreateAccountPane(Accounts.FACTORY_OFFLINE));
+            }
+        }
+
+        private void openAuthlibInjectorAccount(AuthlibInjectorServer server) {
+            if (SettingsManager.isUserGameAccountsReadOnly()) {
+                confirmOverwriteUserAccounts(() -> Controllers.dialog(new CreateAccountPane(server)));
+            } else {
+                Controllers.dialog(new CreateAccountPane(server));
+            }
+        }
+
+        private void openAddAuthlibInjectorServer() {
+            if (SettingsManager.isAuthlibInjectorServersReadOnly()) {
+                confirmOverwriteAuthlibInjectorServers(
+                        () -> Controllers.dialog(new AddAuthlibInjectorServerPane()));
+            } else {
+                Controllers.dialog(new AddAuthlibInjectorServerPane());
+            }
         }
 
         /// Confirms overwriting the user account files before continuing the account operation.
