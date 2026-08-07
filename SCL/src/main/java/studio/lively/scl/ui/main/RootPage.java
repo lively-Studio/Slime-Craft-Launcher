@@ -194,7 +194,8 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
 
             // Version management button
             JFXButton versionManageButton = new JFXButton(i18n("version.manage"));
-            versionManageButton.getStyleClass().add("secondary-button");
+            versionManageButton.getStyleClass().add("dialog-accept");
+            versionManageButton.setMaxWidth(250);
             versionManageButton.setOnAction(e -> Controllers.navigate(Controllers.getGameListPage()));
 
             // Launch button
