@@ -40,7 +40,6 @@ You can download SCL from the following sources:
 
 - [SCL Official Website](https://github.com/lively-Studio/Slime-Craft-Launcher/download)
 - [GitHub Release](https://github.com/lively-Studio/Slime-Craft-Launcher/releases)
-- [CNB Release](https://cnb.cool/lively-Studio/Slime-Craft-Launcher/-/releases)
 
 ## Contributing
 
