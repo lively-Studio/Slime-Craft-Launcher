@@ -39,9 +39,23 @@ public final class UpdateChecker {
     private static final BooleanBinding outdated = Bindings.createBooleanBinding(
             () -> {
                 RemoteVersion latest = latestVersion.get();
-                if (latest == null || isDevelopmentVersion(Metadata.VERSION)) {
+                if (latest == null) {
                     return false;
-                } else if (latest.force()
+                }
+
+                boolean currentDev = isDevelopmentVersion(Metadata.VERSION);
+                boolean latestDev = isDevelopmentVersion(latest.version());
+
+                // Development versions only update to other DEV versions (not V stable)
+                if (currentDev && !latestDev) {
+                    return false;
+                }
+                // Stable versions only update to V stable versions
+                if (!currentDev && latestDev) {
+                    return false;
+                }
+
+                if (latest.force()
                         || Metadata.isNightly()
                         || latest.channel() == UpdateChannel.NIGHTLY
                         || latest.channel() != UpdateChannel.getChannel()) {
