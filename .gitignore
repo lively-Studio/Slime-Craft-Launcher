@@ -9,3 +9,4 @@ hs_err_pid*.log
 scl_signature_key.pem
 *.jpg.meta
 *.png.meta
+gradle.properties
