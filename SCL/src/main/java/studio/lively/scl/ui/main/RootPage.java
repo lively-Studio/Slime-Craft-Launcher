@@ -272,7 +272,6 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
             AdvancedListBox bottomNav = new AdvancedListBox(true /* horizontal */);
             bottomNav.setSpacing(4);
             bottomNav.add(gameListItem)
-                    .add(gameItem)
                     .add(downloadItem)
                     .add(launcherSettingsItem);
 
