@@ -1,5 +1,10 @@
 {
   "$schema": "https://raw.githubusercontent.com/lively-Studio/Slime-Craft-Launcher/main/docs/schemas/launcher-settings/1.0.0",
+  "selectedTheme": {
+    "packId": "scl.classic",
+    "themeId": "2021-08-26"
+  },
+  "launcherFontFamily": "Apple LiGothic",
   "selectedGameDirectory": "game-directory:7105bc1f-490e-5e8c-878c-f5844c3d4bc3",
   "defaultGameSettingsPreset": "game-settings-preset:019fdb73-46d8-7b7e-a330-889713976bf1"
 }

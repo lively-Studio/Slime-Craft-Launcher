@@ -166,6 +166,16 @@ public final class AboutPage extends SpinnerPane {
                         imageView.setImage(loadImage(image.getAsString()));
                         imageView.setMouseTransparent(true);
 
+                        String imagePath = image.getAsString();
+                        if (imagePath.contains("lively_studio")) {
+                            imageView.setMouseTransparent(false);
+                            button.setOnMouseClicked(e -> {
+                                javafx.animation.RotateTransition rt = new javafx.animation.RotateTransition(
+                                    javafx.util.Duration.millis(300), imageView);
+                                rt.setByAngle(45);
+                                rt.play();
+                            });
+                        }
 
                         button.setLeading(imageView);
                     } else if (image.isJsonObject()) {
