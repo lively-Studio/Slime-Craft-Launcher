@@ -209,6 +209,24 @@ public final class LauncherSettings extends ObservableSetting implements JsonSch
         return disableAutoShowUpdateDialog;
     }
 
+    /// Whether stable versions can update to DEV development versions.
+    @SerializedName("stableToDevUpdate")
+    private final BooleanProperty stableToDevUpdate = new SimpleBooleanProperty(false);
+
+    /// Returns the stable-to-dev update opt-in property.
+    public BooleanProperty stableToDevUpdateProperty() {
+        return stableToDevUpdate;
+    }
+
+    /// Whether DEV development versions can update to stable (V) versions.
+    @SerializedName("devToStableUpdate")
+    private final BooleanProperty devToStableUpdate = new SimpleBooleanProperty(false);
+
+    /// Returns the dev-to-stable update opt-in property.
+    public BooleanProperty devToStableUpdateProperty() {
+        return devToStableUpdate;
+    }
+
     /// Whether April Fools features are disabled.
     @SerializedName("disableAprilFools")
     private final BooleanProperty disableAprilFools = new SimpleBooleanProperty(false);

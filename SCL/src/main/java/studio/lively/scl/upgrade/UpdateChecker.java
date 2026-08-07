@@ -45,14 +45,23 @@ public final class UpdateChecker {
 
                 boolean currentDev = isDevelopmentVersion(Metadata.VERSION);
                 boolean latestDev = isDevelopmentVersion(latest.version());
+                boolean stableToDev = settings().stableToDevUpdateProperty().get();
+                boolean devToStable = settings().devToStableUpdateProperty().get();
 
-                // Development versions only update to other DEV versions (not V stable)
-                if (currentDev && !latestDev) {
-                    return false;
-                }
-                // Stable versions only update to V stable versions
-                if (!currentDev && latestDev) {
-                    return false;
+                // Dev → Dev: always allowed
+                // Stable → Stable: always allowed
+                // Stable → Dev: only if stableToDevUpdate is enabled
+                // Dev → Stable: only if devToStableUpdate is enabled
+                if (currentDev && latestDev) {
+                    // Dev → Dev: OK
+                } else if (!currentDev && !latestDev) {
+                    // Stable → Stable: OK
+                } else if (!currentDev && latestDev) {
+                    // Stable → Dev: require setting
+                    if (!stableToDev) return false;
+                } else {
+                    // Dev → Stable: require setting
+                    if (!devToStable) return false;
                 }
 
                 if (latest.force()
