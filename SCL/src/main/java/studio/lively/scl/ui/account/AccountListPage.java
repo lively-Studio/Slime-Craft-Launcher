@@ -213,6 +213,7 @@ public final class AccountListPage extends DecoratorAnimatedPage implements Deco
 
             layout.setBody(body);
             layout.setActions(cancelButton);
+            layout.setMaxWidth(320);
             Controllers.dialog(layout);
         }
 
