@@ -172,13 +172,6 @@ public final class VersionsPage extends Control implements WizardPage, Refreshab
             HBox actions = new HBox(8);
             actions.setAlignment(Pos.CENTER);
             {
-                if ("game".equals(control.libraryId)) {
-                    JFXButton wikiButton = newToggleButton4(SVG.GLOBE_BOOK);
-                    wikiButton.setOnAction(event -> onOpenWiki());
-                    FXUtils.installFastTooltip(wikiButton, i18n("wiki.tooltip"));
-                    actions.getChildren().add(wikiButton);
-                }
-
                 JFXButton actionButton = newToggleButton4(SVG.ARROW_FORWARD);
                 actionButton.setOnAction(e -> onAction());
                 actions.getChildren().add(actionButton);

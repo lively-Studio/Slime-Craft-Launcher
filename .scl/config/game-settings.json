@@ -1,0 +1,9 @@
+{
+  "$schema": "https://raw.githubusercontent.com/lively-Studio/Slime-Craft-Launcher/main/docs/schemas/game-settings/1.0.0",
+  "presets": [
+    {
+      "id": "game-settings-preset:019fdb73-46d8-7b7e-a330-889713976bf1",
+      "autoNameNumber": 1
+    }
+  ]
+}
