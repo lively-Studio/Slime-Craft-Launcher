@@ -1,0 +1,73 @@
+/* Copyright comment */
+@import "minimal-mistakes/copyright";
+
+/* Variables */
+@import "minimal-mistakes-plus/variables";
+
+/* Mixins and functions */
+@import "minimal-mistakes/vendor/breakpoint/breakpoint";
+@include breakpoint-set("to ems", true);
+@import "minimal-mistakes/vendor/magnific-popup/magnific-popup"; // Magnific Popup
+@import "minimal-mistakes/vendor/susy/susy";
+@import "minimal-mistakes/mixins";
+
+/* Core CSS */
+@import "minimal-mistakes/reset";
+@import "minimal-mistakes/base";
+@import "minimal-mistakes/forms";
+@import "minimal-mistakes/tables";
+@import "minimal-mistakes/animations";
+
+/* Components */
+@import "minimal-mistakes/buttons";
+@import "minimal-mistakes/notices";
+@import "minimal-mistakes/masthead";
+@import "minimal-mistakes/navigation";
+@import "minimal-mistakes/footer";
+@import "minimal-mistakes/search";
+@import "minimal-mistakes/syntax";
+
+/* Utility classes */
+@import "minimal-mistakes/utilities";
+
+/* Layout specific */
+@import "minimal-mistakes/page";
+@import "minimal-mistakes-plus/archive";
+@import "minimal-mistakes/sidebar";
+@import "minimal-mistakes/print";
+
+blockquote {
+  margin-inline: 0;
+  font-style: normal;
+}
+
+* {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+.m0 {
+  margin: 0 !important;
+}
+
+table.setting-multi-radio td {
+  border: 0;
+  text-align: center;
+  border-left: 1px solid mix(#000, $border-color, 25%);
+}
+
+input[type="radio"] {
+  width: 0;
+  margin: 0;
+  margin-inline-end: 1em;
+  font-family: var(--fa-family-classic);
+}
+
+input[type="radio"]::before {
+  content: "\f111";
+}
+
+input[type="radio"]:checked::before {
+  content: "\f192";
+}

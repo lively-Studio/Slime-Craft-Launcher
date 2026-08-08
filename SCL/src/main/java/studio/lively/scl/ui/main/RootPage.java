@@ -265,6 +265,19 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
             }
             FXUtils.installFastTooltip(downloadItem, new Tooltip(i18n("download")));
 
+            // Multiplayer lobby (Terracotta)
+            AdvancedListItem multiplayerItem = new AdvancedListItem();
+            multiplayerItem.setLeftIcon(SVG.PUBLIC);
+            multiplayerItem.setTitle(i18n("terracotta"));
+            multiplayerItem.setOnAction(e -> {
+                if (TerracottaMetadata.PROVIDER != null) {
+                    Controllers.navigate(Controllers.getTerracottaPage());
+                } else {
+                    Controllers.dialog(i18n("terracotta.unsupported"), null, MessageDialogPane.MessageType.WARNING);
+                }
+            });
+            FXUtils.installFastTooltip(multiplayerItem, new Tooltip(i18n("terracotta")));
+
             AdvancedListItem launcherSettingsItem = new AdvancedListItem();
             launcherSettingsItem.setLeftIcon(SVG.SETTINGS);
             launcherSettingsItem.setTitle(i18n("settings"));
@@ -280,6 +293,7 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
             AdvancedListBox bottomNav = new AdvancedListBox(true /* horizontal */);
             bottomNav.setSpacing(4);
             bottomNav.add(gameListItem)
+                    .add(multiplayerItem)
                     .add(downloadItem)
                     .add(launcherSettingsItem);
 
