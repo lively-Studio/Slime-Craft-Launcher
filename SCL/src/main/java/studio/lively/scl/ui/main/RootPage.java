@@ -40,6 +40,7 @@ import studio.lively.scl.setting.GameDirectory;
 import studio.lively.scl.setting.GameDirectoryManager;
 import studio.lively.scl.task.Schedulers;
 import studio.lively.scl.task.Task;
+import studio.lively.scl.terracotta.TerracottaMetadata;
 import studio.lively.scl.ui.Controllers;
 import studio.lively.scl.ui.FXUtils;
 import studio.lively.scl.ui.SVG;
