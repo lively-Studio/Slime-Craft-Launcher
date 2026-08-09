@@ -220,6 +220,14 @@ public final class SettingsPage extends ScrollPane {
                 }
 
                 {
+                    LineToggleButton advancedMode = new LineToggleButton();
+                    advancedMode.setTitle(i18n("settings.launcher.advanced_mode"));
+                    advancedMode.setSubtitle(i18n("settings.launcher.advanced_mode.subtitle"));
+                    advancedMode.selectedProperty().bindBidirectional(settings().advancedModeProperty());
+                    miscPaneList.getContent().add(advancedMode);
+                }
+
+                {
                     BorderPane debugPane = new BorderPane();
 
                     Label left = new Label(i18n("settings.launcher.debug"));
