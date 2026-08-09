@@ -58,7 +58,7 @@ import studio.lively.scl.ui.nbt.NBTFileType;
 import studio.lively.scl.ui.versions.GameAdvancedListItem;
 import studio.lively.scl.ui.versions.GameListPopupMenu;
 import studio.lively.scl.ui.versions.Versions;
-import studio.lively.scl.upgrade.AprilFools;
+import studio.lively.scl.util.AprilFools;
 import studio.lively.scl.upgrade.UpdateChecker;
 import studio.lively.scl.util.Lang;
 import studio.lively.scl.util.StringUtils;
