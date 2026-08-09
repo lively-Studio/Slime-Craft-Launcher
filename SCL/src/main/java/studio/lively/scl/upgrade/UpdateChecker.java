@@ -43,31 +43,25 @@ public final class UpdateChecker {
                     return false;
                 }
 
+                // Channel-based filtering: development versions match DEV/DEV,
+                // stable versions match V/V. Cross-channel requires NIGHTLY.
                 boolean currentDev = isDevelopmentVersion(Metadata.VERSION);
                 boolean latestDev = isDevelopmentVersion(latest.version());
-                boolean stableToDev = settings().stableToDevUpdateProperty().get();
-                boolean devToStable = settings().devToStableUpdateProperty().get();
+                UpdateChannel channel = UpdateChannel.getChannel();
 
-                // Dev → Dev: always allowed
-                // Stable → Stable: always allowed
-                // Stable → Dev: only if stableToDevUpdate is enabled
-                // Dev → Stable: only if devToStableUpdate is enabled
-                if (currentDev && latestDev) {
-                    // Dev → Dev: OK
-                } else if (!currentDev && !latestDev) {
-                    // Stable → Stable: OK
-                } else if (!currentDev && latestDev) {
-                    // Stable → Dev: require setting
-                    if (!stableToDev) return false;
-                } else {
-                    // Dev → Stable: require setting
-                    if (!devToStable) return false;
+                // Same type always OK (DEV→DEV or V→V)
+                if (currentDev == latestDev) {
+                    // pass
+                }
+                // Cross-type: only when channel is NIGHTLY (preview/dev)
+                else if (channel != UpdateChannel.NIGHTLY) {
+                    return false;
                 }
 
                 if (latest.force()
                         || Metadata.isNightly()
                         || latest.channel() == UpdateChannel.NIGHTLY
-                        || latest.channel() != UpdateChannel.getChannel()) {
+                        || latest.channel() != channel) {
                     return !latest.version().equals(Metadata.VERSION);
                 } else {
                     return VersionNumber.compare(Metadata.VERSION, latest.version()) < 0;

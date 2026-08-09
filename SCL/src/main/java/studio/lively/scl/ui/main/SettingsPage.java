@@ -163,22 +163,6 @@ public final class SettingsPage extends ScrollPane {
                 }
 
                 {
-                    LineToggleButton stableToDevPane = new LineToggleButton();
-                    stableToDevPane.setTitle(i18n("update.stable_to_dev"));
-                    stableToDevPane.setSubtitle(i18n("update.stable_to_dev.subtitle"));
-                    stableToDevPane.selectedProperty().bindBidirectional(settings().stableToDevUpdateProperty());
-                    updatePaneList.getContent().add(stableToDevPane);
-                }
-
-                {
-                    LineToggleButton devToStablePane = new LineToggleButton();
-                    devToStablePane.setTitle(i18n("update.dev_to_stable"));
-                    devToStablePane.setSubtitle(i18n("update.dev_to_stable.subtitle"));
-                    devToStablePane.selectedProperty().bindBidirectional(settings().devToStableUpdateProperty());
-                    updatePaneList.getContent().add(devToStablePane);
-                }
-
-                {
                     LineToggleButton disableAutoShowUpdateDialogPane = new LineToggleButton();
                     disableAutoShowUpdateDialogPane.setTitle(i18n("update.disable_auto_show_update_dialog"));
                     disableAutoShowUpdateDialogPane.setSubtitle(i18n("update.disable_auto_show_update_dialog.subtitle"));
