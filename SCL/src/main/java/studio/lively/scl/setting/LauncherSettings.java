@@ -218,15 +218,6 @@ public final class LauncherSettings extends ObservableSetting implements JsonSch
         return showWorkingDialog;
     }
 
-    /// Whether advanced player mode is enabled (unlocks extra features).
-    @SerializedName("advancedMode")
-    private final BooleanProperty advancedMode = new SimpleBooleanProperty(false);
-
-    /// Returns the advanced mode property.
-    public BooleanProperty advancedModeProperty() {
-        return advancedMode;
-    }
-
     /// Whether April Fools features are disabled.
     @SerializedName("disableAprilFools")
     private final BooleanProperty disableAprilFools = new SimpleBooleanProperty(false);
