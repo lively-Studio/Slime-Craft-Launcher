@@ -20,15 +20,15 @@ package studio.lively.scl.ui.main;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPopup;
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import studio.lively.scl.Metadata;
-import studio.lively.scl.auth.Account;
 import studio.lively.scl.event.EventBus;
 import studio.lively.scl.event.RefreshedVersionsEvent;
 import studio.lively.scl.game.SCLGameRepository;
@@ -44,6 +44,7 @@ import studio.lively.scl.terracotta.TerracottaMetadata;
 import studio.lively.scl.ui.Controllers;
 import studio.lively.scl.ui.FXUtils;
 import studio.lively.scl.ui.SVG;
+import studio.lively.scl.ui.SVGContainer;
 import studio.lively.scl.ui.animation.AnimationUtils;
 import studio.lively.scl.ui.construct.AdvancedListBox;
 import studio.lively.scl.ui.construct.AdvancedListItem;
@@ -62,7 +63,6 @@ import studio.lively.scl.util.StringUtils;
 import studio.lively.scl.util.TaskCancellationAction;
 import studio.lively.scl.util.io.CompressingUtils;
 import studio.lively.scl.util.io.FileUtils;
-import studio.lively.scl.util.javafx.BindingMapping;
 import studio.lively.scl.util.platform.*;
 import studio.lively.scl.util.versioning.VersionNumber;
 
@@ -85,24 +85,18 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
     public RootPage() {
         EventBus.EVENT_BUS.channel(RefreshedVersionsEvent.class)
                 .register(event -> onRefreshedVersions((SCLGameRepository) event.getSource()));
-
         SCLGameRepository repository = GameDirectoryManager.getSelectedRepository();
         if (repository.isLoaded())
             onRefreshedVersions(GameDirectoryManager.getSelectedRepository());
-
         getStyleClass().remove("gray-background");
         getLeft().getStyleClass().add("gray-background");
     }
 
     @Override
-    public ReadOnlyObjectProperty<State> stateProperty() {
-        return getMainPage().stateProperty();
-    }
+    public ReadOnlyObjectProperty<State> stateProperty() { return getMainPage().stateProperty(); }
 
     @Override
-    protected Skin createDefaultSkin() {
-        return new Skin(this);
-    }
+    protected Skin createDefaultSkin() { return new Skin(this); }
 
     public MainPage getMainPage() {
         if (mainPage == null) {
@@ -112,240 +106,116 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
                     modpacks -> {
                         Path file = modpacks.get(0);
                         if (ModpackHelper.isFileModpackByExtension(file)) {
-                            Controllers.getDecorator().startWizard(
-                                    new ModpackInstallWizardProvider(GameDirectoryManager.getSelectedRepository(), file),
-                                    i18n("install.modpack"));
+                            Controllers.getDecorator().startWizard(new ModpackInstallWizardProvider(GameDirectoryManager.getSelectedRepository(), file), i18n("install.modpack"));
                         } else if (NBTFileType.isNBTFileByExtension(file)) {
-                            try {
-                                Controllers.navigate(new NBTEditorPage(file));
-                            } catch (Throwable e) {
-                                LOG.warning("Fail to open nbt file", e);
-                                Controllers.dialog(i18n("nbt.open.failed") + "\n\n" + StringUtils.getStackTrace(e),
-                                        i18n("message.error"), MessageDialogPane.MessageType.ERROR);
-                            }
+                            try { Controllers.navigate(new NBTEditorPage(file)); }
+                            catch (Throwable e) { LOG.warning("Fail to open nbt file", e); Controllers.dialog(i18n("nbt.open.failed") + "\n\n" + StringUtils.getStackTrace(e), i18n("message.error"), MessageDialogPane.MessageType.ERROR); }
                         } else if ("json".equalsIgnoreCase(FileUtils.getExtension(file))) {
                             Versions.installFromJson(GameDirectoryManager.getSelectedRepository(), file);
                         }
                     });
-
             FXUtils.onChangeAndOperate(GameDirectoryManager.selectedInstanceProperty(), mainPage::setCurrentGame);
             mainPage.latestVersionProperty().bind(UpdateChecker.latestVersionProperty());
-
             GameDirectoryManager.registerVersionsListener(repository -> {
-                GameDirectory gameDirectory = repository.getGameDirectory();
-                List<Version> children = repository.getVersions().parallelStream()
-                        .filter(version -> !version.isHidden())
-                        .sorted(Comparator
-                                .comparing((Version version) -> Lang.requireNonNullElse(version.getReleaseTime(), Instant.EPOCH))
-                                .thenComparing(version -> VersionNumber.asVersion(repository.getGameVersion(version).orElse(version.getId()))))
+                GameDirectory gd = repository.getGameDirectory();
+                List<Version> children = repository.getVersions().parallelStream().filter(v -> !v.isHidden())
+                        .sorted(Comparator.comparing((Version v) -> Lang.requireNonNullElse(v.getReleaseTime(), Instant.EPOCH))
+                                .thenComparing(v -> VersionNumber.asVersion(repository.getGameVersion(v).orElse(v.getId()))))
                         .collect(Collectors.toList());
-                runInFX(() -> {
-                    if (gameDirectory == GameDirectoryManager.getSelectedGameDirectory())
-                        mainPage.initVersions(repository, children);
-                });
+                runInFX(() -> { if (gd == GameDirectoryManager.getSelectedGameDirectory()) mainPage.initVersions(repository, children); });
             });
             this.mainPage = mainPage;
         }
         return mainPage;
     }
 
-    private static class Skin extends DecoratorAnimatedPageSkin<RootPage> {
-
-        protected Skin(RootPage control) {
-            super(control);
-
-            // ===== Center: Account avatar + name in the middle, launch button at the bottom =====
-            VBox centerContent = new VBox();
-            centerContent.setAlignment(Pos.CENTER);
-            centerContent.setSpacing(24);
-            centerContent.setPadding(new Insets(40, 20, 20, 20));
-
-            // Player avatar canvas (72x72, larger than sidebar version)
-            Canvas avatarCanvas = new Canvas(72, 72);
-            avatarCanvas.getStyleClass().add("avatar-large");
-            TexturesLoader.drawAvatar(avatarCanvas, TexturesLoader.getDefaultSkinImage());
-
-            // Player name label
-            Label playerNameLabel = new Label(i18n("account.missing"));
-            playerNameLabel.getStyleClass().add("player-name-label");
-            playerNameLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-
-            // Bind avatar and name to selected account
-            FXUtils.onChangeAndOperate(Accounts.selectedAccountProperty(), account -> {
-                if (account == null) {
-                    TexturesLoader.unbindAvatar(avatarCanvas);
-                    TexturesLoader.drawAvatar(avatarCanvas, TexturesLoader.getDefaultSkinImage());
-                    playerNameLabel.setText(i18n("account.missing"));
-                } else {
-                    TexturesLoader.bindAvatar(avatarCanvas, account);
-                    playerNameLabel.textProperty().bind(createStringBinding(() -> {
-                        String profileName = account.getProfileName();
-                        return StringUtils.isBlank(profileName) ? account.getProfileID().toString() : profileName;
-                    }, account));
-                }
-            });
-
-            // Account button: avatar + name, click to navigate to account page
-            VBox accountButton = new VBox();
-            accountButton.setAlignment(Pos.CENTER);
-            accountButton.setSpacing(12);
-            accountButton.getStyleClass().add("account-button");
-            accountButton.getChildren().setAll(avatarCanvas, playerNameLabel);
-            accountButton.setOnMouseClicked(e -> Controllers.navigate(Controllers.getAccountListPage()));
-
-            // Version management button
-            JFXButton versionManageButton = new JFXButton(i18n("version.manage"));
-            versionManageButton.getStyleClass().add("dialog-accept");
-            versionManageButton.setMaxWidth(250);
-            versionManageButton.setOnAction(e -> Controllers.navigate(Controllers.getGameListPage()));
-
-            // Launch button
-            JFXButton launchButton = new JFXButton();
-            launchButton.getStyleClass().add("launch-button");
-            launchButton.setDefaultButton(true);
-            launchButton.setMaxWidth(250);
-            {
-                VBox graphic = new VBox();
-                graphic.setAlignment(Pos.CENTER);
-                Label launchLabel = new Label();
-                launchLabel.setStyle("-fx-font-size: 18px;");
-                Label currentLabel = new Label();
-                currentLabel.setStyle("-fx-font-size: 12px;");
-
-                FXUtils.onChangeAndOperate(getSkinnable().getMainPage().currentGameProperty(), currentGame -> {
-                    if (currentGame == null) {
-                        launchLabel.setText(i18n("version.launch.empty"));
-                        currentLabel.setText(null);
-                        graphic.getChildren().setAll(launchLabel);
-                        FXUtils.setOnActionWithCooldown(launchButton, getSkinnable().getMainPage()::launchNoGame);
-                    } else {
-                        launchLabel.setText(i18n("version.launch"));
-                        currentLabel.setText(currentGame);
-                        graphic.getChildren().setAll(launchLabel, currentLabel);
-                        FXUtils.setOnActionWithCooldown(launchButton, getSkinnable().getMainPage()::launch);
-                    }
-                });
-
-                launchButton.setGraphic(graphic);
-            }
-
-            centerContent.getChildren().addAll(accountButton, versionManageButton, launchButton);
-            VBox.setVgrow(accountButton, javafx.scene.layout.Priority.ALWAYS);
-
-            // ===== Bottom navigation bar =====
-            GameAdvancedListItem gameListItem = new GameAdvancedListItem();
-            gameListItem.getStyleClass().add("navigation-drawer-item");
-            gameListItem.setCompact(true);
-            gameListItem.setOnAction(e -> {
-                String version = GameDirectoryManager.getSelectedRepository().getSelectedInstance();
-                if (version == null) {
-                    Controllers.navigate(Controllers.getGameListPage());
-                } else {
-                    Versions.modifyGameSettings(GameDirectoryManager.getSelectedRepository(), version);
-                }
-            });
-            FXUtils.onScroll(gameListItem, getSkinnable().getMainPage().getVersions(), list -> {
-                String currentId = getSkinnable().getMainPage().getCurrentGame();
-                return Lang.indexWhere(list, instance -> instance.getId().equals(currentId));
-            }, it -> getSkinnable().getMainPage().getRepository().setSelectedInstance(it.getId()));
-            if (AnimationUtils.isAnimationEnabled()) {
-                FXUtils.prepareOnMouseEnter(gameListItem, Controllers::prepareVersionPage);
-            }
-            FXUtils.onSecondaryButtonClicked(gameListItem, () -> showGameListPopupMenu(gameListItem));
-            FXUtils.installFastTooltip(gameListItem, new Tooltip(i18n("version.manage")));
-
-            AdvancedListItem downloadItem = new AdvancedListItem();
-            downloadItem.setLeftIcon(SVG.DOWNLOAD);
-            downloadItem.setTitle(i18n("download"));
-            downloadItem.setOnAction(e -> {
-                Controllers.getDownloadPage().showGameDownloads();
-                Controllers.navigate(Controllers.getDownloadPage());
-            });
-            if (AnimationUtils.isAnimationEnabled()) {
-                FXUtils.prepareOnMouseEnter(downloadItem, Controllers::prepareDownloadPage);
-            }
-            FXUtils.installFastTooltip(downloadItem, new Tooltip(i18n("download")));
-
-            // Multiplayer lobby (Terracotta)
-            AdvancedListItem multiplayerItem = new AdvancedListItem();
-            multiplayerItem.setLeftIcon(SVG.PUBLIC);
-            multiplayerItem.setTitle(i18n("terracotta"));
-            multiplayerItem.setOnAction(e -> {
-                if (TerracottaMetadata.PROVIDER != null) {
-                    Controllers.navigate(Controllers.getTerracottaPage());
-                } else {
-                    Controllers.dialog(i18n("terracotta.unsupported"), null, MessageDialogPane.MessageType.WARNING);
-                }
-            });
-            FXUtils.installFastTooltip(multiplayerItem, new Tooltip(i18n("terracotta")));
-
-            AdvancedListItem launcherSettingsItem = new AdvancedListItem();
-            launcherSettingsItem.setLeftIcon(SVG.SETTINGS);
-            launcherSettingsItem.setTitle(i18n("settings"));
-            launcherSettingsItem.setOnAction(e -> {
-                Controllers.getSettingsPage().showGameSettings(GameDirectoryManager.getSelectedRepository());
-                Controllers.navigate(Controllers.getSettingsPage());
-            });
-            if (AnimationUtils.isAnimationEnabled()) {
-                FXUtils.prepareOnMouseEnter(launcherSettingsItem, Controllers::prepareSettingsPage);
-            }
-            FXUtils.installFastTooltip(launcherSettingsItem, new Tooltip(i18n("settings")));
-
-            AdvancedListBox bottomNav = new AdvancedListBox(true /* horizontal */);
-            bottomNav.setSpacing(4);
-            bottomNav.add(gameListItem)
-                    .add(multiplayerItem)
-                    .add(downloadItem)
-                    .add(launcherSettingsItem);
-
-            setLeft(bottomNav);
-            setCenter(centerContent);
-        }
-
-        public void showGameListPopupMenu(Region gameListItem) {
-            GameListPopupMenu.show(gameListItem,
-                    JFXPopup.PopupVPosition.TOP,
-                    JFXPopup.PopupHPosition.LEFT,
-                    gameListItem.getWidth(),
-                    0,
-                    getSkinnable().getMainPage().getRepository(),
-                    getSkinnable().getMainPage().getVersions());
-        }
-    }
-
     private boolean checkedModpack = false;
 
     private void onRefreshedVersions(SCLGameRepository repository) {
         runInFX(() -> {
-            if (!checkedModpack) {
-                checkedModpack = true;
-
+            if (!checkedModpack) { checkedModpack = true;
                 if (repository.getVersionCount() == 0) {
-                    Path zipModpack = Metadata.CURRENT_DIRECTORY.resolve("modpack.zip");
-                    Path mrpackModpack = Metadata.CURRENT_DIRECTORY.resolve("modpack.mrpack");
-
-                    Path modpackFile;
-                    if (Files.exists(zipModpack)) {
-                        modpackFile = zipModpack;
-                    } else if (Files.exists(mrpackModpack)) {
-                        modpackFile = mrpackModpack;
-                    } else {
-                        modpackFile = null;
-                    }
-
-                    if (modpackFile != null) {
-                        Task.supplyAsync(() -> CompressingUtils.findSuitableEncoding(modpackFile))
-                                .thenApplyAsync(encoding -> ModpackHelper.readModpackManifest(modpackFile, encoding))
-                                .thenApplyAsync(modpack -> ModpackHelper
-                                        .getInstallTask(repository, modpackFile, modpack.getName(), modpack, null)
-                                        .executor())
-                                .thenAcceptAsync(Schedulers.javafx(), executor -> {
-                                    Controllers.taskDialog(executor, i18n("modpack.installing"), TaskCancellationAction.NO_CANCEL);
-                                    executor.start();
-                                }).start();
+                    Path zip = Metadata.CURRENT_DIRECTORY.resolve("modpack.zip");
+                    Path mrpack = Metadata.CURRENT_DIRECTORY.resolve("modpack.mrpack");
+                    Path f = Files.exists(zip) ? zip : Files.exists(mrpack) ? mrpack : null;
+                    if (f != null) {
+                        Task.supplyAsync(() -> CompressingUtils.findSuitableEncoding(f))
+                                .thenApplyAsync(e -> ModpackHelper.readModpackManifest(f, e))
+                                .thenApplyAsync(m -> ModpackHelper.getInstallTask(repository, f, m.getName(), m, null).executor())
+                                .thenAcceptAsync(Schedulers.javafx(), ex -> { Controllers.taskDialog(ex, i18n("modpack.installing"), TaskCancellationAction.NO_CANCEL); ex.start(); }).start();
                     }
                 }
             }
         });
+    }
+
+    // ── Skin: Modern Layout ──
+    private static class Skin extends DecoratorAnimatedPageSkin<RootPage> {
+        protected Skin(RootPage control) {
+            super(control);
+            control.getStylesheets().add("assets/css/new-root.css");
+
+            Canvas av = new Canvas(56, 56);
+            TexturesLoader.drawAvatar(av, TexturesLoader.getDefaultSkinImage());
+            Label nm = new Label(i18n("account.missing")); nm.getStyleClass().add("profile-name");
+            Label ht = new Label(i18n("account").toUpperCase(Locale.ROOT)); ht.getStyleClass().add("profile-hint");
+            FXUtils.onChangeAndOperate(Accounts.selectedAccountProperty(), a -> {
+                if (a == null) { TexturesLoader.unbindAvatar(av); TexturesLoader.drawAvatar(av, TexturesLoader.getDefaultSkinImage()); nm.setText(i18n("account.missing")); }
+                else { TexturesLoader.bindAvatar(av, a); nm.textProperty().bind(createStringBinding(() -> { String n = a.getProfileName(); return StringUtils.isBlank(n) ? a.getProfileID().toString() : n; }, a)); }
+            });
+            VBox card = new VBox(8, new VBox(av){{getStyleClass().add("avatar-box");}}, nm, ht);
+            card.getStyleClass().add("profile-card"); card.setAlignment(Pos.CENTER);
+            card.setOnMouseClicked(e -> Controllers.navigate(Controllers.getAccountListPage()));
+
+            HBox qa = new HBox(10); qa.setAlignment(Pos.CENTER);
+            qa.getChildren().addAll(
+                actCard(SVG.FORMAT_LIST_BULLETED, i18n("version.manage"), () -> Controllers.navigate(Controllers.getGameListPage())),
+                actCard(SVG.PUBLIC, i18n("terracotta"), () -> { if (TerracottaMetadata.PROVIDER != null) Controllers.navigate(Controllers.getTerracottaPage()); else Controllers.dialog(i18n("terracotta.unsupported"), null, MessageDialogPane.MessageType.WARNING); }),
+                actCard(SVG.SETTINGS, i18n("settings"), () -> { Controllers.getSettingsPage().showGameSettings(GameDirectoryManager.getSelectedRepository()); Controllers.navigate(Controllers.getSettingsPage()); })
+            );
+
+            JFXButton lb = new JFXButton(); lb.getStyleClass().add("launch-btn"); lb.setMaxWidth(260); lb.setDefaultButton(true);
+            Label ls = new Label(); ls.getStyleClass().add("launch-version");
+            VBox lg = new VBox(2, new Label(i18n("version.launch")), ls); lg.setAlignment(Pos.CENTER); lb.setGraphic(lg);
+            FXUtils.onChangeAndOperate(getSkinnable().getMainPage().currentGameProperty(), g -> {
+                lg.getChildren().clear();
+                if (g == null) { lg.getChildren().add(new Label(i18n("version.launch.empty"))); FXUtils.setOnActionWithCooldown(lb, getSkinnable().getMainPage()::launchNoGame); }
+                else { lg.getChildren().addAll(new Label(i18n("version.launch")), new Label(g)); FXUtils.setOnActionWithCooldown(lb, getSkinnable().getMainPage()::launch); }
+            });
+
+            AdvancedListBox nav = new AdvancedListBox(true); nav.setSpacing(4);
+            GameAdvancedListItem ga = new GameAdvancedListItem(); ga.setCompact(true); ga.getStyleClass().add("navigation-drawer-item");
+            ga.setOnAction(e -> { String v = GameDirectoryManager.getSelectedRepository().getSelectedInstance(); if (v == null) Controllers.navigate(Controllers.getGameListPage()); else Versions.modifyGameSettings(GameDirectoryManager.getSelectedRepository(), v); });
+            if (AnimationUtils.isAnimationEnabled()) FXUtils.prepareOnMouseEnter(ga, Controllers::prepareVersionPage);
+            FXUtils.installFastTooltip(ga, new Tooltip(i18n("version.manage")));
+            nav.add(ga).add(navItem(SVG.DOWNLOAD, i18n("download"), () -> { Controllers.getDownloadPage().showGameDownloads(); Controllers.navigate(Controllers.getDownloadPage()); })).add(navItem(SVG.SETTINGS, i18n("settings"), () -> { Controllers.getSettingsPage().showGameSettings(GameDirectoryManager.getSelectedRepository()); Controllers.navigate(Controllers.getSettingsPage()); }));
+
+            VBox mc = new VBox(8,
+                new VBox(card){{getStyleClass().add("profile-section");}},
+                new VBox(6, new Label(i18n("version.manage").toUpperCase(Locale.ROOT)){{getStyleClass().add("actions-title");}}, qa){{getStyleClass().add("actions-section");}},
+                new VBox(lb){{getStyleClass().add("launch-section");}}
+            );
+            mc.setAlignment(Pos.TOP_CENTER);
+            VBox.setVgrow(mc.getChildren().get(2), Priority.ALWAYS);
+            setCenter(mc);
+            setLeft(nav);
+        }
+
+        private VBox actCard(SVG ico, String t, Runnable r) {
+            SVGContainer c = new SVGContainer(ico, 20, 20); c.getStyleClass().add("action-icon");
+            VBox card = new VBox(4, c, new Label(t){{getStyleClass().add("action-label");}});
+            card.getStyleClass().add("action-card"); card.setAlignment(Pos.CENTER);
+            card.setOnMouseClicked(e -> r.run()); return card;
+        }
+
+        private AdvancedListItem navItem(SVG ico, String t, Runnable r) {
+            AdvancedListItem it = new AdvancedListItem(); it.setLeftIcon(ico); it.setTitle(t); it.setOnAction(e -> r.run());
+            return it;
+        }
+
+        public void showGameListPopupMenu(Region item) {
+            GameListPopupMenu.show(item, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, item.getWidth(), 0,
+                getSkinnable().getMainPage().getRepository(), getSkinnable().getMainPage().getVersions());
+        }
     }
 }
