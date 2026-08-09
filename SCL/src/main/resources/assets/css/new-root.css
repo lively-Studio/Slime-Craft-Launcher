@@ -79,7 +79,6 @@
 .launch-btn {
     -fx-background-color: #00BCD4;
     -fx-background-radius: 4;
-    -fx-text-fill: #0A0A0A;
     -fx-font-size: 16;
     -fx-font-weight: bold;
     -fx-padding: 12 32;
@@ -87,10 +86,13 @@
     -fx-max-width: 280;
     -fx-cursor: hand;
 }
+.launch-btn .label {
+    -fx-text-fill: #0A0A0A;
+}
 .launch-btn:hover {
     -fx-background-color: #00ACC1;
 }
 .launch-version {
     -fx-font-size: 10;
-    -fx-text-fill: derive(#0A0A0A, +50%);
+    -fx-text-fill: #333;
 }
