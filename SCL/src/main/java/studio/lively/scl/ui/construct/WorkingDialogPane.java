@@ -54,17 +54,16 @@ public class WorkingDialogPane extends VBox {
         // Animation: bar slides left ↔ right
         Timeline timeline = new Timeline(
             new KeyFrame(Duration.ZERO,
-                new KeyValue(bar.translateXProperty(), -80),
-                new KeyValue(bar.widthProperty(), 80)),
+                new KeyValue(bar.translateXProperty(), -80, Interpolator.EASE_BOTH),
+                new KeyValue(bar.widthProperty(), 80, Interpolator.EASE_BOTH)),
             new KeyFrame(Duration.millis(800),
-                new KeyValue(bar.translateXProperty(), 240),
-                new KeyValue(bar.widthProperty(), 60)),
+                new KeyValue(bar.translateXProperty(), 240, Interpolator.EASE_BOTH),
+                new KeyValue(bar.widthProperty(), 60, Interpolator.EASE_BOTH)),
             new KeyFrame(Duration.millis(1600),
-                new KeyValue(bar.translateXProperty(), -80),
-                new KeyValue(bar.widthProperty(), 80))
+                new KeyValue(bar.translateXProperty(), -80, Interpolator.EASE_BOTH),
+                new KeyValue(bar.widthProperty(), 80, Interpolator.EASE_BOTH))
         );
         timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.setInterpolator(Interpolator.EASE_BOTH);
         timeline.play();
 
         // Clean up animation when removed
