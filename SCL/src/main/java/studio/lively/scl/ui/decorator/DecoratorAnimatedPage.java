@@ -17,6 +17,7 @@
  */
 package studio.lively.scl.ui.decorator;
 
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
@@ -24,6 +25,7 @@ import javafx.scene.control.SkinBase;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
 public class DecoratorAnimatedPage extends Control {
@@ -69,7 +71,15 @@ public class DecoratorAnimatedPage extends Control {
 
             BorderPane pane = new BorderPane();
             pane.setBottom(control.bottomNav);
-            pane.setCenter(control.center);
+
+            // Clip center to viewport
+            StackPane clip = new StackPane(control.center);
+            clip.setMinSize(0, 0); clip.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+            clip.setStyle("-fx-background-color: null;");
+            control.center.setMinSize(0, 0);
+            StackPane.setAlignment(control.center, Pos.TOP_CENTER);
+            pane.setCenter(clip);
+
             getChildren().setAll(pane);
         }
 
