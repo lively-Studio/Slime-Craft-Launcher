@@ -58,6 +58,7 @@ import studio.lively.scl.ui.nbt.NBTFileType;
 import studio.lively.scl.ui.versions.GameAdvancedListItem;
 import studio.lively.scl.ui.versions.GameListPopupMenu;
 import studio.lively.scl.ui.versions.Versions;
+import studio.lively.scl.upgrade.AprilFools;
 import studio.lively.scl.upgrade.UpdateChecker;
 import studio.lively.scl.util.Lang;
 import studio.lively.scl.util.StringUtils;
@@ -175,7 +176,7 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
                 actCard(SVG.SETTINGS, i18n("settings"), () -> runAction(() -> { Controllers.getSettingsPage().showGameSettings(GameDirectoryManager.getSelectedRepository()); Controllers.navigate(Controllers.getSettingsPage()); }))
             );
 
-            JFXButton lb = new JFXButton(); lb.getStyleClass().add("launch-btn"); lb.setMaxWidth(260); lb.setDefaultButton(true);
+            JFXButton lb = new JFXButton(); lb.getStyleClass().add("launch-btn"); lb.setMaxWidth(260); lb.setDefaultButton(true); if (AprilFools.isEnabled()) { lb.setVisible(false); lb.setManaged(false); }
             Label ls = new Label(); ls.getStyleClass().add("launch-version");
             VBox lg = new VBox(2, new Label(i18n("version.launch")), ls); lg.setAlignment(Pos.CENTER); lb.setGraphic(lg);
             FXUtils.onChangeAndOperate(getSkinnable().getMainPage().currentGameProperty(), g -> {
