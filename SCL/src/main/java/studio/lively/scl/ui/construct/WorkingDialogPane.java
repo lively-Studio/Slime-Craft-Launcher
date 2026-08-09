@@ -64,13 +64,12 @@ public class WorkingDialogPane extends VBox {
 
         getChildren().addAll(title, barTrack);
 
-        // Run action in background, close dialog when done
-        new Thread(() -> {
-            action.run();
-            Platform.runLater(() -> {
+        // Run action on FX thread, close dialog after it completes
+        Platform.runLater(() -> {
+            try { action.run(); } finally {
                 timeline.stop();
-                DialogUtils.close(this);
-            });
-        }, "SCL-Working").start();
+                Platform.runLater(() -> DialogUtils.close(this));
+            }
+        });
     }
 }
