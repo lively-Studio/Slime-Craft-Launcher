@@ -202,7 +202,7 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
         }
 
         private VBox actCard(SVG ico, String t, Runnable r) {
-            SVGContainer c = new SVGContainer(ico, 20, 20); c.getStyleClass().add("action-icon");
+            SVGContainer c = new SVGContainer(ico, 20); c.getStyleClass().add("action-icon");
             VBox card = new VBox(4, c, new Label(t){{getStyleClass().add("action-label");}});
             card.getStyleClass().add("action-card"); card.setAlignment(Pos.CENTER);
             card.setOnMouseClicked(e -> r.run()); return card;
