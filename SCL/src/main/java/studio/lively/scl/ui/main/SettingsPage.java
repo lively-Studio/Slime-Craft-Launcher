@@ -212,6 +212,14 @@ public final class SettingsPage extends ScrollPane {
                 }
 
                 {
+                    LineToggleButton showWorkingDialog = new LineToggleButton();
+                    showWorkingDialog.setTitle(i18n("settings.launcher.show_working_dialog"));
+                    showWorkingDialog.setSubtitle(i18n("settings.launcher.show_working_dialog.subtitle"));
+                    showWorkingDialog.selectedProperty().bindBidirectional(settings().showWorkingDialogProperty());
+                    miscPaneList.getContent().add(showWorkingDialog);
+                }
+
+                {
                     BorderPane debugPane = new BorderPane();
 
                     Label left = new Label(i18n("settings.launcher.debug"));

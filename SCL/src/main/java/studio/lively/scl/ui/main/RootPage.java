@@ -170,9 +170,9 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
 
             HBox qa = new HBox(10); qa.setAlignment(Pos.CENTER);
             qa.getChildren().addAll(
-                actCard(SVG.FORMAT_LIST_BULLETED, i18n("version.manage"), () -> Controllers.dialog(new WorkingDialogPane(i18n("message.working"), () -> runInFX(() -> Controllers.navigate(Controllers.getGameListPage()))))),
-                actCard(SVG.PUBLIC, i18n("terracotta"), () -> Controllers.dialog(new WorkingDialogPane(i18n("message.working"), () -> { if (TerracottaMetadata.PROVIDER != null) Controllers.navigate(Controllers.getTerracottaPage()); else Controllers.dialog(i18n("terracotta.unsupported"), null, MessageDialogPane.MessageType.WARNING); }))),
-                actCard(SVG.SETTINGS, i18n("settings"), () -> Controllers.dialog(new WorkingDialogPane(i18n("message.working"), () -> { Controllers.getSettingsPage().showGameSettings(GameDirectoryManager.getSelectedRepository()); Controllers.navigate(Controllers.getSettingsPage()); })))
+                actCard(SVG.FORMAT_LIST_BULLETED, i18n("version.manage"), () -> runAction(() -> runInFX(() -> Controllers.navigate(Controllers.getGameListPage())))),
+                actCard(SVG.PUBLIC, i18n("terracotta"), () -> runAction(() -> { if (TerracottaMetadata.PROVIDER != null) Controllers.navigate(Controllers.getTerracottaPage()); else Controllers.dialog(i18n("terracotta.unsupported"), null, MessageDialogPane.MessageType.WARNING); })),
+                actCard(SVG.SETTINGS, i18n("settings"), () -> runAction(() -> { Controllers.getSettingsPage().showGameSettings(GameDirectoryManager.getSelectedRepository()); Controllers.navigate(Controllers.getSettingsPage()); }))
             );
 
             JFXButton lb = new JFXButton(); lb.getStyleClass().add("launch-btn"); lb.setMaxWidth(260); lb.setDefaultButton(true);
@@ -200,6 +200,14 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
             VBox.setVgrow(mc.getChildren().get(2), Priority.ALWAYS);
             setCenter(mc);
             setLeft(nav);
+        }
+
+        /// Show working dialog only if enabled in settings.
+        private void runAction(Runnable action) {
+            if (studio.lively.scl.setting.SettingsManager.settings().showWorkingDialogProperty().get())
+                Controllers.dialog(new WorkingDialogPane(i18n("message.working"), action));
+            else
+                action.run();
         }
 
         private VBox actCard(SVG ico, String t, Runnable r) {

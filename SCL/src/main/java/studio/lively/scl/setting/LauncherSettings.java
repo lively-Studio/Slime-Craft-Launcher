@@ -209,6 +209,15 @@ public final class LauncherSettings extends ObservableSetting implements JsonSch
         return disableAutoShowUpdateDialog;
     }
 
+    /// Whether to show working dialog when clicking action buttons.
+    @SerializedName("showWorkingDialog")
+    private final BooleanProperty showWorkingDialog = new SimpleBooleanProperty(true);
+
+    /// Returns the show working dialog property.
+    public BooleanProperty showWorkingDialogProperty() {
+        return showWorkingDialog;
+    }
+
     /// Whether April Fools features are disabled.
     @SerializedName("disableAprilFools")
     private final BooleanProperty disableAprilFools = new SimpleBooleanProperty(false);
