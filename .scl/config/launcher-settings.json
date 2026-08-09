@@ -6,8 +6,10 @@
     "themeId": "2021-08-26"
   },
   "themeAppearanceOverrides": [
-    "background"
+    "background",
+    "themeBrightnessMode"
   ],
+  "themeBrightnessMode": "dark",
   "customThemeColor": "#5C6BC0",
   "themeColorType": "CUSTOM",
   "backgroundType": "BUILTIN",

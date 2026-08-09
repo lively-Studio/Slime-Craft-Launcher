@@ -1993,8 +1993,8 @@
 .bottom-navigation {
     -fx-padding: 4 0 8 0;
     -fx-alignment: center;
-    -fx-background-color: -nothing-surface-1;
-    -fx-border-color: -nothing-outline-variant;
+    -fx-background-color: -nothing-surface;
+    -fx-border-color: -nothing-outline;
     -fx-border-width: 1 0 0 0;
 }
 
@@ -2007,6 +2007,12 @@
 /* Compact items: icon-only, centered */
 .bottom-navigation .compact-item > .rippler-container > .container {
     -fx-padding: 6 12;
+}
+
+/* Bottom nav icons auto-adapt to theme */
+.bottom-navigation .advanced-list-item SVGPath,
+.bottom-navigation .navigation-drawer-item SVGPath {
+    -fx-fill: -nothing-on-surface-variant;
 }
 
 /* Non-compact items in bottom nav: collapse text */
