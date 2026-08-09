@@ -73,7 +73,7 @@ public class DecoratorAnimatedPage extends Control {
 
             ScrollPane scroll = new ScrollPane(control.center);
             scroll.setFitToWidth(true);
-            scroll.setFitToHeight(false);
+            scroll.setFitToHeight(true);
             scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
             scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
             scroll.setStyle("-fx-background-color: null;");
