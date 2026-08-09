@@ -1,153 +1,96 @@
-/* ===== SCL Modern Theme ===== */
+/* SCL Homepage — NOTHING-UI-1 Spec
+   Dark theme, cyan accent #00BCD4, radius 2/4px, ≤200ms transitions */
 .root {
-    -fx-background-color: #0a0a0a;
-    -fx-padding: 0;
+    -fx-background-color: -nothing-dark-surface-0;
 }
 
-/* ── Top Area: Profile Card ── */
+/* ── Profile Card ── */
 .profile-section {
-    -fx-padding: 32 20 20 20;
+    -fx-padding: 24 16 16 16;
     -fx-alignment: center;
 }
-
 .profile-card {
-    -fx-background-color: #1a1a1a;
-    -fx-background-radius: 16;
-    -fx-padding: 24 20 20 20;
-    -fx-min-width: 260;
-    -fx-max-width: 340;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 12, 0, 0, 4);
+    -fx-background-color: -nothing-dark-surface-2;
+    -fx-background-radius: 4;
+    -fx-padding: 20 16 16 16;
+    -fx-max-width: 280;
+    -fx-effect: -nothing-shadow-2;
 }
-
 .profile-card:hover {
-    -fx-background-color: #222;
+    -fx-background-color: -nothing-dark-surface-3;
     -fx-cursor: hand;
 }
-
 .avatar-box {
-    -fx-padding: 0 0 12 0;
+    -fx-padding: 0 0 8 0;
     -fx-alignment: center;
 }
-
 .profile-name {
-    -fx-font-size: 16;
+    -fx-font-size: 14;
     -fx-font-weight: bold;
-    -fx-text-fill: #e8e8e8;
+    -fx-text-fill: -nothing-dark-text-primary;
     -fx-alignment: center;
 }
-
 .profile-hint {
     -fx-font-size: 11;
-    -fx-text-fill: #888;
+    -fx-text-fill: -nothing-dark-text-disabled;
     -fx-alignment: center;
-    -fx-padding: 4 0 0 0;
+    -fx-padding: 2 0 0 0;
 }
 
 /* ── Quick Actions ── */
 .actions-section {
-    -fx-padding: 16 20 0 20;
+    -fx-padding: 16 16 0 16;
 }
-
 .actions-title {
     -fx-font-size: 11;
     -fx-font-weight: bold;
-    -fx-text-fill: #666;
+    -fx-text-fill: -nothing-dark-text-disabled;
     -fx-letter-spacing: 1;
     -fx-padding: 0 0 8 8;
 }
-
 .action-card {
-    -fx-background-color: #1a1a1a;
-    -fx-background-radius: 12;
-    -fx-padding: 14 16;
-    -fx-min-width: 120;
-    -fx-max-width: 340;
+    -fx-background-color: -nothing-dark-surface-2;
+    -fx-background-radius: 4;
+    -fx-padding: 12 14;
+    -fx-min-width: 80;
+    -fx-max-width: 100;
     -fx-cursor: hand;
 }
-
 .action-card:hover {
-    -fx-background-color: #222;
+    -fx-background-color: -nothing-dark-surface-3;
 }
-
 .action-icon {
-    -fx-fill: #888;
-    -fx-padding: 0 10 0 0;
+    -fx-fill: -nothing-dark-text-secondary;
 }
-
 .action-card:hover .action-icon {
-    -fx-fill: #4caf50;
+    -fx-fill: -nothing-accent;
 }
-
 .action-label {
-    -fx-font-size: 13;
-    -fx-text-fill: #ccc;
+    -fx-font-size: 12;
+    -fx-text-fill: -nothing-dark-text-primary;
     -fx-font-weight: bold;
-}
-
-.action-sub {
-    -fx-font-size: 10;
-    -fx-text-fill: #777;
-    -fx-padding: 2 0 0 0;
 }
 
 /* ── Launch Button ── */
 .launch-section {
-    -fx-padding: 24 20 16 20;
+    -fx-padding: 20 16 12 16;
     -fx-alignment: center;
 }
-
 .launch-btn {
-    -fx-background-color: #4caf50;
-    -fx-background-radius: 12;
-    -fx-text-fill: white;
+    -fx-background-color: -nothing-accent;
+    -fx-background-radius: 4;
+    -fx-text-fill: -nothing-dark-surface-1;
     -fx-font-size: 16;
     -fx-font-weight: bold;
-    -fx-padding: 14 40;
+    -fx-padding: 12 32;
     -fx-min-width: 200;
-    -fx-max-width: 300;
+    -fx-max-width: 280;
     -fx-cursor: hand;
 }
-
 .launch-btn:hover {
-    -fx-background-color: #43a047;
+    -fx-background-color: derive(-nothing-accent, -10%);
 }
-
-.launch-btn:pressed {
-    -fx-background-color: #388e3c;
-}
-
 .launch-version {
     -fx-font-size: 10;
-    -fx-text-fill: rgba(255,255,255,0.7);
-}
-
-/* ── Bottom Nav ── */
-.bottom-bar {
-    -fx-background-color: #121212;
-    -fx-padding: 8 0 20 0;
-    -fx-alignment: center;
-    -fx-border-color: #222;
-    -fx-border-width: 0.5 0 0 0;
-}
-
-.nav-item {
-    -fx-padding: 6 14;
-    -fx-cursor: hand;
-    -fx-background-radius: 8;
-}
-
-.nav-item:hover {
-    -fx-background-color: #222;
-}
-
-.nav-icon {
-    -fx-fill: #666;
-}
-
-.nav-item:hover .nav-icon {
-    -fx-fill: #4caf50;
-}
-
-.nav-item.active .nav-icon {
-    -fx-fill: #4caf50;
+    -fx-text-fill: derive(-nothing-dark-surface-1, +30%);
 }
