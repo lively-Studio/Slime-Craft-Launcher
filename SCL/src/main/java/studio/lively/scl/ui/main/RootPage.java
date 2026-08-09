@@ -169,9 +169,9 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
 
             HBox qa = new HBox(10); qa.setAlignment(Pos.CENTER);
             qa.getChildren().addAll(
-                actCard(SVG.FORMAT_LIST_BULLETED, i18n("version.manage"), () -> Controllers.navigate(Controllers.getGameListPage())),
-                actCard(SVG.PUBLIC, i18n("terracotta"), () -> { if (TerracottaMetadata.PROVIDER != null) Controllers.navigate(Controllers.getTerracottaPage()); else Controllers.dialog(i18n("terracotta.unsupported"), null, MessageDialogPane.MessageType.WARNING); }),
-                actCard(SVG.SETTINGS, i18n("settings"), () -> { Controllers.getSettingsPage().showGameSettings(GameDirectoryManager.getSelectedRepository()); Controllers.navigate(Controllers.getSettingsPage()); })
+                actCard(SVG.FORMAT_LIST_BULLETED, i18n("version.manage"), () -> { Controllers.showToast(i18n("message.working")); runInFX(() -> Controllers.navigate(Controllers.getGameListPage())); }),
+                actCard(SVG.PUBLIC, i18n("terracotta"), () -> { Controllers.showToast(i18n("message.working")); if (TerracottaMetadata.PROVIDER != null) Controllers.navigate(Controllers.getTerracottaPage()); else Controllers.dialog(i18n("terracotta.unsupported"), null, MessageDialogPane.MessageType.WARNING); }),
+                actCard(SVG.SETTINGS, i18n("settings"), () -> { Controllers.showToast(i18n("message.working")); Controllers.getSettingsPage().showGameSettings(GameDirectoryManager.getSelectedRepository()); Controllers.navigate(Controllers.getSettingsPage()); })
             );
 
             JFXButton lb = new JFXButton(); lb.getStyleClass().add("launch-btn"); lb.setMaxWidth(260); lb.setDefaultButton(true);
