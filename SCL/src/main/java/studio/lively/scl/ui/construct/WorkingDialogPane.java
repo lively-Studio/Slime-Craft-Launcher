@@ -32,6 +32,11 @@ public class WorkingDialogPane extends VBox {
         barTrack.setPrefHeight(4);
         barTrack.setMaxWidth(250);
         barTrack.getStyleClass().add("working-bar-track");
+        // Clip: bar never overflows the track
+        Rectangle clipRect = new Rectangle(250, 4);
+        clipRect.setArcWidth(4); clipRect.setArcHeight(4);
+        barTrack.setClip(clipRect);
+        barTrack.widthProperty().addListener((o, old, w) -> clipRect.setWidth(w.doubleValue()));
 
         // Animated bar — uses CSS fill so `-nothing-accent` applies
         Rectangle bar = new Rectangle(60, 4);
