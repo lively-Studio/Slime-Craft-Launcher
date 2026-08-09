@@ -1,76 +1,71 @@
 /*
  * Slime Craft Launcher
  * Copyright (C) 2025 lively-Studio <X_CODER_ocs2008@126.com> and contributors
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package studio.lively.scl.ui.construct;
 
 import javafx.animation.*;
+import javafx.application.Platform;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import studio.lively.scl.ui.DialogUtils;
 
-/// A simple "working" dialog with an animated themed bar.
+/// Working dialog: shows animated bar, runs action, then auto-closes.
 public class WorkingDialogPane extends VBox {
 
-    public WorkingDialogPane(String message) {
+    public WorkingDialogPane(String message, Runnable action) {
         getStyleClass().add("working-dialog-pane");
         setSpacing(16);
-        setPadding(new javafx.geometry.Insets(16, 24, 24, 24));
-        setMaxWidth(320);
+        setPadding(new javafx.geometry.Insets(20, 28, 20, 28));
+        setMaxWidth(300);
 
         // Title
         javafx.scene.control.Label title = new javafx.scene.control.Label(message);
-        title.getStyleClass().add("working-title");
-        title.setStyle("-fx-font-size: 14; -fx-text-fill: -nothing-on-surface; -fx-font-weight: bold;");
+        title.setStyle("-fx-font-size: 14; -fx-alignment: center;");
 
         // Animated bar container
         StackPane barTrack = new StackPane();
         barTrack.setMinHeight(4);
         barTrack.setPrefHeight(4);
-        barTrack.setStyle("-fx-background-color: -nothing-outline; -fx-background-radius: 2;");
+        barTrack.setMaxWidth(250);
+        barTrack.getStyleClass().add("working-bar-track");
 
-        // Animated bar
-        Rectangle bar = new Rectangle(80, 4);
+        // Animated bar — uses CSS fill so `-nothing-accent` applies
+        Rectangle bar = new Rectangle(60, 4);
         bar.setArcWidth(4);
         bar.setArcHeight(4);
-        bar.setFill(javafx.scene.paint.Color.web("#00BCD4"));
+        bar.getStyleClass().add("working-bar");
+        bar.setFill(Color.web("#00BCD4"));
 
         barTrack.getChildren().add(bar);
 
-        // Animation: bar slides left ↔ right
+        // Animation
         Timeline timeline = new Timeline(
             new KeyFrame(Duration.ZERO,
-                new KeyValue(bar.translateXProperty(), -80, Interpolator.EASE_BOTH),
-                new KeyValue(bar.widthProperty(), 80, Interpolator.EASE_BOTH)),
-            new KeyFrame(Duration.millis(800),
-                new KeyValue(bar.translateXProperty(), 240, Interpolator.EASE_BOTH),
+                new KeyValue(bar.translateXProperty(), -60, Interpolator.EASE_BOTH),
                 new KeyValue(bar.widthProperty(), 60, Interpolator.EASE_BOTH)),
-            new KeyFrame(Duration.millis(1600),
-                new KeyValue(bar.translateXProperty(), -80, Interpolator.EASE_BOTH),
-                new KeyValue(bar.widthProperty(), 80, Interpolator.EASE_BOTH))
+            new KeyFrame(Duration.millis(700),
+                new KeyValue(bar.translateXProperty(), 190, Interpolator.EASE_BOTH),
+                new KeyValue(bar.widthProperty(), 50, Interpolator.EASE_BOTH)),
+            new KeyFrame(Duration.millis(1400),
+                new KeyValue(bar.translateXProperty(), -60, Interpolator.EASE_BOTH),
+                new KeyValue(bar.widthProperty(), 60, Interpolator.EASE_BOTH))
         );
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
 
-        // Clean up animation when removed
-        sceneProperty().addListener((obs, old, val) -> {
-            if (val == null) timeline.stop();
-        });
-
         getChildren().addAll(title, barTrack);
+
+        // Run action in background, close dialog when done
+        new Thread(() -> {
+            action.run();
+            Platform.runLater(() -> {
+                timeline.stop();
+                DialogUtils.close(this);
+            });
+        }, "SCL-Working").start();
     }
 }

@@ -2083,3 +2083,20 @@
 .player-name-label {
     -fx-text-fill: -nothing-on-surface;
 }
+
+/* ===== Working Dialog ===== */
+.working-dialog-pane {
+    -fx-background-color: -nothing-surface;
+    -fx-background-radius: 4;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 16, 0, 0, 8);
+}
+
+.working-bar-track {
+    -fx-background-color: -nothing-outline;
+    -fx-background-radius: 2;
+}
+
+.working-bar {
+    -fx-fill: -nothing-accent;
+}
+
