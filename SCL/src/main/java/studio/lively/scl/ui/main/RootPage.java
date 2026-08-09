@@ -49,6 +49,7 @@ import studio.lively.scl.ui.animation.AnimationUtils;
 import studio.lively.scl.ui.construct.AdvancedListBox;
 import studio.lively.scl.ui.construct.AdvancedListItem;
 import studio.lively.scl.ui.construct.MessageDialogPane;
+import studio.lively.scl.ui.construct.WorkingDialogPane;
 import studio.lively.scl.ui.decorator.DecoratorAnimatedPage;
 import studio.lively.scl.ui.decorator.DecoratorPage;
 import studio.lively.scl.ui.download.ModpackInstallWizardProvider;
@@ -169,9 +170,9 @@ public class RootPage extends DecoratorAnimatedPage implements DecoratorPage {
 
             HBox qa = new HBox(10); qa.setAlignment(Pos.CENTER);
             qa.getChildren().addAll(
-                actCard(SVG.FORMAT_LIST_BULLETED, i18n("version.manage"), () -> { Controllers.showToast(i18n("message.working")); runInFX(() -> Controllers.navigate(Controllers.getGameListPage())); }),
-                actCard(SVG.PUBLIC, i18n("terracotta"), () -> { Controllers.showToast(i18n("message.working")); if (TerracottaMetadata.PROVIDER != null) Controllers.navigate(Controllers.getTerracottaPage()); else Controllers.dialog(i18n("terracotta.unsupported"), null, MessageDialogPane.MessageType.WARNING); }),
-                actCard(SVG.SETTINGS, i18n("settings"), () -> { Controllers.showToast(i18n("message.working")); Controllers.getSettingsPage().showGameSettings(GameDirectoryManager.getSelectedRepository()); Controllers.navigate(Controllers.getSettingsPage()); })
+                actCard(SVG.FORMAT_LIST_BULLETED, i18n("version.manage"), () -> { Controllers.dialog(new WorkingDialogPane(i18n("message.working"))); runInFX(() -> Controllers.navigate(Controllers.getGameListPage())); }),
+                actCard(SVG.PUBLIC, i18n("terracotta"), () -> { Controllers.dialog(new WorkingDialogPane(i18n("message.working"))); if (TerracottaMetadata.PROVIDER != null) Controllers.navigate(Controllers.getTerracottaPage()); else Controllers.dialog(i18n("terracotta.unsupported"), null, MessageDialogPane.MessageType.WARNING); }),
+                actCard(SVG.SETTINGS, i18n("settings"), () -> { Controllers.dialog(new WorkingDialogPane(i18n("message.working"))); Controllers.getSettingsPage().showGameSettings(GameDirectoryManager.getSelectedRepository()); Controllers.navigate(Controllers.getSettingsPage()); })
             );
 
             JFXButton lb = new JFXButton(); lb.getStyleClass().add("launch-btn"); lb.setMaxWidth(260); lb.setDefaultButton(true);
