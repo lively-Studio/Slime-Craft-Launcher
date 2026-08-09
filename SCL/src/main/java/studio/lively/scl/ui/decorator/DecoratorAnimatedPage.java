@@ -36,6 +36,9 @@ public class DecoratorAnimatedPage extends Control {
         bottomNav.getStyleClass().add("bottom-navigation");
         bottomNav.setFillHeight(true);
         HBox.setHgrow(bottomNav, Priority.ALWAYS);
+
+        // Clip overflow: content must fit within the viewport
+        center.setStyle("-fx-background-color: null;");
     }
 
     protected void setLeft(Node... children) {

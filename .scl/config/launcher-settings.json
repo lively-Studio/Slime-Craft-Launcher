@@ -9,7 +9,7 @@
     "background",
     "themeBrightnessMode"
   ],
-  "themeBrightnessMode": "dark",
+  "themeBrightnessMode": "light",
   "customThemeColor": "#5C6BC0",
   "themeColorType": "CUSTOM",
   "backgroundType": "BUILTIN",
