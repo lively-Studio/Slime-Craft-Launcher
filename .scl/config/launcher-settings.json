@@ -2,7 +2,6 @@
   "$schema": "https://raw.githubusercontent.com/lively-Studio/Slime-Craft-Launcher/main/docs/schemas/launcher-settings/1.0.0",
   "acceptPreviewUpdate": true,
   "showWorkingDialog": true,
-  "advancedMode": false,
   "selectedTheme": {
     "packId": "scl.classic",
     "themeId": "2021-08-26"
@@ -21,5 +20,6 @@
   "selectedInstance": {
     "game-directory:019fd721-9135-700e-85fd-dde30a5f46b1": "1.21.11-Fabric-CODER"
   },
-  "selectedAccount": "account:019fd71d-a63b-7a3d-84ea-33e1fa8a45bf"
+  "selectedAccount": "account:019fd71d-a63b-7a3d-84ea-33e1fa8a45bf",
+  "advancedMode": false
 }
