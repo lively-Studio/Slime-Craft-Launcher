@@ -1,6 +1,6 @@
 /*
  * Slime Craft Launcher
- * Copyright (C) 2025 lively-Studio <X_CODER_ocs2008@126.com> and contributors
+ * Copyright (C) 2025 lively-Studio <X_CODER_ocs_2026@126.com> and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -148,7 +148,7 @@ public abstract class ParseModDataTask extends DefaultTask {
         try (BufferedWriter writer = Files.newBufferedWriter(outputFile, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)) {
             writer.write("#\n" +
                     "# Slime Craft Launcher\n" +
-                    "# Copyright (C) 2025 lively-Studio <X_CODER_ocs2008@126.com> and contributors\n" +
+                    "# Copyright (C) 2025 lively-Studio <X_CODER_ocs_2026@126.com> and contributors\n" +
                     "#\n" +
                     "# mcmod.cn\n" +
                     "# Copyright (C) 2025. All Rights Reserved.\n" +

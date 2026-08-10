@@ -2101,9 +2101,9 @@
 }
 
 
-/* ===== Dialogs: force fit within mobile viewport ===== */
+/* ===== Dialogs ===== */
 .jfx-dialog-layout {
-    -fx-max-width: 240;
+    -fx-max-width: 420;
 }
 
 .jfx-dialog-layout .scroll-pane,

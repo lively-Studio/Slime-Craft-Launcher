@@ -1,6 +1,6 @@
 /*
  * Slime Craft Launcher
- * Copyright (C) 2025 lively-Studio <X_CODER_ocs2008@126.com> and contributors
+ * Copyright (C) 2025 lively-Studio <X_CODER_ocs_2026@126.com> and contributors
  */
 package studio.lively.scl.ui.construct;
 
