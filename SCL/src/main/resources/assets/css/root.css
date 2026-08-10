@@ -2103,7 +2103,7 @@
 
 /* ===== Dialogs: force fit within mobile viewport ===== */
 .jfx-dialog-layout {
-    -fx-max-width: 260;
+    -fx-max-width: 240;
 }
 
 .jfx-dialog-layout .scroll-pane,
