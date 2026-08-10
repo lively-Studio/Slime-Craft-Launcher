@@ -89,7 +89,7 @@ public class TerracottaPage extends DecoratorAnimatedPage implements DecoratorPa
                             item.getWidth(),
                             0,
                             mainPage.getRepository(), mainPage.getVersions()));
-                })
+                });
         setLeft(sideBar);
 
         setCenter(transitionPane);
