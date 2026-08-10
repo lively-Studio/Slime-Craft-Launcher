@@ -2100,3 +2100,18 @@
     -fx-fill: -nothing-accent;
 }
 
+
+/* ===== Dialogs: force fit within mobile viewport ===== */
+.jfx-dialog-layout {
+    -fx-max-width: 400;
+}
+
+.jfx-dialog-layout .scroll-pane,
+.jfx-dialog-layout .list-view {
+    -fx-min-height: 0;
+    -fx-pref-height: 260;
+}
+
+.jfx-dialog-layout > .jfx-layout-body > * {
+    -fx-max-width: 100%;
+}
