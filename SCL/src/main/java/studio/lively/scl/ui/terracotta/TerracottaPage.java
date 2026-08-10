@@ -90,7 +90,6 @@ public class TerracottaPage extends DecoratorAnimatedPage implements DecoratorPa
                             0,
                             mainPage.getRepository(), mainPage.getVersions()));
                 })
-                .addNavigationDrawerItem(i18n("terracotta.feedback.title"), SVG.FEEDBACK, () -> {});
         setLeft(sideBar);
 
         setCenter(transitionPane);
