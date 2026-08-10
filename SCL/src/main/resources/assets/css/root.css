@@ -2115,3 +2115,20 @@
 .jfx-dialog-layout > .jfx-layout-body > * {
     -fx-max-width: 100%;
 }
+
+/* ===== Download page: force content within viewport ===== */
+.download-page .scroll-pane .grid-pane,
+.download-page .scroll-pane .flow-pane,
+.download-page .scroll-pane .tile-pane {
+    -fx-max-width: 420;
+}
+
+.download-page .jfx-list-view,
+.download-page .list-cell {
+    -fx-pref-width: 380;
+}
+
+/* Universal: all scroll-pane contents fit width */
+.scroll-pane > .viewport > * {
+    -fx-max-width: 100%;
+}
