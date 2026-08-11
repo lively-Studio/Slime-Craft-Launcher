@@ -1,7 +1,11 @@
 name: Build macOS DMG
 
 # 使用 jpackage 将 SCL 打包为 macOS .dmg 安装包
-# 产物架构跟随 runner：macos-14 = arm64，macos-13 = x86_64
+# - 统一在 macos-14 runner（Apple Silicon）上构建
+# - arm64（Apple Silicon）：直接用宿主 JDK jpackage（产出本地架构 app）
+# - x86_64（Intel）：先下载 Zulu FX JDK 17 macOS x64，用宿主 jlink 指向其 jmods
+#   交叉生成 x86_64 runtime image，再通过 jpackage --runtime-image 产出 Intel 版 .app/.dmg
+# 说明：GitHub 已在 2025 年逐步退役 macos-13 (Intel) hosted runner，因此 Intel 构建走交叉打包
 
 on:
   workflow_dispatch:
@@ -14,19 +18,19 @@ on:
 
 env:
   SCL_VERSION: DEV2026.1.0-SNAPSHOT-6
+  ZULU_JDK_VERSION: '17'
 
 jobs:
   build-macos-dmg:
+    runs-on: macos-14
     strategy:
       fail-fast: false
       matrix:
         include:
-          - runner: macos-14
-            arch: arm64
-          - runner: macos-13
-            arch: x86_64
-
-    runs-on: ${{ matrix.runner }}
+          - arch: arm64
+            cross: false
+          - arch: x86_64
+            cross: true
     permissions:
       contents: write
 
@@ -36,11 +40,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up JDK 17 with JavaFX
+      - name: Set up JDK 17 with JavaFX (host)
         uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
-          java-version: '17'
+          java-version: ${{ env.ZULU_JDK_VERSION }}
           java-package: 'jdk+fx'
 
       - name: Setup Gradle
@@ -56,6 +60,49 @@ jobs:
         env:
           MICROSOFT_AUTH_ID: ${{ secrets.MICROSOFT_AUTH_ID }}
 
+      # ============== Cross: download target-arch Zulu FX JDK tar.gz ==============
+      - name: Download Zulu FX JDK 17 for macOS ${{ matrix.arch }} (cross build)
+        if: matrix.cross
+        run: |
+          set -e
+          DOWNLOAD_DIR="$HOME/zulu-target-jdk-macos"
+          mkdir -p "$DOWNLOAD_DIR"
+          cd "$DOWNLOAD_DIR"
+
+          # macOS x64 JDK+FX 已知版本
+          URLS=(
+            "https://cdn.azul.com/zulu/bin/zulu17.56.15-ca-fx-jdk17.0.14-macosx_x64.tar.gz"
+            "https://cdn.azul.com/zulu/bin/zulu17.54.17-ca-fx-jdk17.0.13-macosx_x64.tar.gz"
+            "https://cdn.azul.com/zulu/bin/zulu17.52.19-ca-fx-jdk17.0.12-macosx_x64.tar.gz"
+          )
+          TARBALL=""
+          for u in "${URLS[@]}"; do
+            echo "Trying $u ..."
+            if curl -fSIL --retry 3 -o /dev/null "$u" 2>/dev/null; then
+              TARBALL="$u"
+              break
+            fi
+          done
+          if [ -z "$TARBALL" ]; then
+            echo "No fixed Zulu URL worked; querying Azul metadata API."
+            API_URL="https://api.azul.com/metadata/v1/zulu/packages?java_version=17&os=macos&arch=x64&archive_type=tar.gz&java_package_type=jdk&javafx_bundled=true&latest=true&release_status=ga"
+            TARBALL=$(curl -fsSL "$API_URL" | grep -oE '"download_url":"[^"]+"' | head -1 | cut -d'"' -f4)
+          fi
+          if [ -z "$TARBALL" ]; then
+            echo "Could not resolve Zulu FX JDK macOS-x64 download URL"
+            exit 1
+          fi
+          echo "Downloading: $TARBALL"
+          curl -fSL --retry 3 -o target-jdk.tar.gz "$TARBALL"
+          tar xzf target-jdk.tar.gz
+          rm target-jdk.tar.gz
+          # 解压后通常 zulu-17.jdk/Contents/Home/jmods 或根下直出 jdk-... 目录
+          TARGET_JDK_HOME=$(find "$PWD" -maxdepth 4 -name "jmods" -type d | head -1 | xargs dirname)
+          echo "TARGET_JDK_HOME=$TARGET_JDK_HOME" >> "$GITHUB_ENV"
+          echo "TARGET_JDK_HOME resolved: $TARGET_JDK_HOME"
+          ls "$TARGET_JDK_HOME/jmods" | head -5
+
+      # ============== Common: icon, version, jpackage input ==============
       - name: Prepare macOS icon (.icns)
         run: |
           set -e
@@ -103,17 +150,9 @@ jobs:
           iconutil -c icns "$ICONSET" -o SCL/build/icons/SCL.icns
           ls -la SCL/build/icons/
 
-      - name: Build DMG with jpackage
+      - name: Sanitize version
+        id: ver
         run: |
-          set -e
-          set -x
-
-          JAR=$(ls SCL/build/libs/SCL-*.jar | head -1)
-          JAR_NAME=$(basename "$JAR")
-          echo "Using JAR: $JAR_NAME"
-
-          # macOS bundle 版本号必须为纯数字加点号 (如 x.y.z)
-          # 从 SCL_VERSION 中提取数字部分，例如 DEV2026.1.0-SNAPSHOT-6 -> 2026.1.0
           VERSION_RAW="${{ env.SCL_VERSION }}"
           APP_VERSION=$(echo "$VERSION_RAW" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
           if [ -z "$APP_VERSION" ]; then
@@ -122,20 +161,60 @@ jobs:
           if [ -z "$APP_VERSION" ]; then
             APP_VERSION="1.0.0"
           fi
+          echo "app_version=$APP_VERSION" >> "$GITHUB_OUTPUT"
           echo "App version: $APP_VERSION"
 
-          # 准备 jpackage 输入目录（只放入主 JAR）
+      - name: Prepare jpackage input + resolve JAR
+        run: |
+          set -e
+          JAR=$(ls SCL/build/libs/SCL-*.jar | head -1)
+          JAR_NAME=$(basename "$JAR")
+          echo "Using JAR: $JAR_NAME"
+          echo "JAR_NAME=$JAR_NAME" >> "$GITHUB_ENV"
           mkdir -p SCL/build/jpackage-input
           cp "$JAR" SCL/build/jpackage-input/
 
-          # 调用 jpackage 生成 DMG
-          # --main-jar 模式下 jpackage 会使用 jlink 创建运行时镜像
-          # Zulu JDK+FX 自带 JavaFX jmods，会被自动打包进运行时
-          # --add-opens 与 manifest 中的 Add-Opens 保持一致（jpackage 启动器不以 -jar 方式启动，不会读取 manifest 的 Add-Opens）
+      # ============== Cross: jlink target runtime image ==============
+      - name: Build target runtime image (jlink) for ${{ matrix.arch }}
+        if: matrix.cross
+        run: |
+          set -e
+          set -x
+          JMODS_DIR="$TARGET_JDK_HOME/jmods"
+          RUNTIME_DIR="$PWD/SCL/build/runtime-${{ matrix.arch }}"
+          rm -rf "$RUNTIME_DIR"
+          MODULES=$(find "$JMODS_DIR" -maxdepth 1 -name '*.jmod' -printf '%f\n' \
+            | sed 's/\.jmod$//' | tr '\n' ',' | sed 's/,$//')
+          echo "jlink modules count: $(echo "$MODULES" | tr ',' '\n' | wc -l)"
+          # 在 arm64 macOS 上调用 arm64 jlink，传入 x64 jmods 生成 x64 runtime image
+          jlink \
+            --module-path "$JMODS_DIR" \
+            --add-modules "$MODULES" \
+            --output "$RUNTIME_DIR" \
+            --strip-debug \
+            --no-man-pages \
+            --no-header-files \
+            --compress=2 \
+            --strip-native-commands \
+            --include-locales=*,en,zh,zh_CN,zh_TW,ja,es,ru,uk,de,fr,it,ko,pt,ar,hi,tr,pl,nl,sv
+          ls "$RUNTIME_DIR/Contents/Home/lib" 2>/dev/null | head || ls "$RUNTIME_DIR/lib" 2>/dev/null | head || true
+          echo "RUNTIME_DIR=$RUNTIME_DIR" >> "$GITHUB_ENV"
+
+      # ============== Build DMG with jpackage ==============
+      - name: Build DMG with jpackage (${{ matrix.arch }})
+        run: |
+          set -e
+          set -x
+          RUNTIME_ARG=""
+          if [ -n "${{ env.RUNTIME_DIR }}" ]; then
+            RUNTIME_ARG="--runtime-image ${{ env.RUNTIME_DIR }}"
+          fi
+
+          # shellcheck disable=SC2086
           jpackage \
             --type dmg \
             --name "SCL" \
-            --app-version "$APP_VERSION" \
+            --app-version "${{ steps.ver.outputs.app_version }}" \
             --vendor "lively-Studio" \
             --copyright "Copyright (C) 2025 lively-Studio" \
             --description "Slime Craft Launcher" \
@@ -146,6 +225,7 @@ jobs:
             --mac-package-name "SCL" \
             --mac-package-identifier "studio.lively.scl" \
             --mac-app-category "public.app-category.games" \
+            $RUNTIME_ARG \
             --java-options '--add-opens=java.base/java.lang=ALL-UNNAMED' \
             --java-options '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED' \
             --java-options '--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED' \
@@ -182,21 +262,21 @@ jobs:
           mv "$DMG" "$NEW_NAME"
           echo "Renamed to: $NEW_NAME"
           ls -la "$NEW_NAME"
+          echo "DMG_NEW=$NEW_NAME" >> "$GITHUB_ENV"
 
       - name: Upload DMG artifact
         uses: actions/upload-artifact@v7
         with:
           name: SCL-${{ env.SCL_VERSION }}-macos-${{ matrix.arch }}
-          path: SCL-${{ env.SCL_VERSION }}-macos-${{ matrix.arch }}.dmg
+          path: ${{ env.DMG_NEW }}
           archive: false
 
       - name: Upload DMG to Release
         continue-on-error: true
         run: |
           if gh release view "${{ env.SCL_VERSION }}" &>/dev/null; then
-            gh release upload "${{ env.SCL_VERSION }}" \
-              "SCL-${{ env.SCL_VERSION }}-macos-${{ matrix.arch }}.dmg" --clobber
-            echo "Uploaded DMG to release ${{ env.SCL_VERSION }}"
+            gh release upload "${{ env.SCL_VERSION }}" "${{ env.DMG_NEW }}" --clobber
+            echo "Uploaded DMG (${{ matrix.arch }}) to release ${{ env.SCL_VERSION }}"
           else
             echo "Release ${{ env.SCL_VERSION }} does not exist, skipping upload."
           fi

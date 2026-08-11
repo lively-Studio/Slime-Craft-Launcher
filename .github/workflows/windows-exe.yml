@@ -1,6 +1,10 @@
 name: Build Windows Installer
 
 # 使用 jpackage 将 SCL 打包为 Windows .exe 安装包
+# - 在 windows-latest（x86_64）上运行
+# - x86_64 包：直接用宿主 JDK jpackage
+# - aarch64 包：先下载 Zulu FX JDK 17 Windows aarch64 zip，用宿主 jlink 指向其 jmods
+#   交叉生成 aarch64 runtime image，再通过 jpackage --runtime-image 产出 arm64 EXE
 # jpackage --type exe 会基于 WiX 生成 MSI 并包裹为 EXE 安装程序
 
 on:
@@ -16,10 +20,19 @@ env:
   SCL_VERSION: DEV2026.1.0-SNAPSHOT-6
   # Windows 升级标识（固定不变，不同版本共用同一 UUID 才能升级覆盖）
   WIN_UPGRADE_UUID: a1b2c3d4-1234-5678-9abc-def012345678
+  ZULU_JDK_VERSION: '17'
 
 jobs:
   build-windows-exe:
     runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            cross: false
+          - arch: aarch64
+            cross: true
     permissions:
       contents: write
 
@@ -29,11 +42,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up JDK 17 with JavaFX
+      - name: Set up JDK 17 with JavaFX (host x64)
         uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
-          java-version: '17'
+          java-version: ${{ env.ZULU_JDK_VERSION }}
           java-package: 'jdk+fx'
 
       - name: Setup Gradle
@@ -51,6 +64,51 @@ jobs:
         env:
           MICROSOFT_AUTH_ID: ${{ secrets.MICROSOFT_AUTH_ID }}
 
+      # ============== Cross: download target-arch Zulu FX JDK zip ==============
+      - name: Download Zulu FX JDK 17 for ${{ matrix.arch }} Windows (cross build)
+        if: matrix.cross
+        shell: bash
+        run: |
+          set -e
+          DOWNLOAD_DIR="$HOME/zulu-target-jdk-win"
+          mkdir -p "$DOWNLOAD_DIR"
+          cd "$DOWNLOAD_DIR"
+
+          # 先尝试固定已知的 Zulu 17 版本 win aarch64；失败则回退 Azul metadata API
+          URLS=(
+            "https://cdn.azul.com/zulu/bin/zulu17.56.15-ca-fx-jdk17.0.14-win_aarch64.zip"
+            "https://cdn.azul.com/zulu/bin/zulu17.54.17-ca-fx-jdk17.0.13-win_aarch64.zip"
+            "https://cdn.azul.com/zulu/bin/zulu17.52.19-ca-fx-jdk17.0.12-win_aarch64.zip"
+          )
+          ZIPURL=""
+          for u in "${URLS[@]}"; do
+            echo "Trying $u ..."
+            if curl -fSIL --retry 3 -o /dev/null "$u" 2>/dev/null; then
+              ZIPURL="$u"
+              break
+            fi
+          done
+          if [ -z "$ZIPURL" ]; then
+            echo "No fixed Zulu URL worked; querying Azul metadata API."
+            API_URL="https://api.azul.com/metadata/v1/zulu/packages?java_version=17&os=windows&arch=aarch64&archive_type=zip&java_package_type=jdk&javafx_bundled=true&latest=true&release_status=ga"
+            ZIPURL=$(curl -fsSL "$API_URL" | grep -oE '"download_url":"[^"]+"' | head -1 | cut -d'"' -f4)
+          fi
+          if [ -z "$ZIPURL" ]; then
+            echo "Could not resolve Zulu FX JDK win-aarch64 download URL"
+            exit 1
+          fi
+          echo "Downloading: $ZIPURL"
+          curl -fSL --retry 3 -o target-jdk.zip "$ZIPURL"
+          unzip -q target-jdk.zip
+          rm target-jdk.zip
+          TARGET_JDK_HOME=$(find "$PWD" -maxdepth 2 -name "jmods" -type d | head -1 | xargs dirname)
+          # Git Bash 路径转 Unix 风格
+          TARGET_JDK_HOME="${TARGET_JDK_HOME//\\//}"
+          echo "TARGET_JDK_HOME=$TARGET_JDK_HOME" >> "$GITHUB_ENV"
+          echo "TARGET_JDK_HOME resolved: $TARGET_JDK_HOME"
+          ls "$TARGET_JDK_HOME/jmods" | head -5
+
+      # ============== Common: icon, version, jpackage input ==============
       - name: Prepare Windows icon (.ico)
         shell: bash
         run: |
@@ -78,18 +136,10 @@ jobs:
           PYEOF
           ls -la SCL/build/icons/
 
-      - name: Build EXE with jpackage
+      - name: Sanitize version
+        id: ver
         shell: bash
         run: |
-          set -e
-          set -x
-
-          JAR=$(ls SCL/build/libs/SCL-*.jar | head -1)
-          JAR_NAME=$(basename "$JAR")
-          echo "Using JAR: $JAR_NAME"
-
-          # Windows MSI ProductVersion 要求每个字段在 [0, 255] 范围内
-          # SCL_VERSION 形如 DEV2026.1.0-SNAPSHOT-6，提取数字部分后 2026 超过 255，需取后两位
           VERSION_RAW="${{ env.SCL_VERSION }}"
           APP_VERSION=$(echo "$VERSION_RAW" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
           if [ -z "$APP_VERSION" ]; then
@@ -98,23 +148,71 @@ jobs:
           if [ -z "$APP_VERSION" ]; then
             APP_VERSION="1.0.0"
           fi
-          # 对每个字段做 0-255 截断（MSI ProductVersion 硬限制）
+          # MSI ProductVersion 要求每个字段在 [0, 255] 范围内
           IFS='.' read -r MAJOR MINOR PATCH <<< "$APP_VERSION"
           [ -z "$PATCH" ] && PATCH=0
           [ "$MAJOR" -gt 255 ] 2>/dev/null && MAJOR=$((MAJOR % 100))
           [ "$MINOR" -gt 255 ] 2>/dev/null && MINOR=$((MINOR % 100))
           [ "$PATCH" -gt 255 ] 2>/dev/null && PATCH=$((PATCH % 100))
           APP_VERSION="$MAJOR.$MINOR.$PATCH"
+          echo "app_version=$APP_VERSION" >> "$GITHUB_OUTPUT"
           echo "App version: $APP_VERSION"
 
+      - name: Prepare jpackage input + resolve JAR
+        shell: bash
+        run: |
+          set -e
+          JAR=$(ls SCL/build/libs/SCL-*.jar | head -1)
+          JAR_NAME=$(basename "$JAR")
+          echo "Using JAR: $JAR_NAME"
+          echo "JAR_NAME=$JAR_NAME" >> "$GITHUB_ENV"
           mkdir -p SCL/build/jpackage-input
           cp "$JAR" SCL/build/jpackage-input/
 
-          # jpackage --type exe 需要下载 WiX Toolset 3.x（jpackage 会自动下载到 JAVA_HOME/lib/wix）
+      # ============== Cross: jlink target runtime image ==============
+      - name: Build target runtime image (jlink) for ${{ matrix.arch }}
+        if: matrix.cross
+        shell: bash
+        run: |
+          set -e
+          set -x
+          JMODS_DIR="$TARGET_JDK_HOME/jmods"
+          RUNTIME_DIR="$PWD/SCL/build/runtime-${{ matrix.arch }}"
+          rm -rf "$RUNTIME_DIR"
+          MODULES=$(find "$JMODS_DIR" -maxdepth 1 -name '*.jmod' -printf '%f\n' \
+            | sed 's/\.jmod$//' | tr '\n' ',' | sed 's/,$//')
+          echo "jlink modules count: $(echo "$MODULES" | tr ',' '\n' | wc -l)"
+          # 在 Windows x64 上调用 x64 jlink，传入 aarch64 jmods 生成 aarch64 runtime
+          jlink \
+            --module-path "$JMODS_DIR" \
+            --add-modules "$MODULES" \
+            --output "$RUNTIME_DIR" \
+            --strip-debug \
+            --no-man-pages \
+            --no-header-files \
+            --compress=2 \
+            --strip-native-commands \
+            --include-locales=*,en,zh,zh_CN,zh_TW,ja,es,ru,uk,de,fr,it,ko,pt,ar,hi,tr,pl,nl,sv
+          ls "$RUNTIME_DIR/bin" 2>/dev/null | head || true
+          echo "RUNTIME_DIR=$RUNTIME_DIR" >> "$GITHUB_ENV"
+
+      # ============== Build EXE with jpackage ==============
+      - name: Build EXE with jpackage (${{ matrix.arch }})
+        shell: bash
+        run: |
+          set -e
+          set -x
+          RUNTIME_ARG=""
+          if [ -n "${{ env.RUNTIME_DIR }}" ]; then
+            RUNTIME_ARG="--runtime-image ${{ env.RUNTIME_DIR }}"
+          fi
+
+          # jpackage --type exe 需要 WiX Toolset 3.x（jpackage 会自动下载到 JAVA_HOME/lib/wix）
+          # shellcheck disable=SC2086
           jpackage \
             --type exe \
             --name "SCL" \
-            --app-version "$APP_VERSION" \
+            --app-version "${{ steps.ver.outputs.app_version }}" \
             --vendor "lively-Studio" \
             --copyright "Copyright (C) 2025 lively-Studio" \
             --description "Slime Craft Launcher" \
@@ -127,6 +225,7 @@ jobs:
             --win-menu-group "SCL" \
             --win-shortcut \
             --win-dir-chooser \
+            $RUNTIME_ARG \
             --java-options '--add-opens=java.base/java.lang=ALL-UNNAMED' \
             --java-options '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED' \
             --java-options '--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED' \
@@ -152,7 +251,7 @@ jobs:
 
           ls -la *.exe *.msi 2>/dev/null || true
 
-      - name: Rename installer with version
+      - name: Rename installer with version + arch
         shell: bash
         run: |
           set -e
@@ -164,16 +263,17 @@ jobs:
             echo "No EXE produced"
             exit 1
           fi
-          NEW_NAME="SCL-${{ env.SCL_VERSION }}-windows-x86_64.exe"
+          NEW_NAME="SCL-${{ env.SCL_VERSION }}-windows-${{ matrix.arch }}.exe"
           mv "$INST" "$NEW_NAME"
           echo "Renamed to: $NEW_NAME"
           ls -la "$NEW_NAME"
+          echo "EXE_NEW=$NEW_NAME" >> "$GITHUB_ENV"
 
       - name: Upload EXE artifact
         uses: actions/upload-artifact@v7
         with:
-          name: SCL-${{ env.SCL_VERSION }}-windows-x86_64
-          path: SCL-${{ env.SCL_VERSION }}-windows-x86_64.exe
+          name: SCL-${{ env.SCL_VERSION }}-windows-${{ matrix.arch }}
+          path: ${{ env.EXE_NEW }}
           archive: false
 
       - name: Upload EXE to Release
@@ -181,9 +281,8 @@ jobs:
         shell: bash
         run: |
           if gh release view "${{ env.SCL_VERSION }}" &>/dev/null; then
-            gh release upload "${{ env.SCL_VERSION }}" \
-              "SCL-${{ env.SCL_VERSION }}-windows-x86_64.exe" --clobber
-            echo "Uploaded EXE to release ${{ env.SCL_VERSION }}"
+            gh release upload "${{ env.SCL_VERSION }}" "${{ env.EXE_NEW }}" --clobber
+            echo "Uploaded EXE (${{ matrix.arch }}) to release ${{ env.SCL_VERSION }}"
           else
             echo "Release ${{ env.SCL_VERSION }} does not exist, skipping upload."
           fi
