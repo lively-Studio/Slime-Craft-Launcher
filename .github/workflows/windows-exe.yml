@@ -88,7 +88,8 @@ jobs:
           JAR_NAME=$(basename "$JAR")
           echo "Using JAR: $JAR_NAME"
 
-          # Windows ProductVersion 必须为 x.y 或 x.y.z 纯数字
+          # Windows MSI ProductVersion 要求每个字段在 [0, 255] 范围内
+          # SCL_VERSION 形如 DEV2026.1.0-SNAPSHOT-6，提取数字部分后 2026 超过 255，需取后两位
           VERSION_RAW="${{ env.SCL_VERSION }}"
           APP_VERSION=$(echo "$VERSION_RAW" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
           if [ -z "$APP_VERSION" ]; then
@@ -97,6 +98,13 @@ jobs:
           if [ -z "$APP_VERSION" ]; then
             APP_VERSION="1.0.0"
           fi
+          # 对每个字段做 0-255 截断（MSI ProductVersion 硬限制）
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$APP_VERSION"
+          [ -z "$PATCH" ] && PATCH=0
+          [ "$MAJOR" -gt 255 ] 2>/dev/null && MAJOR=$((MAJOR % 100))
+          [ "$MINOR" -gt 255 ] 2>/dev/null && MINOR=$((MINOR % 100))
+          [ "$PATCH" -gt 255 ] 2>/dev/null && PATCH=$((PATCH % 100))
+          APP_VERSION="$MAJOR.$MINOR.$PATCH"
           echo "App version: $APP_VERSION"
 
           mkdir -p SCL/build/jpackage-input
