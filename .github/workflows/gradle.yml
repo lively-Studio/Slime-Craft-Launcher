@@ -69,26 +69,23 @@ jobs:
         path: SCL/build/libs/SCL-*.jar
         archive: false
 
-    - name: Generate release notes
+    - name: Generate release notes from CHANGELOG.md
       if: steps.check_release.outputs.exists == 'false'
       run: |
-        # Find the previous release tag (DEV or V prefix)
-        PREV_TAG=$(git tag --list 'DEV*' 'V*' --sort=-version:refname | grep -v "${{ env.SCL_VERSION }}" | head -1)
-        if [ -n "$PREV_TAG" ]; then
-          COMMIT_COUNT=$(git rev-list --count ${PREV_TAG}..HEAD)
-          COMMITS=$(git log ${PREV_TAG}..HEAD --pretty=format:'· %s' --reverse)
-        else
-          COMMIT_COUNT=$(git rev-list --count HEAD)
-          COMMITS=$(git log --pretty=format:'· %s' --reverse)
-        fi
+        # Extract the section for the current version from CHANGELOG.md
+        # Format: "## DEV2026.1.0-SNAPSHOT-8" followed by bullet points until next "## "
+        awk -v ver="${{ env.SCL_VERSION }}" '
+          /^## / {
+            if (found) exit
+            if (index($0, ver)) { found=1; next }
+          }
+          found { print }
+        ' CHANGELOG.md > release_notes.md
 
-        # Build release notes
-        echo "> ⚠️ 警告！" > release_notes.md
-        echo "> 这个版本是 **GitHub Actions 自动构建** 的产物，可能不准确！" >> release_notes.md
-        echo "" >> release_notes.md
-        echo "修复和更改了 **${COMMIT_COUNT}** 个提交：" >> release_notes.md
-        echo "" >> release_notes.md
-        echo "${COMMITS}" >> release_notes.md
+        # If no matching section was found, fall back to a simple message
+        if [ ! -s release_notes.md ]; then
+          echo "No changelog entry found for ${{ env.SCL_VERSION }}." > release_notes.md
+        fi
       env:
         GH_TOKEN: ${{ github.token }}
 
