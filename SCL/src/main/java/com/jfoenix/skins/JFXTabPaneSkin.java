@@ -56,6 +56,8 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.util.Duration;
+import org.glavo.monetfx.ColorRole;
+import studio.lively.scl.theme.Themes;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -68,7 +70,6 @@ import java.util.List;
  */
 public class JFXTabPaneSkin extends TabPaneSkin {
 
-    private final Color defaultColor = Color.valueOf("#00BCD4");
     private final Color ripplerColor = Color.valueOf("#FFFF8D");
     private final Color selectedTabText = Color.WHITE;
     private Color tempLabelColor = Color.WHITE;
@@ -516,7 +517,9 @@ public class JFXTabPaneSkin extends TabPaneSkin {
             headersRegion.setClip(clip);
 
             headerBackground = new StackPane();
-            headerBackground.setBackground(new Background(new BackgroundFill(defaultColor, CornerRadii.EMPTY, Insets.EMPTY)));
+            final Color primary0 = Themes.getColorScheme().getColor(ColorRole.PRIMARY);
+            final Color onPrimary0 = Themes.getColorScheme().getColor(ColorRole.ON_PRIMARY);
+            headerBackground.setBackground(new Background(new BackgroundFill(primary0, CornerRadii.EMPTY, Insets.EMPTY)));
             headerBackground.getStyleClass().setAll("tab-header-background");
             selectedTabLine = new StackPane();
             scale = new Scale(1, 1, 0, 0);
@@ -528,8 +531,18 @@ public class JFXTabPaneSkin extends TabPaneSkin {
             selectedTabLine.getStyleClass().add("tab-selected-line");
             selectedTabLine.setPrefHeight(2);
             selectedTabLine.setPrefWidth(1);
-            selectedTabLine.setBackground(new Background(new BackgroundFill(ripplerColor, CornerRadii.EMPTY, Insets.EMPTY)));
+            // 选中 tab 指示线：与 primary 形成对比色（onPrimary），提升可读性
+            selectedTabLine.setBackground(new Background(new BackgroundFill(onPrimary0, CornerRadii.EMPTY, Insets.EMPTY)));
             headersRegion.getChildren().add(selectedTabLine);
+
+            // 主题色变化时同步刷新 Tab 头背景、选中指示线、以及每个 Tab 标签文字（暂存的 tempLabelColor 也要重算）
+            Themes.colorSchemeProperty().addListener(o -> {
+                Color primary = Themes.getColorScheme().getColor(ColorRole.PRIMARY);
+                Color onPrimary = Themes.getColorScheme().getColor(ColorRole.ON_PRIMARY);
+                headerBackground.setBackground(new Background(new BackgroundFill(primary, CornerRadii.EMPTY, Insets.EMPTY)));
+                selectedTabLine.setBackground(new Background(new BackgroundFill(onPrimary, CornerRadii.EMPTY, Insets.EMPTY)));
+                updateTabColorsForNewTheme(primary, onPrimary);
+            });
 
             rightControlButton = new HeaderControl(ArrowPosition.RIGHT);
             leftControlButton = new HeaderControl(ArrowPosition.LEFT);
@@ -611,6 +624,26 @@ public class JFXTabPaneSkin extends TabPaneSkin {
                 }
             }
             return null;
+        }
+
+        /// Called when the Monet color scheme changes so that every existing tab
+        /// header label is recoloured against the new primary background colour.
+        private void updateTabColorsForNewTheme(Color primary, Color onPrimary) {
+            for (Node child : headersRegion.getChildren()) {
+                if (child instanceof TabHeaderContainer) {
+                    TabHeaderContainer header = (TabHeaderContainer) child;
+                    // Picked state → white/surface on primary (monotone contrast).
+                    // Recompute the unselected tint from the old saved text fill tint so
+                    // we do not lose user-level custom label tints when they exist.
+                    if (header.tab.isSelected()) {
+                        header.tabText.setTextFill(selectedTabText);
+                    } else {
+                        // Fall back to onPrimary, desaturated slightly so the label
+                        // doesn't visually overpower the selected tab.
+                        header.tabText.setTextFill(onPrimary.deriveColor(0, 0, 0.85, 1));
+                    }
+                }
+            }
         }
 
         private boolean isTabsFitHeaderWidth() {

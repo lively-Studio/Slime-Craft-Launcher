@@ -31,7 +31,7 @@
 }
 
 .hint {
-    -fx-hyperlink-fill: #00838F;
+    -fx-hyperlink-fill: -nothing-accent-cyan;
 }
 
 .log-window {

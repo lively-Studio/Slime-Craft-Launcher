@@ -11,6 +11,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import org.glavo.monetfx.ColorRole;
+import studio.lively.scl.theme.Themes;
 import studio.lively.scl.ui.DialogUtils;
 
 /// Working dialog: shows animated bar, runs action, then auto-closes.
@@ -38,12 +40,15 @@ public class WorkingDialogPane extends VBox {
         barTrack.setClip(clipRect);
         barTrack.widthProperty().addListener((o, old, w) -> clipRect.setWidth(w.doubleValue()));
 
-        // Animated bar — uses CSS fill so `-nothing-accent` applies
+        // Animated bar — fill follows the Monet primary color and re-applies
+        // whenever the user changes the theme (color scheme rebuilds).
         Rectangle bar = new Rectangle(60, 4);
         bar.setArcWidth(4);
         bar.setArcHeight(4);
         bar.getStyleClass().add("working-bar");
-        bar.setFill(Color.web("#00BCD4"));
+        bar.setFill(Themes.getColorScheme().getColor(ColorRole.PRIMARY));
+        Themes.colorSchemeProperty().addListener(o ->
+                bar.setFill(Themes.getColorScheme().getColor(ColorRole.PRIMARY)));
 
         barTrack.getChildren().add(bar);
 

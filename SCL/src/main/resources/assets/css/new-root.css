@@ -71,13 +71,13 @@
     -fx-font-weight: bold;
 }
 
-/* ── Launch Button : cyan bg always, black text always ── */
+/* ── Launch Button : follow live accent color ── */
 .launch-section {
     -fx-padding: 20 16 12 16;
     -fx-alignment: center;
 }
 .launch-btn {
-    -fx-background-color: #00BCD4;
+    -fx-background-color: -nothing-accent-fill;
     -fx-background-radius: 4;
     -fx-font-size: 16;
     -fx-font-weight: bold;
@@ -87,12 +87,12 @@
     -fx-cursor: hand;
 }
 .launch-btn .label {
-    -fx-text-fill: #0A0A0A;
+    -fx-text-fill: -nothing-on-surface;
 }
 .launch-btn:hover {
-    -fx-background-color: #00ACC1;
+    -fx-background-color: -nothing-accent-selected-bg;
 }
 .launch-version {
     -fx-font-size: 10;
-    -fx-text-fill: #333;
+    -fx-text-fill: -nothing-on-surface-variant;
 }
