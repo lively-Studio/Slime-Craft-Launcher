@@ -21,21 +21,26 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
+import javafx.scene.paint.Color;
 import org.glavo.monetfx.Brightness;
+import org.glavo.monetfx.ColorRole;
+import org.glavo.monetfx.ColorScheme;
 import studio.lively.scl.theme.Themes;
+import org.jetbrains.annotations.NotNullByDefault;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Locale;
 
-/**
- * @author Glavo
- */
+/// Manages the launcher scene stylesheets, including the dynamic Monet accent override.
+@NotNullByDefault
 public final class StyleSheets {
     private static final int FONT_STYLE_SHEET_INDEX = 0;
     private static final int THEME_STYLE_SHEET_INDEX = 1;
-    private static final int BRIGHTNESS_SHEET_INDEX = 2;
+    private static final int ACCENT_OVERRIDE_SHEET_INDEX = 2;
+    private static final int BRIGHTNESS_SHEET_INDEX = 3;
+    private static final int ROOT_STYLE_SHEET_INDEX = 4;
 
     private static final ObservableList<String> stylesheets;
 
@@ -43,6 +48,7 @@ public final class StyleSheets {
         String[] array = new String[]{
                 getFontStyleSheet(),
                 getThemeStyleSheet(),
+                getAccentOverrideStyleSheet(),
                 getBrightnessStyleSheet(),
                 "/assets/css/root.css"
         };
@@ -50,6 +56,7 @@ public final class StyleSheets {
 
         FontManager.fontProperty().addListener(o -> stylesheets.set(FONT_STYLE_SHEET_INDEX, getFontStyleSheet()));
         Themes.colorSchemeProperty().addListener(o -> {
+            stylesheets.set(ACCENT_OVERRIDE_SHEET_INDEX, getAccentOverrideStyleSheet());
             stylesheets.set(BRIGHTNESS_SHEET_INDEX, getBrightnessStyleSheet());
         });
     }
@@ -115,9 +122,53 @@ public final class StyleSheets {
     }
 
     /// Always returns the static NOTHING-UI-1 token stylesheet.
-    /// No dynamic per-seed color generation.
     private static String getThemeStyleSheet() {
         return "/assets/css/nothing-ui.css";
+    }
+
+    /// Formats a JavaFX color as an opaque CSS hex color (`#RRGGBB`).
+    private static String toCssColor(Color c) {
+        return String.format("#%02X%02X%02X",
+                (int) Math.round(c.getRed() * 255.0),
+                (int) Math.round(c.getGreen() * 255.0),
+                (int) Math.round(c.getBlue() * 255.0));
+    }
+
+    /// Formats a JavaFX color as a CSS `rgba(r,g,b,a)` string with the given alpha.
+    private static String toCssColorAlpha(Color c, double alpha) {
+        return String.format("rgba(%d,%d,%d,%.2f)",
+                (int) Math.round(c.getRed() * 255.0),
+                (int) Math.round(c.getGreen() * 255.0),
+                (int) Math.round(c.getBlue() * 255.0),
+                alpha);
+    }
+
+    /// Builds a dynamic stylesheet that overrides the NOTHING-UI accent tokens with the
+    /// current MonetFX primary color, so user-selected custom theme colors take effect.
+    /// Uses the `.root` selector to override tokens declared with `*` in `nothing-ui.css`.
+    private static String getAccentOverrideStyleSheet() {
+        ColorScheme scheme = Themes.getColorScheme();
+        Color primary = scheme.getColor(ColorRole.PRIMARY);
+        Color onPrimary = scheme.getColor(ColorRole.ON_PRIMARY);
+        Color error = scheme.getColor(ColorRole.ERROR);
+        Color onError = scheme.getColor(ColorRole.ON_ERROR);
+        Color errorContainer = scheme.getColor(ColorRole.ERROR_CONTAINER);
+
+        StringBuilder builder = new StringBuilder();
+        builder.append(".root {");
+        // Redirect the built-in cyan accent slot to the live primary color so every
+        // component that references `-nothing-accent-cyan` follows the user's theme color.
+        builder.append("-nothing-accent-cyan:").append(toCssColor(primary)).append(';');
+        builder.append("-nothing-accent:").append(toCssColor(primary)).append(';');
+        builder.append("-nothing-accent-fill:").append(toCssColor(primary)).append(';');
+        builder.append("-nothing-accent-selected-bg:").append(toCssColorAlpha(primary, 0.15)).append(';');
+        builder.append("-nothing-accent-track-bg:").append(toCssColorAlpha(primary, 0.20)).append(';');
+        // Error tokens also follow the Monet error role for consistency.
+        builder.append("-nothing-error:").append(toCssColor(error)).append(';');
+        builder.append("-nothing-error-container:").append(toCssColorAlpha(errorContainer, 0.12)).append(';');
+        builder.append("-nothing-on-error:").append(toCssColor(onError)).append(';');
+        builder.append('}');
+        return toStyleSheetUri(builder.toString());
     }
 
     public static void init(Scene scene) {
