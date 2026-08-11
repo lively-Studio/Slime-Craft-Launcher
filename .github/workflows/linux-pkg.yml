@@ -16,7 +16,7 @@ on:
       - '**.md'
 
 env:
-  SCL_VERSION: DEV2026.1.0-SNAPSHOT-7
+  SCL_VERSION: DEV2026.1.0-SNAPSHOT-8
   ZULU_JDK_VERSION: '17'
   # Zulu FX JDK download URL template (buckle download endpoint + exact version)
   # Version suffix is resolved at download time via "latest in 17 LTS" for each platform/arch
