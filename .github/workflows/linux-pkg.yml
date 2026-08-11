@@ -184,7 +184,7 @@ jobs:
             --no-header-files \
             --compress=2 \
             --strip-native-commands \
-            --include-locales=*,en,zh,zh_CN,zh_TW,ja,es,ru,uk,de,fr,it,ko,pt,ar,hi,tr,pl,nl,sv
+            --include-locales=en,zh,ja,es,ru,uk,de,fr,it,ko,pt,ar,hi,tr,pl,nl,sv
           ls "$RUNTIME_DIR/lib" | head
           echo "RUNTIME_DIR=$RUNTIME_DIR" >> "$GITHUB_ENV"
 
