@@ -120,6 +120,10 @@ public final class UpdateChecker {
         String response = NetworkUtils.doGet(RELEASES_API);
         JsonArray releases = JsonUtils.fromNonNullJson(response, JsonArray.class);
 
+        // NIGHTLY channel: prefer DEV releases first, fall back to STABLE if none found.
+        boolean tryDevFirst = (channel == UpdateChannel.NIGHTLY);
+        RemoteVersion stableFallback = null;
+
         for (JsonElement element : releases) {
             if (!element.isJsonObject()) continue;
             JsonObject release = element.getAsJsonObject();
@@ -158,7 +162,25 @@ public final class UpdateChecker {
             if (jarUrl == null) continue;
 
             UpdateChannel remoteChannel = isDevRelease ? UpdateChannel.DEVELOPMENT : UpdateChannel.STABLE;
-            return new RemoteVersion(remoteChannel, tagName, jarUrl, RemoteVersion.Type.JAR, null, preview, false);
+            RemoteVersion candidate = new RemoteVersion(remoteChannel, tagName, jarUrl, RemoteVersion.Type.JAR, null, preview, false);
+
+            if (tryDevFirst) {
+                if (isDevRelease) {
+                    // Found a DEV release — return it immediately (prefers DEV for NIGHTLY)
+                    return candidate;
+                } else if (stableFallback == null) {
+                    // Save the first STABLE release as fallback
+                    stableFallback = candidate;
+                }
+            } else {
+                // DEVELOPMENT or STABLE channel: return the first matching release
+                return candidate;
+            }
+        }
+
+        // NIGHTLY: if no DEV release found, fall back to STABLE
+        if (tryDevFirst && stableFallback != null) {
+            return stableFallback;
         }
 
         return null;
