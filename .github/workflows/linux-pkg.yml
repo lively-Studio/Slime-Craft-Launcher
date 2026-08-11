@@ -29,7 +29,8 @@ jobs:
       - name: Install jpackage native deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y fakeroot dpkg-deb rpm
+          # dpkg-deb 由 dpkg 提供，Ubuntu 默认已安装；只需补 fakeroot 与 rpm
+          sudo apt-get install -y fakeroot rpm
 
       - name: Set up JDK 17 with JavaFX
         uses: actions/setup-java@v5
