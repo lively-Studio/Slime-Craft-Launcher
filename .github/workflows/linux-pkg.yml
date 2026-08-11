@@ -197,8 +197,8 @@ jobs:
           if [ -n "${{ env.RUNTIME_DIR }}" ]; then
             RUNTIME_ARG="--runtime-image ${{ env.RUNTIME_DIR }}"
           fi
-          # jpackage 对 Linux deb 的 Architecture 字段由 runtime image 自动推断；
-          # 交叉构建时额外传递 --linux-deb-section game 确保 section 合法
+          # jpackage 对 Linux deb 的 Architecture 字段由 runtime image 自动推断。
+          # 注：--linux-deb-section 是 JDK 18+ 选项，JDK 17 不支持，故不使用。
           # shellcheck disable=SC2086
           jpackage \
             --type deb \
@@ -214,7 +214,6 @@ jobs:
             --linux-menu-group "Game" \
             --linux-shortcut \
             --linux-deb-maintainer "lively-Studio <X_CODER_ocs_2026@126.com>" \
-            --linux-deb-section "games" \
             $RUNTIME_ARG \
             --java-options '--add-opens=java.base/java.lang=ALL-UNNAMED' \
             --java-options '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED' \
