@@ -43,7 +43,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardMoveOption;
 import java.util.*;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CountDownLatch;
@@ -205,7 +204,7 @@ public final class UpdateHandler {
             if (Files.exists(backup)) {
                 Files.deleteIfExists(backup);
             }
-            Files.move(target, backup, StandardMoveOption.REPLACE_EXISTING);
+            Files.move(target, backup, StandardCopyOption.REPLACE_EXISTING);
             renamed = true;
             LOG.info("Renamed old JAR to " + backup + " for atomic replacement");
         } catch (IOException e) {
@@ -220,7 +219,7 @@ public final class UpdateHandler {
             // If we renamed the old file, try to restore it on failure
             if (renamed) {
                 try {
-                    Files.move(backup, target, StandardMoveOption.REPLACE_EXISTING);
+                    Files.move(backup, target, StandardCopyOption.REPLACE_EXISTING);
                     LOG.info("Restored original JAR from backup");
                 } catch (IOException restoreError) {
                     LOG.warning("Failed to restore original JAR: " + restoreError.getMessage());
