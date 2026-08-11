@@ -17,12 +17,18 @@
  */
 package studio.lively.scl.upgrade;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
+import org.jetbrains.annotations.Nullable;
 import studio.lively.scl.Metadata;
+import studio.lively.scl.util.gson.JsonUtils;
+import studio.lively.scl.util.io.NetworkUtils;
 import studio.lively.scl.util.versioning.VersionNumber;
 
 import java.io.IOException;
@@ -98,8 +104,64 @@ public final class UpdateChecker {
         return checkingUpdate.getReadOnlyProperty();
     }
 
-    private static RemoteVersion checkUpdate(UpdateChannel channel, boolean preview) throws IOException {
-        throw new IOException("Update checking disabled");
+    /// GitHub releases API endpoint for the SCL repository.
+    private static final String RELEASES_API =
+            "https://api.github.com/repos/lively-Studio/Slime-Craft-Launcher/releases";
+
+    /// Queries the GitHub Releases API and returns the newest release matching the
+    /// given channel. For DEVELOPMENT/NIGHTLY channels the first release whose tag
+    /// starts with {@code DEV} is returned; for STABLE the first {@code V}-prefixed
+    /// release is returned.
+    ///
+    /// @param channel the update channel to filter by
+    /// @param preview whether preview releases are acceptable
+    /// @return the newest matching remote version, or {@code null} if none found
+    private static @Nullable RemoteVersion checkUpdate(UpdateChannel channel, boolean preview) throws IOException {
+        String response = NetworkUtils.doGet(RELEASES_API);
+        JsonArray releases = JsonUtils.fromNonNullJson(response, JsonArray.class);
+
+        for (JsonElement element : releases) {
+            if (!element.isJsonObject()) continue;
+            JsonObject release = element.getAsJsonObject();
+            JsonElement tagEl = release.get("tag_name");
+            if (tagEl == null || tagEl.isJsonNull()) continue;
+            String tagName = tagEl.getAsString();
+
+            boolean isDevRelease = tagName.startsWith("DEV");
+            boolean isStableRelease = tagName.startsWith("V");
+
+            // Channel filtering: DEV channel wants DEV tags, STABLE wants V tags.
+            // NIGHTLY channel accepts either (prefers DEV for preview builds).
+            if (channel == UpdateChannel.DEVELOPMENT && !isDevRelease) continue;
+            if (channel == UpdateChannel.STABLE && !isStableRelease) continue;
+
+            // Find the plain JAR asset (not platform-specific packages).
+            JsonElement assetsEl = release.get("assets");
+            if (assetsEl == null || !assetsEl.isJsonArray()) continue;
+            String jarUrl = null;
+            for (JsonElement assetEl : assetsEl.getAsJsonArray()) {
+                if (!assetEl.isJsonObject()) continue;
+                JsonObject asset = assetEl.getAsJsonObject();
+                JsonElement nameEl = asset.get("name");
+                if (nameEl == null) continue;
+                String name = nameEl.getAsString();
+                // The plain JAR ends with .jar and doesn't contain platform identifiers.
+                if (name.endsWith(".jar") && !name.contains("-macos-") && !name.contains("-windows-") && !name.contains("-linux-")) {
+                    JsonElement urlEl = asset.get("browser_download_url");
+                    if (urlEl != null && !urlEl.isJsonNull()) {
+                        jarUrl = urlEl.getAsString();
+                        break;
+                    }
+                }
+            }
+
+            if (jarUrl == null) continue;
+
+            UpdateChannel remoteChannel = isDevRelease ? UpdateChannel.DEVELOPMENT : UpdateChannel.STABLE;
+            return new RemoteVersion(remoteChannel, tagName, jarUrl, RemoteVersion.Type.JAR, null, preview, false);
+        }
+
+        return null;
     }
 
     /// Returns true if the version string indicates a development build.
