@@ -2,10 +2,10 @@ name: Build macOS DMG
 
 # 使用 jpackage 将 SCL 打包为 macOS .dmg 安装包
 # - 统一在 macos-14 runner（Apple Silicon）上构建
-# - arm64（Apple Silicon）：直接用宿主 JDK jpackage（产出本地架构 app）
-# - x86_64（Intel）：先下载 Zulu FX JDK 17 macOS x64，用宿主 jlink 指向其 jmods
-#   交叉生成 x86_64 runtime image，再通过 jpackage --runtime-image 产出 Intel 版 .app/.dmg
-# 说明：GitHub 已在 2025 年逐步退役 macos-13 (Intel) hosted runner，因此 Intel 构建走交叉打包
+# - arm64（Apple Silicon）：直接用宿主 JDK jpackage
+# - x86_64（Intel）：下载 x64 Zulu FX JDK，通过 Rosetta 2 (arch -x86_64) 运行 x64 jpackage，
+#   产出 launcher + runtime 全为 x64 的 .app/.dmg，Intel Mac 可直接运行
+# 说明：GitHub 已退役 macos-13 (Intel) hosted runner，Intel 构建走 Rosetta 2 转译
 
 on:
   workflow_dispatch:
@@ -60,8 +60,10 @@ jobs:
         env:
           MICROSOFT_AUTH_ID: ${{ secrets.MICROSOFT_AUTH_ID }}
 
-      # ============== Cross: download target-arch Zulu FX JDK tar.gz ==============
-      - name: Download Zulu FX JDK 17 for macOS ${{ matrix.arch }} (cross build)
+      # ============== Cross: download x64 Zulu FX JDK ==============
+      # 下载 x64 Zulu FX JDK，后续通过 Rosetta 2 (arch -x86_64) 运行其 jpackage，
+      # 这样 launcher 二进制和 runtime image 都是 x64 的，Intel Mac 可直接运行。
+      - name: Download Zulu FX JDK 17 for macOS x86_64 (cross build)
         if: matrix.cross
         run: |
           set -e
@@ -96,11 +98,19 @@ jobs:
           curl -fSL --retry 3 -o target-jdk.tar.gz "$TARBALL"
           tar xzf target-jdk.tar.gz
           rm target-jdk.tar.gz
-          # 解压后通常 zulu-17.jdk/Contents/Home/jmods 或根下直出 jdk-... 目录
-          TARGET_JDK_HOME=$(find "$PWD" -maxdepth 4 -name "jmods" -type d | head -1 | xargs dirname)
+          # macOS Zulu JDK 解压后 jmods 在 zulu-XX.jdk/Contents/Home/jmods
+          # 不用 maxdepth 限制，避免目录嵌套层级不同导致找不到
+          TARGET_JDK_HOME=$(find "$PWD" -name "jmods" -type d 2>/dev/null | head -1 | xargs dirname)
+          if [ -z "$TARGET_JDK_HOME" ]; then
+            echo "Could not find jmods directory after extracting Zulu JDK"
+            ls -R "$PWD" | head -40
+            exit 1
+          fi
           echo "TARGET_JDK_HOME=$TARGET_JDK_HOME" >> "$GITHUB_ENV"
           echo "TARGET_JDK_HOME resolved: $TARGET_JDK_HOME"
           ls "$TARGET_JDK_HOME/jmods" | head -5
+          # 验证 Rosetta 2 可用
+          arch -x86_64 /usr/bin/true && echo "Rosetta 2 available" || { echo "Rosetta 2 not available"; exit 1; }
 
       # ============== Common: icon, version, jpackage input ==============
       - name: Prepare macOS icon (.icns)
@@ -174,44 +184,25 @@ jobs:
           mkdir -p SCL/build/jpackage-input
           cp "$JAR" SCL/build/jpackage-input/
 
-      # ============== Cross: jlink target runtime image ==============
-      - name: Build target runtime image (jlink) for ${{ matrix.arch }}
-        if: matrix.cross
-        run: |
-          set -e
-          set -x
-          JMODS_DIR="$TARGET_JDK_HOME/jmods"
-          RUNTIME_DIR="$PWD/SCL/build/runtime-${{ matrix.arch }}"
-          rm -rf "$RUNTIME_DIR"
-          MODULES=$(find "$JMODS_DIR" -maxdepth 1 -name '*.jmod' -printf '%f\n' \
-            | sed 's/\.jmod$//' | tr '\n' ',' | sed 's/,$//')
-          echo "jlink modules count: $(echo "$MODULES" | tr ',' '\n' | wc -l)"
-          # 在 arm64 macOS 上调用 arm64 jlink，传入 x64 jmods 生成 x64 runtime image
-          jlink \
-            --module-path "$JMODS_DIR" \
-            --add-modules "$MODULES" \
-            --output "$RUNTIME_DIR" \
-            --strip-debug \
-            --no-man-pages \
-            --no-header-files \
-            --compress=2 \
-            --strip-native-commands \
-            --include-locales=*,en,zh,zh_CN,zh_TW,ja,es,ru,uk,de,fr,it,ko,pt,ar,hi,tr,pl,nl,sv
-          ls "$RUNTIME_DIR/Contents/Home/lib" 2>/dev/null | head || ls "$RUNTIME_DIR/lib" 2>/dev/null | head || true
-          echo "RUNTIME_DIR=$RUNTIME_DIR" >> "$GITHUB_ENV"
-
       # ============== Build DMG with jpackage ==============
+      # arm64: 直接用宿主 JDK 的 jpackage
+      # x86_64: 切换 JAVA_HOME 指向 x64 JDK，用 Rosetta 2 (arch -x86_64) 运行 jpackage，
+      #         这样 launcher 二进制 + runtime image 全部是 x64 的，Intel Mac 可直接运行
       - name: Build DMG with jpackage (${{ matrix.arch }})
         run: |
           set -e
           set -x
-          RUNTIME_ARG=""
-          if [ -n "${{ env.RUNTIME_DIR }}" ]; then
-            RUNTIME_ARG="--runtime-image ${{ env.RUNTIME_DIR }}"
+          JPKG=jpackage
+          if [ -n "${{ env.TARGET_JDK_HOME }}" ]; then
+            # x86_64 交叉构建：用 Rosetta 2 运行 x64 JDK 的 jpackage
+            export JAVA_HOME="${{ env.TARGET_JDK_HOME }}"
+            JPKG="arch -x86_64 $JAVA_HOME/bin/jpackage"
+            echo "Cross-building x86_64 via Rosetta 2, JAVA_HOME=$JAVA_HOME"
+            $JPKG --version
           fi
 
           # shellcheck disable=SC2086
-          jpackage \
+          $JPKG \
             --type dmg \
             --name "SCL" \
             --app-version "${{ steps.ver.outputs.app_version }}" \
@@ -225,7 +216,6 @@ jobs:
             --mac-package-name "SCL" \
             --mac-package-identifier "studio.lively.scl" \
             --mac-app-category "public.app-category.games" \
-            $RUNTIME_ARG \
             --java-options '--add-opens=java.base/java.lang=ALL-UNNAMED' \
             --java-options '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED' \
             --java-options '--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED' \
