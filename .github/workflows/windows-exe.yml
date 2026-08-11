@@ -1,0 +1,183 @@
+name: Build Windows Installer
+
+# 使用 jpackage 将 SCL 打包为 Windows .exe 安装包
+# jpackage --type exe 会基于 WiX 生成 MSI 并包裹为 EXE 安装程序
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+    paths-ignore:
+      - '**.md'
+
+env:
+  SCL_VERSION: DEV2026.1.0-SNAPSHOT-6
+  # Windows 升级标识（固定不变，不同版本共用同一 UUID 才能升级覆盖）
+  WIN_UPGRADE_UUID: a1b2c3d4-1234-5678-9abc-def012345678
+
+jobs:
+  build-windows-exe:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17 with JavaFX
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          java-package: 'jdk+fx'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-cleanup: never
+
+      - name: Show jpackage version
+        shell: bash
+        run: jpackage --version
+
+      - name: Build JAR with Gradle
+        shell: bash
+        run: ./gradlew :SCL:shadowJar --no-daemon --parallel
+        env:
+          MICROSOFT_AUTH_ID: ${{ secrets.MICROSOFT_AUTH_ID }}
+
+      - name: Prepare Windows icon (.ico)
+        shell: bash
+        run: |
+          set -e
+          mkdir -p SCL/build/icons
+          # 用 Pillow 把最高分辨率的 PNG 源图打包成多尺寸 ICO
+          python -m pip install --user Pillow
+          python << 'PYEOF'
+          from PIL import Image
+          import os
+          base = 'SCL/src/main/resources/assets/img'
+          src = None
+          for cand in ['icon@8x.png', 'icon@4x.png', 'icon@2x.png', 'icon.png']:
+              p = os.path.join(base, cand)
+              if os.path.exists(p):
+                  src = p
+                  break
+          if not src:
+              raise SystemExit('icon source not found')
+          print('Using icon source:', src)
+          img = Image.open(src).convert('RGBA')
+          img.save('SCL/build/icons/SCL.ico',
+                   sizes=[(16,16),(32,32),(48,48),(64,64),(128,128),(256,256)])
+          print('Generated SCL.ico')
+          PYEOF
+          ls -la SCL/build/icons/
+
+      - name: Build EXE with jpackage
+        shell: bash
+        run: |
+          set -e
+          set -x
+
+          JAR=$(ls SCL/build/libs/SCL-*.jar | head -1)
+          JAR_NAME=$(basename "$JAR")
+          echo "Using JAR: $JAR_NAME"
+
+          # Windows ProductVersion 必须为 x.y 或 x.y.z 纯数字
+          VERSION_RAW="${{ env.SCL_VERSION }}"
+          APP_VERSION=$(echo "$VERSION_RAW" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          if [ -z "$APP_VERSION" ]; then
+            APP_VERSION=$(echo "$VERSION_RAW" | grep -oE '[0-9]+\.[0-9]+' | head -1)
+          fi
+          if [ -z "$APP_VERSION" ]; then
+            APP_VERSION="1.0.0"
+          fi
+          echo "App version: $APP_VERSION"
+
+          mkdir -p SCL/build/jpackage-input
+          cp "$JAR" SCL/build/jpackage-input/
+
+          # jpackage --type exe 需要下载 WiX Toolset 3.x（jpackage 会自动下载到 JAVA_HOME/lib/wix）
+          jpackage \
+            --type exe \
+            --name "SCL" \
+            --app-version "$APP_VERSION" \
+            --vendor "lively-Studio" \
+            --copyright "Copyright (C) 2025 lively-Studio" \
+            --description "Slime Craft Launcher" \
+            --input SCL/build/jpackage-input \
+            --main-jar "$JAR_NAME" \
+            --main-class studio.lively.scl.Main \
+            --icon SCL/build/icons/SCL.ico \
+            --win-upgrade-uuid "${{ env.WIN_UPGRADE_UUID }}" \
+            --win-menu \
+            --win-menu-group "SCL" \
+            --win-shortcut \
+            --win-dir-chooser \
+            --java-options '--add-opens=java.base/java.lang=ALL-UNNAMED' \
+            --java-options '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED' \
+            --java-options '--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED' \
+            --java-options '--add-opens=javafx.base/com.sun.javafx.binding=ALL-UNNAMED' \
+            --java-options '--add-opens=javafx.base/com.sun.javafx.event=ALL-UNNAMED' \
+            --java-options '--add-opens=javafx.base/com.sun.javafx.runtime=ALL-UNNAMED' \
+            --java-options '--add-opens=javafx.base/javafx.beans.property=ALL-UNNAMED' \
+            --java-options '--add-opens=javafx.graphics/javafx.css=ALL-UNNAMED' \
+            --java-options '--add-opens=javafx.graphics/javafx.stage=ALL-UNNAMED' \
+            --java-options '--add-opens=javafx.graphics/javafx.scene=ALL-UNNAMED' \
+            --java-options '--add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED' \
+            --java-options '--add-opens=javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED' \
+            --java-options '--add-opens=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED' \
+            --java-options '--add-opens=javafx.graphics/com.sun.prism=ALL-UNNAMED' \
+            --java-options '--add-opens=javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED' \
+            --java-options '--add-opens=javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED' \
+            --java-options '--add-opens=javafx.graphics/com.sun.javafx.tk.quantum=ALL-UNNAMED' \
+            --java-options '--add-opens=javafx.controls/javafx.scene.control.skin=ALL-UNNAMED' \
+            --java-options '--add-opens=jdk.attach/sun.tools.attach=ALL-UNNAMED' \
+            --java-options '--enable-native-access=ALL-UNNAMED' \
+            --java-options '-Dhmcl.offline.auth.restricted=false' \
+            --verbose
+
+          ls -la *.exe *.msi 2>/dev/null || true
+
+      - name: Rename installer with version
+        shell: bash
+        run: |
+          set -e
+          INST=$(ls SCL-*.exe 2>/dev/null | head -1)
+          if [ -z "$INST" ]; then
+            INST=$(ls *.exe 2>/dev/null | head -1)
+          fi
+          if [ -z "$INST" ]; then
+            echo "No EXE produced"
+            exit 1
+          fi
+          NEW_NAME="SCL-${{ env.SCL_VERSION }}-windows-x86_64.exe"
+          mv "$INST" "$NEW_NAME"
+          echo "Renamed to: $NEW_NAME"
+          ls -la "$NEW_NAME"
+
+      - name: Upload EXE artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: SCL-${{ env.SCL_VERSION }}-windows-x86_64
+          path: SCL-${{ env.SCL_VERSION }}-windows-x86_64.exe
+          archive: false
+
+      - name: Upload EXE to Release
+        continue-on-error: true
+        shell: bash
+        run: |
+          if gh release view "${{ env.SCL_VERSION }}" &>/dev/null; then
+            gh release upload "${{ env.SCL_VERSION }}" \
+              "SCL-${{ env.SCL_VERSION }}-windows-x86_64.exe" --clobber
+            echo "Uploaded EXE to release ${{ env.SCL_VERSION }}"
+          else
+            echo "Release ${{ env.SCL_VERSION }} does not exist, skipping upload."
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
