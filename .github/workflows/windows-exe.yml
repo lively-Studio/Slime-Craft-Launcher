@@ -17,7 +17,7 @@ on:
       - '**.md'
 
 env:
-  SCL_VERSION: DEV2026.1.0-SNAPSHOT-8
+  SCL_VERSION: DEV2026.1.0-SNAPSHOT-9
   # Windows 升级标识（固定不变，不同版本共用同一 UUID 才能升级覆盖）
   WIN_UPGRADE_UUID: a1b2c3d4-1234-5678-9abc-def012345678
   ZULU_JDK_VERSION: '17'

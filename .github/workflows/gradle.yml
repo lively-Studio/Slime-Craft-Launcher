@@ -14,7 +14,7 @@ on:
 # SNAPSHOT = Advanced development build (高级开发版)
 # 6       = Advanced build package version (高级开发版包版本号)
 env:
-  SCL_VERSION: DEV2026.1.0-SNAPSHOT-8
+  SCL_VERSION: DEV2026.1.0-SNAPSHOT-9
 
 jobs:
   build:
@@ -87,7 +87,7 @@ jobs:
       if: steps.check_release.outputs.exists == 'false'
       run: |
         # Extract the section for the current version from CHANGELOG.md
-        # Format: "## DEV2026.1.0-SNAPSHOT-8" followed by bullet points until next "## "
+        # Format: "## DEV2026.1.0-SNAPSHOT-9" followed by bullet points until next "## "
         awk -v ver="${{ env.SCL_VERSION }}" '
           /^## / {
             if (found) exit

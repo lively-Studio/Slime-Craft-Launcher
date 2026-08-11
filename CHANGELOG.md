@@ -1,5 +1,11 @@
 # 版本日志 / Changelog
 
+## DEV2026.1.0-SNAPSHOT-9
+
+- ci: 所有构建 workflow（gradle/macos/windows/linux）添加 JAR 签名密钥准备步骤，配合 `attachSignature` 对 shadow JAR 签名
+- fix(upgrade): UpdateHandler 改用 `IntegrityChecker.isOfficial()` 判定，允许 nightly 构建在未签名情况下自更新；仅在当前 JAR 已签名时验证下载 JAR 签名
+- chore: 版本号升级至 SNAPSHOT-9
+
 ## DEV2026.1.0-SNAPSHOT-8
 
 - fix: 实现更新检查器，查询 GitHub Releases API 检测新版本
