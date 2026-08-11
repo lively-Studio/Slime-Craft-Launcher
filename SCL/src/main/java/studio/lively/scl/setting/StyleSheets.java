@@ -145,7 +145,13 @@ public final class StyleSheets {
 
     /// Builds a dynamic stylesheet that overrides the NOTHING-UI accent tokens with the
     /// current MonetFX primary color, so user-selected custom theme colors take effect.
-    /// Uses the `.root` selector to override tokens declared with `*` in `nothing-ui.css`.
+    ///
+    /// Selector note: `nothing-ui.css` declares all accent tokens via the universal
+    /// `* { ... }` selector, which attaches the variables directly on every scene node
+    /// and therefore wins over inherited values from a parent `.root` declaration. To
+    /// actually override those, we use the same `*` selector here — our override
+    /// stylesheet is inserted after `nothing-ui.css` in the application stylesheet
+    /// list, so equal-specificity rules resolve in our favour.
     private static String getAccentOverrideStyleSheet() {
         ColorScheme scheme = Themes.getColorScheme();
         Color primary = scheme.getColor(ColorRole.PRIMARY);
@@ -155,7 +161,7 @@ public final class StyleSheets {
         Color errorContainer = scheme.getColor(ColorRole.ERROR_CONTAINER);
 
         StringBuilder builder = new StringBuilder();
-        builder.append(".root {");
+        builder.append("* {");
         // Redirect the built-in cyan accent slot to the live primary color so every
         // component that references `-nothing-accent-cyan` follows the user's theme color.
         builder.append("-nothing-accent-cyan:").append(toCssColor(primary)).append(';');
