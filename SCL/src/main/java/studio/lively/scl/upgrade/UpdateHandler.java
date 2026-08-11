@@ -42,6 +42,8 @@ import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardMoveOption;
 import java.util.*;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CountDownLatch;
@@ -173,12 +175,71 @@ public final class UpdateHandler {
         LOG.info("Applying update to " + target);
 
         Path self = getCurrentLocation();
-        // Allow unsigned nightly/dev builds from CI to apply updates.
-        // Only require signature verification for official signed builds.
         if (!IntegrityChecker.isOfficial() && !IntegrityChecker.DISABLE_SELF_INTEGRITY_CHECK) {
             throw new IOException("Current JAR is not verified");
         }
-        Files.copy(self, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+
+        // Check write permission on the target directory before attempting the update.
+        // For installed apps (DMG/EXE/DEB/RPM), the JAR lives in a system directory
+        // (e.g. /Applications, C:\Program Files, /opt) that may not be writable
+        // without elevated privileges.
+        Path parentDir = target.getParent();
+        if (parentDir != null && !Files.isWritable(parentDir)) {
+            throw new IOException(
+                "Cannot write to installation directory: " + parentDir + "\n" +
+                "Please run SCL with elevated privileges (admin/root) to apply the update," +
+                " or download the JAR manually from GitHub Releases."
+            );
+        }
+
+        // On Windows, the old JAR may still be locked by the old process that has not
+        // fully released its file handle yet. Rename-then-copy avoids this issue:
+        //   1. Rename old JAR to a backup name (safe even if still open on Windows)
+        //   2. Copy new JAR to the original path
+        //   3. Try to delete the old backup (will succeed when the old process exits)
+        // On macOS/Linux, direct copy works fine, but rename-then-copy is also safe.
+        Path backup = target.resolveSibling(target.getFileName() + ".old");
+        boolean renamed = false;
+        try {
+            // Remove stale backup from a previous failed update
+            if (Files.exists(backup)) {
+                Files.deleteIfExists(backup);
+            }
+            Files.move(target, backup, StandardMoveOption.REPLACE_EXISTING);
+            renamed = true;
+            LOG.info("Renamed old JAR to " + backup + " for atomic replacement");
+        } catch (IOException e) {
+            // Fall back to direct copy if rename fails
+            LOG.warning("Failed to rename old JAR, falling back to direct copy: " + e.getMessage());
+        }
+
+        try {
+            Files.copy(self, target, StandardCopyOption.REPLACE_EXISTING);
+            LOG.info("Successfully copied new JAR to " + target);
+        } catch (IOException e) {
+            // If we renamed the old file, try to restore it on failure
+            if (renamed) {
+                try {
+                    Files.move(backup, target, StandardMoveOption.REPLACE_EXISTING);
+                    LOG.info("Restored original JAR from backup");
+                } catch (IOException restoreError) {
+                    LOG.warning("Failed to restore original JAR: " + restoreError.getMessage());
+                }
+            }
+            throw e;
+        }
+
+        // Try to clean up the old backup; ignore if it fails (old process still holds handle)
+        if (renamed) {
+            try {
+                Files.deleteIfExists(backup);
+                LOG.info("Deleted old JAR backup: " + backup);
+            } catch (IOException e) {
+                LOG.info("Old JAR backup will be cleaned up later: " + backup + " (" + e.getMessage() + ")");
+                // Register a shutdown hook or leave it for the next update cycle
+                // The backup file will be cleaned up on the next update attempt
+            }
+        }
 
         Optional<Path> newFilename = tryRename(target, Metadata.VERSION);
         if (newFilename.isPresent()) {
