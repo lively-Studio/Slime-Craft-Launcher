@@ -23,6 +23,7 @@ import studio.lively.scl.util.platform.Architecture;
 import studio.lively.scl.util.platform.OperatingSystem;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.EnumSet;
 
@@ -109,7 +110,9 @@ public final class Metadata {
         String sclCurrentDir = System.getProperty("scl.dir", System.getenv("SCL_LOCAL_HOME"));
         SCL_LOCAL_HOME = StringUtils.isNotBlank(sclCurrentDir)
                 ? Path.of(sclCurrentDir).toAbsolutePath().normalize()
-                : CURRENT_DIRECTORY.resolve(".scl");
+                : (Files.isWritable(CURRENT_DIRECTORY)
+                        ? CURRENT_DIRECTORY.resolve(".scl")
+                        : Path.of(System.getProperty("user.home"), ".scl")).toAbsolutePath().normalize();
 
         String sclDependencies = System.getProperty("scl.dependencies.dir", System.getenv("SCL_DEPENDENCIES_DIR"));
         DEPENDENCIES_DIRECTORY = StringUtils.isNotBlank(sclDependencies)
