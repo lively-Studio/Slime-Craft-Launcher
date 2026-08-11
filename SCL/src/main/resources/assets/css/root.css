@@ -55,7 +55,7 @@
 }
 
 .hint.info {
-    -fx-background-color: rgba(0,188,212,0.08);
+    -fx-background-color: -nothing-accent-a08;
     -fx-border-color: -nothing-outline;
 }
 
@@ -124,7 +124,7 @@
 }
 
 .memory-status-bar .memory-allocate {
-    -fx-fill: rgba(0,188,212,0.50);
+    -fx-fill: -nothing-accent-a50;
 }
 
 /* ===== Update label ===== */
@@ -166,7 +166,7 @@
 }
 
 .advanced-list-item .rippler-container {
-    -jfx-rippler-fill: rgba(0,188,212,0.08);
+    -jfx-rippler-fill: -nothing-accent-a08;
 }
 
 /* ===== Advanced List Item (32px, 2px left accent indicator) ===== */
@@ -448,7 +448,7 @@
     -fx-translate-y: 1px;
     -fx-max-height: 55px;
     -fx-min-height: 55px;
-    -fx-background-color: rgba(0,188,212,0.12);
+    -fx-background-color: -nothing-accent-a12;
     -fx-opacity: 1;
     -fx-cursor: hand;
 }
@@ -498,7 +498,7 @@
 }
 
 .tab-rippler {
-    -jfx-rippler-fill: rgba(0,188,212,0.08);
+    -jfx-rippler-fill: -nothing-accent-a08;
 }
 
 .jfx-tab-pane .jfx-rippler {
@@ -603,7 +603,7 @@
 }
 
 .code-box {
-    -fx-background-color: rgba(0,188,212,0.06);
+    -fx-background-color: -nothing-accent-a06;
     -fx-background-radius: 4;
     -fx-padding: 0 10 0 10;
     -fx-alignment: center;
@@ -882,7 +882,7 @@
 }
 
 .jfx-button-raised-round {
-    -fx-background-color: rgba(0,188,212,0.12);
+    -fx-background-color: -nothing-accent-a12;
     -fx-background-radius: 50px;
 }
 
@@ -981,7 +981,7 @@
 }
 
 .jfx-list-cell .jfx-rippler {
-    -jfx-rippler-fill: rgba(0,188,212,0.08);
+    -jfx-rippler-fill: -nothing-accent-a08;
 }
 
 .jfx-list-view {
@@ -1094,7 +1094,7 @@
 }
 
 .md-list-cell:selected {
-    -fx-background-color: rgba(0,188,212,0.08);
+    -fx-background-color: -nothing-accent-a08;
 }
 
 .mod-info-list-cell:warning {
@@ -1194,7 +1194,7 @@
     -fx-background-insets: 0px;
 
     -jfx-toggle-color: -nothing-accent;
-    -jfx-toggle-line-color: rgba(0,188,212,0.20);
+    -jfx-toggle-line-color: -nothing-accent-a20;
     -jfx-untoggle-color: -nothing-scrollbar-thumb;
     -jfx-untoggle-line-color: -nothing-surface-overlay;
     -jfx-size: 10;
@@ -1230,7 +1230,7 @@
 
 /* Toggle icon variants */
 .toggle-icon1 .icon {
-    -fx-fill: #4285F4;
+    -fx-fill: -nothing-accent;
     -fx-padding: 20.0;
 }
 
@@ -1239,12 +1239,12 @@
     -fx-background-radius: 80px;
     -fx-pref-height: 80px;
     -fx-background-color: transparent;
-    -jfx-toggle-color: rgba(66.0, 133.0, 244.0, 0.29885056614875793);
+    -jfx-toggle-color: -nothing-accent-a20;
     -jfx-untoggle-color: transparent;
 }
 
 .toggle-icon1 .jfx-rippler {
-    -jfx-rippler-fill: rgba(66.0, 133.0, 244.0, 0.29885056614875793);
+    -jfx-rippler-fill: -nothing-accent-a20;
     -jfx-mask-type: CIRCLE;
 }
 
@@ -1486,7 +1486,7 @@
  ******************************************************************************/
 
 .jfx-spinner .arc {
-    -fx-stroke: rgba(0,188,212,0.20);
+    -fx-stroke: -nothing-accent-a20;
 }
 
 .small-spinner {
@@ -1546,12 +1546,12 @@
 
 .combo-box-popup .list-view .list-cell:odd:selected > .jfx-rippler > StackPane,
 .combo-box-popup .list-view .list-cell:even:selected > .jfx-rippler > StackPane {
-    -fx-background-color: rgba(0,188,212,0.10);
+    -fx-background-color: -nothing-accent-a10;
     -fx-text-fill: -nothing-accent;
 }
 
 .combo-box-popup .list-view .list-cell:hover > .jfx-rippler > StackPane {
-    -fx-background-color: rgba(0,188,212,0.06);
+    -fx-background-color: -nothing-accent-a06;
 }
 
 .jfx-combo-box-warning {
@@ -1670,7 +1670,7 @@
 }
 
 .table-view > .virtual-flow > .clipped-container > .sheet > .table-row-cell:filled:selected {
-    -fx-background-color: rgba(0,188,212,0.10);
+    -fx-background-color: -nothing-accent-a10;
 }
 
 .table-view > .virtual-flow > .scroll-bar {
@@ -1703,7 +1703,7 @@
 }
 
 .tree-cell:focused {
-    -fx-background-color: rgba(0,188,212,0.10);
+    -fx-background-color: -nothing-accent-a10;
 }
 
 .tree-cell .arrow {
@@ -1729,7 +1729,7 @@
  ******************************************************************************/
 
 .jfx-decorator {
-    -fx-decorator-color: rgba(0,188,212,0.10);
+    -fx-decorator-color: -nothing-accent-a10;
 }
 
 .jfx-decorator-drawer {
@@ -1978,7 +1978,7 @@
 }
 
 .line-select-button .menu-container:selected .subtitle-label {
-    -fx-text-fill: rgba(0,188,212,0.60);
+    -fx-text-fill: -nothing-accent-a60;
 }
 
 .line-toggle-button .jfx-toggle-button {

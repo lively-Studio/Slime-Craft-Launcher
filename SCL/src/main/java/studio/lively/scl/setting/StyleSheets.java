@@ -162,13 +162,21 @@ public final class StyleSheets {
 
         StringBuilder builder = new StringBuilder();
         builder.append("* {");
-        // Redirect the built-in cyan accent slot to the live primary color so every
-        // component that references `-nothing-accent-cyan` follows the user's theme color.
+        // Core accent tokens — redirect to the live Monet primary color.
         builder.append("-nothing-accent-cyan:").append(toCssColor(primary)).append(';');
         builder.append("-nothing-accent:").append(toCssColor(primary)).append(';');
         builder.append("-nothing-accent-fill:").append(toCssColor(primary)).append(';');
         builder.append("-nothing-accent-selected-bg:").append(toCssColorAlpha(primary, 0.15)).append(';');
         builder.append("-nothing-accent-track-bg:").append(toCssColorAlpha(primary, 0.20)).append(';');
+        // Pre-computed alpha variants of the primary color, used throughout root.css
+        // to replace the previously hardcoded rgba(0,188,212,X) values.
+        builder.append("-nothing-accent-a06:").append(toCssColorAlpha(primary, 0.06)).append(';');
+        builder.append("-nothing-accent-a08:").append(toCssColorAlpha(primary, 0.08)).append(';');
+        builder.append("-nothing-accent-a10:").append(toCssColorAlpha(primary, 0.10)).append(';');
+        builder.append("-nothing-accent-a12:").append(toCssColorAlpha(primary, 0.12)).append(';');
+        builder.append("-nothing-accent-a20:").append(toCssColorAlpha(primary, 0.20)).append(';');
+        builder.append("-nothing-accent-a50:").append(toCssColorAlpha(primary, 0.50)).append(';');
+        builder.append("-nothing-accent-a60:").append(toCssColorAlpha(primary, 0.60)).append(';');
         // Error tokens also follow the Monet error role for consistency.
         builder.append("-nothing-error:").append(toCssColor(error)).append(';');
         builder.append("-nothing-error-container:").append(toCssColorAlpha(errorContainer, 0.12)).append(';');
