@@ -58,6 +58,21 @@ jobs:
         shell: bash
         run: jpackage --version
 
+      - name: Prepare signing key
+        shell: bash
+        env:
+          SCL_SIGNATURE_KEY: ${{ secrets.SCL_SIGNATURE_KEY }}
+        run: |
+          if [ -n "$SCL_SIGNATURE_KEY" ]; then
+            # Try base64-encoded DER first, fall back to PEM conversion
+            echo "$SCL_SIGNATURE_KEY" | base64 -d > /tmp/scl_signature_key.pkcs8 2>/dev/null \
+              || echo "$SCL_SIGNATURE_KEY" | openssl pkcs8 -topk8 -inform PEM -outform DER -nocrypt -out /tmp/scl_signature_key.pkcs8
+            echo "SCL_SIGNATURE_KEY=/tmp/scl_signature_key.pkcs8" >> $GITHUB_ENV
+            echo "Signing key prepared."
+          else
+            echo "Warning: SCL_SIGNATURE_KEY secret not set, JAR will not be signed."
+          fi
+
       - name: Build JAR with Gradle
         shell: bash
         run: ./gradlew :SCL:shadowJar --no-daemon --parallel
