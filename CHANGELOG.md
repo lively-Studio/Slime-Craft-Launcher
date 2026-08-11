@@ -1,5 +1,10 @@
 # 版本日志 / Changelog
 
+## DEV2026.1.0-SNAPSHOT-10
+
+- fix(upgrade): applyUpdate 改用 `isOfficial()` 判定，允许 nightly 构建完成更新应用，修复下载后仍回到更新页面的问题
+- chore: 版本号升级至 SNAPSHOT-10
+
 ## DEV2026.1.0-SNAPSHOT-9
 
 - ci: 所有构建 workflow（gradle/macos/windows/linux）添加 JAR 签名密钥准备步骤，配合 `attachSignature` 对 shadow JAR 签名
