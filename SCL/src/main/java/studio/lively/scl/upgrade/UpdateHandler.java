@@ -124,7 +124,7 @@ public final class UpdateHandler {
 
                 if (success) {
                     try {
-                        if (!IntegrityChecker.isSelfVerified() && !IntegrityChecker.DISABLE_SELF_INTEGRITY_CHECK) {
+                        if (!IntegrityChecker.isOfficial() && !IntegrityChecker.DISABLE_SELF_INTEGRITY_CHECK) {
                             throw new IOException("Current JAR is not verified");
                         }
 
@@ -193,7 +193,10 @@ public final class UpdateHandler {
     }
 
     private static void requestUpdate(Path updateTo, Path self) throws IOException {
-        if (!IntegrityChecker.DISABLE_SELF_INTEGRITY_CHECK) {
+        // Only verify the downloaded JAR's signature when the current build is
+        // itself signed. Nightly/dev builds from GitHub Actions are not signed,
+        // so verifying the download would always fail for them.
+        if (IntegrityChecker.isSelfVerified() && !IntegrityChecker.DISABLE_SELF_INTEGRITY_CHECK) {
             IntegrityChecker.verifyJar(updateTo);
         }
         startJava(updateTo, "--apply-to", self.toString());
