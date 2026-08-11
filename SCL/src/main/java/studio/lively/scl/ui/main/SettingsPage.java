@@ -265,6 +265,20 @@ public final class SettingsPage extends ScrollPane {
 
                 rootPane.getChildren().addAll(ComponentList.createComponentListTitle(i18n("settings.launcher.misc")), miscPaneList);
             }
+
+            {
+                ComponentList gameToastPaneList = new ComponentList();
+
+                {
+                    LineToggleButton achievementToast = new LineToggleButton();
+                    achievementToast.setTitle(i18n("settings.launcher.achievement_toast"));
+                    achievementToast.setSubtitle(i18n("settings.launcher.achievement_toast.subtitle"));
+                    achievementToast.selectedProperty().bindBidirectional(settings().achievementToastEnabledProperty());
+                    gameToastPaneList.getContent().add(achievementToast);
+                }
+
+                rootPane.getChildren().addAll(ComponentList.createComponentListTitle(i18n("settings.launcher.game_toast")), gameToastPaneList);
+            }
         }
     }
 

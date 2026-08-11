@@ -29,6 +29,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 public final class I18n {
 
@@ -126,5 +128,19 @@ public final class I18n {
 
     public static boolean hasKey(String key) {
         return getResourceBundle().containsKey(key);
+    }
+
+    /// Cache of compiled regex patterns loaded from I18N locale files.
+    private static final Map<String, Pattern> patternCache = new ConcurrentHashMap<>();
+
+    /// Gets a compiled regex [Pattern] from the I18N locale file.
+    ///
+    /// The pattern string is read from the key in the current locale's resource bundle
+    /// and compiled once, then cached for subsequent calls.
+    public static Pattern getPattern(String key) {
+        return patternCache.computeIfAbsent(key, k -> {
+            String regex = i18n(k);
+            return Pattern.compile(regex);
+        });
     }
 }

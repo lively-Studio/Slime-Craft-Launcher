@@ -227,6 +227,15 @@ public final class LauncherSettings extends ObservableSetting implements JsonSch
         return disableAprilFools;
     }
 
+    /// Whether achievement/death/gamemode toast popups are enabled.
+    @SerializedName("achievementToastEnabled")
+    private final BooleanProperty achievementToastEnabled = new SimpleBooleanProperty(true);
+
+    /// Returns the achievement toast enabled property.
+    public BooleanProperty achievementToastEnabledProperty() {
+        return achievementToastEnabled;
+    }
+
     /// The common Minecraft directory selection mode.
     @SerializedName("commonDirectoryType")
     private final ObjectProperty<EnumCommonDirectory> commonDirectoryType = new RawPreservingObjectProperty<>(EnumCommonDirectory.DEFAULT);

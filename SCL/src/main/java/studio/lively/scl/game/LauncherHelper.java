@@ -248,7 +248,8 @@ public final class LauncherHelper {
                             launchOptions,
                             launcherVisibility == LauncherVisibility.CLOSE
                                     ? null // Unnecessary to start listening to game process output when close launcher immediately after game launched.
-                                    : new SCLProcessListener(repository, version.get(), authInfo, launchOptions, launchingLatch, gameVersion.isPresent())
+                                    : new AchievementListener(
+                                            new SCLProcessListener(repository, version.get(), authInfo, launchOptions, launchingLatch, gameVersion.isPresent()))
                     );
                 }).thenComposeAsync(launcher -> { // launcher is prev task's result
                     if (scriptFile == null) {
