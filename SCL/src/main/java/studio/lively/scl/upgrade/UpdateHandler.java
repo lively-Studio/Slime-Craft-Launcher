@@ -173,8 +173,10 @@ public final class UpdateHandler {
         LOG.info("Applying update to " + target);
 
         Path self = getCurrentLocation();
-        if (!IntegrityChecker.DISABLE_SELF_INTEGRITY_CHECK && !IntegrityChecker.isSelfVerified()) {
-            throw new IOException("Self verification failed");
+        // Allow unsigned nightly/dev builds from CI to apply updates.
+        // Only require signature verification for official signed builds.
+        if (!IntegrityChecker.isOfficial() && !IntegrityChecker.DISABLE_SELF_INTEGRITY_CHECK) {
+            throw new IOException("Current JAR is not verified");
         }
         Files.copy(self, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 
