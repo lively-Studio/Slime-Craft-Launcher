@@ -31,8 +31,8 @@ jobs:
         include:
           - arch: x86_64
             cross: false
-          - arch: aarch64
-            cross: true
+          # Windows aarch64 暂不支持：Zulu / Gluon 均不提供 JavaFX Windows ARM64 原生库。
+          # Windows on ARM 用户可通过 x64 模拟运行 x86_64 版本（Windows 11 ARM 原生支持）。
     permissions:
       contents: write
 
