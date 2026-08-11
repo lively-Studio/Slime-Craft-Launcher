@@ -14,7 +14,7 @@ on:
 # SNAPSHOT = Advanced development build (高级开发版)
 # 6       = Advanced build package version (高级开发版包版本号)
 env:
-  SCL_VERSION: DEV2026.1.0-SNAPSHOT-6
+  SCL_VERSION: DEV2026.1.0-SNAPSHOT-7
 
 jobs:
   build:

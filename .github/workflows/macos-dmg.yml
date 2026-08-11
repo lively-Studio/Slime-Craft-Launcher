@@ -17,7 +17,7 @@ on:
       - '**.md'
 
 env:
-  SCL_VERSION: DEV2026.1.0-SNAPSHOT-6
+  SCL_VERSION: DEV2026.1.0-SNAPSHOT-7
   ZULU_JDK_VERSION: '17'
 
 jobs:
