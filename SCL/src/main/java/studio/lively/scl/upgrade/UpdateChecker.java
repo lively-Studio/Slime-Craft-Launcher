@@ -109,9 +109,12 @@ public final class UpdateChecker {
             "https://api.github.com/repos/lively-Studio/Slime-Craft-Launcher/releases";
 
     /// Queries the GitHub Releases API and returns the newest release matching the
-    /// given channel. For DEVELOPMENT/NIGHTLY channels the first release whose tag
-    /// starts with {@code DEV} is returned; for STABLE the first {@code V}-prefixed
-    /// release is returned.
+    /// given channel. "Newest" is determined by comparing version numbers (via
+    /// {@link VersionNumber}), not by the API's creation order — otherwise a release
+    /// created later (e.g. {@code SNAPSHOT-9} rebuilt after {@code SNAPSHOT-11}) would
+    /// be mistaken for the latest even though its version number is lower. For
+    /// DEVELOPMENT/NIGHTLY channels the highest {@code DEV}-tagged release is returned;
+    /// for STABLE the highest {@code V}-tagged release is returned.
     ///
     /// @param channel the update channel to filter by
     /// @param preview whether preview releases are acceptable
@@ -120,9 +123,12 @@ public final class UpdateChecker {
         String response = NetworkUtils.doGet(RELEASES_API);
         JsonArray releases = JsonUtils.fromNonNullJson(response, JsonArray.class);
 
-        // NIGHTLY channel: prefer DEV releases first, fall back to STABLE if none found.
-        boolean tryDevFirst = (channel == UpdateChannel.NIGHTLY);
-        RemoteVersion stableFallback = null;
+        // Collect the highest-version DEV and STABLE candidates. The "latest" release
+        // MUST be chosen by version number, not by the API's creation order — otherwise a
+        // release created later (e.g. SNAPSHOT-9 rebuilt after SNAPSHOT-11) would be
+        // mistaken for the newest even though its version is actually lower.
+        @Nullable RemoteVersion bestDev = null;
+        @Nullable RemoteVersion bestStable = null;
 
         for (JsonElement element : releases) {
             if (!element.isJsonObject()) continue;
@@ -164,26 +170,23 @@ public final class UpdateChecker {
             UpdateChannel remoteChannel = isDevRelease ? UpdateChannel.DEVELOPMENT : UpdateChannel.STABLE;
             RemoteVersion candidate = new RemoteVersion(remoteChannel, tagName, jarUrl, RemoteVersion.Type.JAR, null, preview, false);
 
-            if (tryDevFirst) {
-                if (isDevRelease) {
-                    // Found a DEV release — return it immediately (prefers DEV for NIGHTLY)
-                    return candidate;
-                } else if (stableFallback == null) {
-                    // Save the first STABLE release as fallback
-                    stableFallback = candidate;
+            if (isDevRelease) {
+                if (bestDev == null || VersionNumber.compare(candidate.version(), bestDev.version()) > 0) {
+                    bestDev = candidate;
                 }
             } else {
-                // DEVELOPMENT or STABLE channel: return the first matching release
-                return candidate;
+                if (bestStable == null || VersionNumber.compare(candidate.version(), bestStable.version()) > 0) {
+                    bestStable = candidate;
+                }
             }
         }
 
-        // NIGHTLY: if no DEV release found, fall back to STABLE
-        if (tryDevFirst && stableFallback != null) {
-            return stableFallback;
-        }
-
-        return null;
+        return switch (channel) {
+            case NIGHTLY -> bestDev != null ? bestDev : bestStable;
+            case DEVELOPMENT -> bestDev;
+            case STABLE -> bestStable;
+            default -> null;
+        };
     }
 
     /// Returns true if the version string indicates a development build.

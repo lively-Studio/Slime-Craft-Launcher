@@ -16,7 +16,7 @@ on:
       - '**.md'
 
 env:
-  SCL_VERSION: DEV2026.1.0-SNAPSHOT-11
+  SCL_VERSION: DEV2026.1.0-SNAPSHOT-12
   ZULU_JDK_VERSION: '17'
   # Zulu FX JDK download URL template (buckle download endpoint + exact version)
   # Version suffix is resolved at download time via "latest in 17 LTS" for each platform/arch
@@ -82,6 +82,7 @@ jobs:
         run: ./gradlew :SCL:shadowJar --no-daemon --parallel
         env:
           MICROSOFT_AUTH_ID: ${{ secrets.MICROSOFT_AUTH_ID }}
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
 
       # ============== Cross-build: download target-arch Zulu FX JDK ==============
       - name: Download Zulu FX JDK 17 for ${{ matrix.arch }} (cross build)
@@ -253,6 +254,32 @@ jobs:
             --verbose
           ls -la *.deb
 
+      - name: Fix DEB control dependencies (cross-arch libc6 suffix bug)
+        run: |
+          set -e
+          set -x
+          # jpackage (JDK 17) on a cross aarch64 build wrongly writes
+          # "Depends: libc6:amd64" which is uninstallable on arm64 hosts.
+          # Rewrite the Depends line to be architecture-agnostic (plain libc6)
+          # so apt resolves the correct libc6:<host-arch>.
+          DEB=$(ls scl_*.deb 2>/dev/null | head -1 || ls *.deb | head -1)
+          [ -n "$DEB" ] || { echo "No DEB produced"; exit 1; }
+          WORK="$(mktemp -d)"
+          ORIG_DEPENDS=$(dpkg-deb -f "$DEB" Depends || true)
+          echo "Original Depends: $ORIG_DEPENDS"
+          dpkg-deb -R "$DEB" "$WORK"
+          # Replace any libc6:<arch> (e.g. libc6:amd64) with plain libc6,
+          # and drop the architecture suffix from any other :<arch> dep too.
+          sed -i -E 's/libc6:[a-z0-9]+/libc6/g; s/([a-z0-9.+-]+):(amd64|arm64|i386|armhf)/\\1/g' "$WORK/DEBIAN/control"
+          NEW_DEPENDS=$(grep -i '^Depends:' "$WORK/DEBIAN/control" || true)
+          echo "Patched control: $NEW_DEPENDS"
+          rm -f "$DEB"
+          # Rebuild with identical permissions/ownership.
+          dpkg-deb -b --root-owner-group "$WORK" "$DEB"
+          rm -rf "$WORK"
+          echo "Rebuilt DEB: $DEB"
+          dpkg-deb -I "$DEB" | grep -i -E 'arch|depends'
+
       - name: Build RPM with jpackage (${{ matrix.arch }})
         run: |
           set -e
@@ -299,6 +326,27 @@ jobs:
             --java-options '-Dhmcl.offline.auth.restricted=false' \
             --verbose
           ls -la *.rpm
+
+      - name: Inspect RPM requirements (cross-arch sanity check)
+        run: |
+          set -e
+          set -x
+          # Unlike DEB (which can hardcode "libc6:amd64"), RPM derives its
+          # Requires from the package's own architecture via autoReq, so an
+          # aarch64 RPM normally yields aarch64-correct deps. Still, verify
+          # no x86-only / amd64-specific requirement slipped in (e.g. a stray
+          # "x86-64" marker or an explicit amd64 glibc), and fail fast if so.
+          RPM_FILE=$(ls scl-*.rpm 2>/dev/null | head -1 || ls *.rpm | head -1)
+          [ -n "$RPM_FILE" ] || { echo "No RPM produced"; exit 1; }
+          echo "=== RPM Requires for $RPM_FILE ==="
+          rpm -qp --requires "$RPM_FILE" || true
+          echo "=== Checking for cross-arch (x86-64 / amd64) misflags ==="
+          if rpm -qp --requires "$RPM_FILE" 2>/dev/null | grep -E -i 'x86-64|amd64|\.x86_64' ; then
+            echo "::error::RPM contains an x86-64/amd64-specific requirement on a ${{ matrix.arch }} build."
+            echo "::error::This will break installation on ${{ matrix.arch }} hosts; fix the jpackage/rpm build."
+            exit 1
+          fi
+          echo "RPM requirements look arch-clean for ${{ matrix.arch }}."
 
       - name: Rename packages with version + arch
         run: |

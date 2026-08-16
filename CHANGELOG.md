@@ -1,5 +1,9 @@
 # 版本日志 / Changelog
 
+## DEV2026.1.0-SNAPSHOT-12
+
+- chore: 版本号升级至 SNAPSHOT-12
+
 ## DEV2026.1.0-SNAPSHOT-11
 
 - fix(upgrade): NIGHTLY channel 优先返回 DEV release，避免因 STABLE 排在前面导致搜不到最新开发版
