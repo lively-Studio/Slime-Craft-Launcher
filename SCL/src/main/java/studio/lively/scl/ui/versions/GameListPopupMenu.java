@@ -83,7 +83,7 @@ public final class GameListPopupMenu extends StackPane {
         listView.prefHeightProperty().bind(Bindings.size(getItems()).multiply(50).add(2));
 
         Label placeholder = new Label(i18n("version.empty"));
-        placeholder.setStyle("-fx-padding: 10px; -fx-text-fill: #707070; -fx-font-style: italic;");
+        placeholder.setStyle("-fx-padding: 10px; -fx-text-fill: -nothing-text-tertiary; -fx-font-style: italic;");
 
         FXUtils.onChangeAndOperate(isEmpty, empty -> {
             getChildren().setAll(empty ? placeholder : listView);

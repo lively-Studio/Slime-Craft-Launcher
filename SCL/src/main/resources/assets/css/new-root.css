@@ -11,10 +11,10 @@
 }
 .profile-card {
     -fx-background-color: -nothing-surface-card;
-    -fx-background-radius: 4;
+    -fx-background-radius: -nothing-radius-md;
     -fx-padding: 20 16 16 16;
     -fx-max-width: 280;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 4, 0, 0, 2);
+    -fx-effect: -nothing-shadow-2;
 }
 .profile-card:hover {
     -fx-background-color: -nothing-surface-elevated;

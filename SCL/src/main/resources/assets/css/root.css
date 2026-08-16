@@ -2,9 +2,10 @@
  * NOTHING-UI-1 Component Styles
  * Design philosophy: Subtract, don't add. Structure is ornament.
  * Dark-first, 2px radius, ≤200ms transitions, 4px base grid.
- * Accent: Cyan (#00BCD4) | Error: Red (#D71921)
+ * Accent: Cyan (#00BCD4) | Error: Red (#F44336)
  *
- * Based on Open-code-Studio/NOTHING-UI-1 DESIGN_SPEC.md v1.0
+ * Consumes NOTHING-UI-2 design tokens (-nothing-*). Backward-compatible
+ * with NOTHING-UI-1 component class names.
  */
 
 /* ===== Mono Icons ===== */
@@ -64,12 +65,12 @@
 }
 
 .hint.success {
-    -fx-background-color: rgba(76,175,80,0.08);
+    -fx-background-color: -nothing-success-container;
     -fx-border-color: -nothing-outline;
 }
 
 .hint.success Text, .hint.success .svg {
-    -fx-fill: #4CAF50;
+    -fx-fill: -nothing-success;
 }
 
 .hint.error {
@@ -82,12 +83,12 @@
 }
 
 .hint.warning {
-    -fx-background-color: rgba(255,152,0,0.08);
+    -fx-background-color: -nothing-warning-container;
     -fx-border-color: -nothing-outline;
 }
 
 .hint.warning Text, .hint.warning .svg {
-    -fx-fill: #FF9800;
+    -fx-fill: -nothing-warning;
 }
 
 .hint.warning .hyperlink {
@@ -129,14 +130,14 @@
 
 /* ===== Update label ===== */
 .update-label {
-    -fx-text-fill: #FF9800;
+    -fx-text-fill: -nothing-warning;
 }
 
 /* ===== Radio Button Title ===== */
 .radio-button-title-label {
     -fx-font-size: 16px;
     -fx-padding: 14.0 0.0 -20.0 0.0;
-    -fx-text-fill: rgba(0.0, 0.0, 0.0, 0.87);
+    -fx-text-fill: -nothing-on-surface;
 }
 
 /* ===== Announcement ===== */
@@ -379,17 +380,17 @@
 
 /* ===== Bubble / Tooltip (2px radius) ===== */
 .bubble {
-    -fx-background-color: rgba(37,37,37,0.90);
-    -fx-background-radius: 2px;
+    -fx-background-color: -nothing-bubble-bg;
+    -fx-background-radius: -nothing-radius-md;
 }
 
 .bubble > HBox > .two-line-list-item > .first-line > .title,
 .bubble > HBox > .two-line-list-item > HBox > .subtitle {
-    -fx-text-fill: rgba(255,255,255,0.90);
+    -fx-text-fill: -nothing-on-surface;
 }
 
 .bubble .svg {
-    -fx-fill: rgba(255,255,255,0.90);
+    -fx-fill: -nothing-on-surface;
 }
 
 /* ===== Sponsor Pane ===== */
@@ -409,7 +410,7 @@
 }
 
 .installer-item-wrapper:card {
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.40), 4, 0, 0, 2);
+    -fx-effect: -nothing-shadow-2;
 }
 
 .installer-item-wrapper .installer-item:list-item {
@@ -524,7 +525,7 @@
  ******************************************************************************/
 
 .dialog-trigger {
-    -fx-background-color: WHITE;
+    -fx-background-color: -nothing-surface-elevated;
     -jfx-button-type: RAISED;
     -fx-font-size: 14.0px;
 }
@@ -707,7 +708,7 @@
 }
 
 .jfx-tool-bar.gray-background Label {
-    -fx-text-fill: BLACK;
+    -fx-text-fill: -nothing-on-surface;
 }
 
 .jfx-tool-bar .jfx-options-burger {
@@ -753,7 +754,7 @@
 }
 
 .jfx-tool-bar-button .icon {
-    -fx-fill: #FD0;
+    -fx-fill: -nothing-accent;
     -fx-padding: 10.0;
 }
 
@@ -765,7 +766,7 @@
 }
 
 .jfx-decorator-button .icon {
-    -fx-fill: #FD0;
+    -fx-fill: -nothing-accent;
     -fx-padding: 0.0;
 }
 
@@ -859,13 +860,13 @@
 }
 
 .jfx-button-raised .jfx-rippler {
-    -jfx-rippler-fill: rgba(255,255,255,0.30);
+    -jfx-rippler-fill: -nothing-ripple-fill;
     -jfx-mask-type: CIRCLE;
     -fx-padding: 0.0;
 }
 
 .jfx-button-raised, .jfx-button-raised * {
-    -fx-text-fill: rgba(255,255,255,0.95);
+    -fx-text-fill: -nothing-on-accent;
     -fx-font-size: 14px;
 }
 
@@ -977,7 +978,7 @@
 
 .list-cell:selected, .jfx-list-cell:selected,
 .list-cell:hover, .jfx-list-cell:hover {
-    -fx-text-fill: black;
+    -fx-text-fill: -nothing-accent;
 }
 
 .jfx-list-cell .jfx-rippler {
@@ -1019,7 +1020,7 @@
 
 .options-list {
     -fx-background-color: transparent;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.40), 6, 0, 0, 4);
+    -fx-effect: -nothing-shadow-4;
 }
 
 /*******************************************************************************
@@ -1029,27 +1030,27 @@
  ******************************************************************************/
 
 .depth-0 {
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0), 0, 0, 0, 0);
+    -fx-effect: -nothing-shadow-0;
 }
 
 .depth-1 {
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.40), 2, 0, 0, 1);
+    -fx-effect: -nothing-shadow-2;
 }
 
 .depth-2 {
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 4, 0, 0, 2);
+    -fx-effect: -nothing-shadow-3;
 }
 
 .depth-3 {
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.30), 6, 0, 0, 4);
+    -fx-effect: -nothing-shadow-4;
 }
 
 .depth-4 {
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 8, 0, 0, 6);
+    -fx-effect: -nothing-shadow-6;
 }
 
 .depth-5 {
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.20), 12, 0, 0, 8);
+    -fx-effect: -nothing-shadow-8;
 }
 
 .padding-8 {
@@ -1064,22 +1065,22 @@
 
 .card {
     -fx-background-color: -nothing-card-bg;
-    -fx-background-radius: 3px;
+    -fx-background-radius: -nothing-radius-md;
     -fx-padding: 8px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 4, 0, 0, 2);
+    -fx-effect: -nothing-shadow-2;
 }
 
 .card-no-padding {
     -fx-background-color: -nothing-card-bg;
-    -fx-background-radius: 3px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 4, 0, 0, 2);
+    -fx-background-radius: -nothing-radius-md;
+    -fx-effect: -nothing-shadow-2;
 }
 
 .card-non-transparent {
     -fx-background-color: -nothing-surface-higher;
-    -fx-background-radius: 3px;
+    -fx-background-radius: -nothing-radius-md;
     -fx-padding: 8px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.40), 2, 0, 0, 1);
+    -fx-effect: -nothing-shadow-1;
 }
 
 .card-list {
@@ -1256,11 +1257,11 @@
 }
 
 .toggle-icon2 .icon {
-    -fx-fill: RED;
+    -fx-fill: -nothing-error;
 }
 
 .toggle-icon2 .jfx-rippler {
-    -jfx-rippler-fill: RED;
+    -jfx-rippler-fill: -nothing-error;
     -jfx-mask-type: CIRCLE;
 }
 
@@ -1274,17 +1275,17 @@
     -fx-min-height: -fx-toggle-icon4-size;
     -fx-background-radius: 50px;
     -fx-background-color: transparent;
-    -jfx-toggle-color: white;
+    -jfx-toggle-color: -nothing-accent;
     -jfx-untoggle-color: transparent;
 }
 
 .toggle-icon3 .icon {
-    -fx-fill: #FD0;
+    -fx-fill: -nothing-accent;
     -fx-padding: 10.0;
 }
 
 .toggle-icon3 .jfx-rippler {
-    -jfx-rippler-fill: white;
+    -jfx-rippler-fill: -nothing-accent;
     -jfx-mask-type: CIRCLE;
 }
 
@@ -1303,7 +1304,7 @@
 }
 
 .toggle-icon4 .icon {
-    -fx-fill: #FD0;
+    -fx-fill: -nothing-accent;
     -fx-padding: 10.0;
 }
 
@@ -1328,7 +1329,7 @@
 }
 
 .toggle-icon-tiny .icon {
-    -fx-fill: #FD0;
+    -fx-fill: -nothing-accent;
     -fx-padding: 0;
 }
 
@@ -1733,7 +1734,7 @@
 }
 
 .jfx-decorator-drawer {
-    -fx-background-color: rgba(244, 244, 244, 0.5);
+    -fx-background-color: -nothing-overlay-bg;
 }
 
 .jfx-decorator-title {
@@ -1839,7 +1840,7 @@
 
 /*******************************************************************************
  *                                                                             *
- * Error States (Red #D71921 signal only)                                      *
+ * Error States (-nothing-error signal only)                                    *
  *                                                                             *
  ******************************************************************************/
 
@@ -1914,12 +1915,12 @@
  ******************************************************************************/
 
 .tooltip {
-    -fx-text-fill: rgba(255,255,255,0.90);
-    -fx-background-color: rgba(37,37,37,0.92);
+    -fx-text-fill: -nothing-on-surface;
+    -fx-background-color: -nothing-bubble-bg;
 }
 
 .tooltip .text {
-    -fx-fill: rgba(255,255,255,0.90);
+    -fx-fill: -nothing-on-surface;
 }
 
 /*******************************************************************************
@@ -1986,7 +1987,7 @@
 }
 
 .update-pane:active .subtitle-label {
-    -fx-text-fill: #FF9800;
+    -fx-text-fill: -nothing-warning;
 }
 
 /* ===== Layout Constraints: prevent overflow ===== */
@@ -2077,7 +2078,7 @@
 }
 
 .avatar-large {
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 8, 0, 0, 2);
+    -fx-effect: -nothing-shadow-5;
 }
 
 .player-name-label {
@@ -2087,8 +2088,8 @@
 /* ===== Working Dialog ===== */
 .working-dialog-pane {
     -fx-background-color: -nothing-surface;
-    -fx-background-radius: 4;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 16, 0, 0, 8);
+    -fx-background-radius: -nothing-radius-md;
+    -fx-effect: -nothing-shadow-8;
 }
 
 .working-bar-track {

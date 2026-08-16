@@ -74,7 +74,7 @@ public final class AccountListPopupMenu extends StackPane {
         Accounts.getAccounts().addListener(new WeakInvalidationListener(listener));
 
         Label placeholder = new Label(i18n("account.empty"));
-        placeholder.setStyle("-fx-padding: 10px; -fx-text-fill: #707070; -fx-font-style: italic;");
+        placeholder.setStyle("-fx-padding: 10px; -fx-text-fill: -nothing-text-tertiary; -fx-font-style: italic;");
 
         FXUtils.onChangeAndOperate(isEmpty, empty -> {
             getChildren().setAll(empty ? placeholder : box);

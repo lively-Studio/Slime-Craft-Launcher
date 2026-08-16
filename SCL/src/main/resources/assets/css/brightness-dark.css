@@ -1,29 +1,30 @@
-/* NOTHING-UI-1 Dark Mode */
+/* NOTHING-UI-2 Dark Mode (default & unique)
+   Reaffirms NUI2 dark tokens declared in nothing-ui.css */
 * {
-    /* Surface */
-    -nothing-surface: #0A0A0A;
-    -nothing-surface-higher: #141414;
-    -nothing-surface-card: #1A1A1A;
-    -nothing-surface-elevated: #1F1F1F;
-    -nothing-surface-overlay: #222222;
+    /* Surface aliases — 20-layer dark */
+    -nothing-surface:          #090909;   /* surface-0 */
+    -nothing-surface-higher:   #141414;   /* surface-1 */
+    -nothing-surface-card:     #1C1C1C;   /* surface-2 */
+    -nothing-surface-elevated: #252525;   /* surface-3 */
+    -nothing-surface-overlay:  #2D2D2D;   /* surface-4 */
 
     /* Text */
-    -nothing-on-surface: rgba(255,255,255,0.90);
-    -nothing-on-surface-variant: rgba(255,255,255,0.60);
+    -nothing-on-surface:         rgba(245,245,245,0.90);
+    -nothing-on-surface-variant: rgba(176,176,176,0.90);
 
     /* Outline */
-    -nothing-outline: rgba(255,255,255,0.12);
-    -nothing-outline-strong: rgba(255,255,255,0.20);
+    -nothing-outline:        rgba(255,255,255,0.10);
+    -nothing-outline-strong: rgba(255,255,255,0.16);
 
     /* Dynamic tokens */
-    -nothing-ripple-fill: rgba(255,255,255,0.08);
-    -nothing-hover-bg: rgba(255,255,255,0.06);
-    -nothing-scrollbar-thumb: rgba(255,255,255,0.20);
-    -nothing-scrollbar-arrow: rgba(255,255,255,0.40);
-    -nothing-overlay-bg: rgba(10,10,10,0.50);
-    -nothing-card-bg: rgba(20,20,20,0.80);
-    -nothing-bubble-bg: rgba(37,37,37,0.90);
-    -nothing-toolbar-bg: rgba(0,188,212,0.10);
+    -nothing-ripple-fill:       rgba(255,255,255,0.08);
+    -nothing-hover-bg:          rgba(255,255,255,0.06);
+    -nothing-scrollbar-thumb:   rgba(255,255,255,0.20);
+    -nothing-scrollbar-arrow:   rgba(255,255,255,0.40);
+    -nothing-overlay-bg:        rgba(9,9,9,0.50);
+    -nothing-card-bg:           rgba(20,20,20,0.80);
+    -nothing-bubble-bg:         rgba(37,37,37,0.90);
+    -nothing-toolbar-bg:        rgba(0,188,212,0.10);
     -nothing-toolbar-second-bg: rgba(0,188,212,0.10);
     -nothing-toolbar-second-label: -nothing-accent;
 
@@ -41,11 +42,11 @@
     -fixed-log-text-fill: rgba(255,255,255,0.85);
     -fixed-log-trace-background: #141414;
     -fixed-log-debug-background: #1A1A1A;
-    -fixed-log-info-background: #0A0A0A;
+    -fixed-log-info-background: #090909;
     -fixed-log-warn-background: rgba(255,152,0,0.08);
     -fixed-log-warn-text-fill: #FF9800;
-    -fixed-log-error-background: rgba(215,25,33,0.08);
-    -fixed-log-error-text-fill: #D71921;
-    -fixed-log-fatal-background: rgba(215,25,33,0.16);
+    -fixed-log-error-background: rgba(244,67,54,0.08);
+    -fixed-log-error-text-fill: #F44336;
+    -fixed-log-fatal-background: rgba(244,67,54,0.16);
     -fixed-log-selected: #1F1F1F;
 }

@@ -247,7 +247,7 @@ public final class JavaManagementPage extends ListPageBase<JavaRuntime> {
             label.setMinSize(24, 24);
             label.setMaxSize(24, 24);
             label.setPrefSize(24, 24);
-            label.setStyle("-fx-background-color: #E0E0E0; -fx-background-radius: 2; -fx-padding: 2; -fx-font-weight: normal; -fx-font-size: 12px;");
+            label.setStyle("-fx-background-color: -nothing-surface-higher; -fx-background-radius: 2; -fx-padding: 2; -fx-font-weight: normal; -fx-font-size: 12px;");
 
             this.content = new TwoLineListItem();
             HBox.setHgrow(content, Priority.ALWAYS);

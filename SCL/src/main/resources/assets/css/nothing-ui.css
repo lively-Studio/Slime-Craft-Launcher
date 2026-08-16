@@ -1,131 +1,233 @@
 /**
- * NOTHING-UI-1 Design Token System
- * Based on Open-code-Studio/NOTHING-UI-1 DESIGN_SPEC.md v1.0
+ * NOTHING-UI-2 Design Token System
+ * Based on OPENOS-dev/NUI2 DESIGN_SPEC.md v2.0
  *
- * Philosophy: Subtract, don't add. Structure is ornament.
- * Default: Light mode. Accent: Cyan. Radius: 2px. Duration: ≤200ms.
+ * Philosophy: Data first, depth as hierarchy, blur as distance.
+ * Default: Dark (unique mode). Accent: Cyan. Radius: 2px/4px. Duration: ≤400ms.
+ *
+ * Core evolution from NUI1:
+ *   6 surfaces  → 20 surfaces (ΔL = 4.0)
+ *   no blur     → dynamic blur (glass-5 .. glass-19)
+ *   6 shadows   → 20 shadows
+ *   light-first → dark-first (unique)
  */
 * {
-    /* === Surface Layer System (Light Default, 6 layers, ΔL 1.0-2.5) === */
-    -nothing-surface-0: #F5F5F5;
-    -nothing-surface-1: #EEEEEE;
-    -nothing-surface-2: #E8E8E8;
-    -nothing-surface-3: #E0E0E0;
-    -nothing-surface-4: #DADADA;
-    -nothing-surface-5: #D4D4D4;
+    /* ================================================================
+       NUI2 Surfaces — 20-layer fine gradient
+       L* step = 4.0, range: 2.5 → 78.5
+       ================================================================ */
+    -nothing-surface-0:  #090909;  /* L*=2.5   基底组 — 根背景 */
+    -nothing-surface-1:  #141414;  /* L*=6.5   基底组 — 侧边栏/面板 */
+    -nothing-surface-2:  #1C1C1C;  /* L*=10.5  基底组 — 工具栏/标签容器 */
+    -nothing-surface-3:  #252525;  /* L*=14.5  基底组 — 卡片/列表组 */
+    -nothing-surface-4:  #2D2D2D;  /* L*=18.5  基底组 — 悬停高亮 */
+    -nothing-surface-5:  #363636;  /* L*=22.5  悬浮组 — 悬浮卡片/下拉 */
+    -nothing-surface-6:  #3F3F3F;  /* L*=26.5  悬浮组 — 弹出菜单 */
+    -nothing-surface-7:  #484848;  /* L*=30.5  悬浮组 — 活跃标签页 */
+    -nothing-surface-8:  #515151;  /* L*=34.5  悬浮组 — 对话框基础 */
+    -nothing-surface-9:  #5B5B5B;  /* L*=38.5  悬浮组 — 对话框 */
+    -nothing-surface-10: #646464;  /* L*=42.5  高亮组 — 模态窗口 */
+    -nothing-surface-11: #6E6E6E;  /* L*=46.5  高亮组 — 抽屉面板 */
+    -nothing-surface-12: #787878;  /* L*=50.5  高亮组 — 高对比浮层 */
+    -nothing-surface-13: #828282;  /* L*=54.5  高亮组 — 通知卡片 */
+    -nothing-surface-14: #8D8D8D;  /* L*=58.5  高亮组 — 优先通知 */
+    -nothing-surface-15: #979797;  /* L*=62.5  顶层组 — 工具提示 */
+    -nothing-surface-16: #A2A2A2;  /* L*=66.5  顶层组 — 焦点高亮 */
+    -nothing-surface-17: #ACACAC;  /* L*=70.5  顶层组 — 紧急通知 */
+    -nothing-surface-18: #B7B7B7;  /* L*=74.5  顶层组 — 系统弹窗 */
+    -nothing-surface-19: #C2C2C2;  /* L*=78.5  顶层组 — 最高浮层 */
 
-    /* === Surface Layer System (Dark) === */
-    -nothing-dark-surface-0: #0A0A0A;
-    -nothing-dark-surface-1: #141414;
-    -nothing-dark-surface-2: #1A1A1A;
-    -nothing-dark-surface-3: #1F1F1F;
-    -nothing-dark-surface-4: #222222;
-    -nothing-dark-surface-5: #252525;
+    /* ================================================================
+       Glass overlays — semi-transparent white layers for backdrop blur
+       ================================================================ */
+    -nothing-glass-5:  rgba(255,255,255,0.015);
+    -nothing-glass-6:  rgba(255,255,255,0.030);
+    -nothing-glass-7:  rgba(255,255,255,0.045);
+    -nothing-glass-8:  rgba(255,255,255,0.060);
+    -nothing-glass-9:  rgba(255,255,255,0.075);
+    -nothing-glass-10: rgba(255,255,255,0.090);
+    -nothing-glass-11: rgba(255,255,255,0.105);
+    -nothing-glass-12: rgba(255,255,255,0.120);
+    -nothing-glass-13: rgba(255,255,255,0.135);
+    -nothing-glass-14: rgba(255,255,255,0.150);
+    -nothing-glass-15: rgba(255,255,255,0.165);
+    -nothing-glass-16: rgba(255,255,255,0.180);
+    -nothing-glass-17: rgba(255,255,255,0.195);
+    -nothing-glass-18: rgba(255,255,255,0.210);
+    -nothing-glass-19: rgba(255,255,255,0.225);
 
-    /* Default Reference: Light layers */
-    -nothing-surface: -nothing-surface-0;
-    -nothing-surface-higher: -nothing-surface-1;
-    -nothing-surface-card: -nothing-surface-2;
-    -nothing-surface-elevated: -nothing-surface-3;
-    -nothing-surface-overlay: -nothing-surface-4;
+    /* ================================================================
+       Backward-compatible surface aliases (NUI1 → NUI2 mapping)
+       ================================================================ */
+    -nothing-surface:          -nothing-surface-0;   /* 根背景 */
+    -nothing-surface-higher:   -nothing-surface-1;   /* 侧边栏/面板 */
+    -nothing-surface-card:     -nothing-surface-2;   /* 卡片 */
+    -nothing-surface-elevated: -nothing-surface-3;   /* 提升/悬停 */
+    -nothing-surface-overlay:  -nothing-surface-4;   /* 覆盖层 */
 
-    /* === Text Opacity Levels (4-tier hierarchy, light default) === */
-    -nothing-text-display: rgba(0,0,0,1.0);
-    -nothing-text-primary: rgba(0,0,0,0.90);
-    -nothing-text-secondary: rgba(0,0,0,0.60);
-    -nothing-text-disabled: rgba(0,0,0,0.35);
+    /* ================================================================
+       Text hierarchy — dark-first (surface 0-12 use light text)
+       ================================================================ */
+    -nothing-text-display:  rgba(245,245,245,1.0);   /* text-primary #F5F5F5 */
+    -nothing-text-primary:  rgba(245,245,245,0.90);
+    -nothing-text-secondary: rgba(176,176,176,0.90); /* text-secondary #B0B0B0 */
+    -nothing-text-tertiary: rgba(112,112,112,0.90);  /* text-tertiary #707070 */
+    -nothing-text-disabled: rgba(255,255,255,0.35);
+    -nothing-on-surface:          -nothing-text-primary;
+    -nothing-on-surface-variant:  -nothing-text-secondary;
+    /* High-layer (13+) light backgrounds need dark text */
+    -nothing-on-light:           rgba(26,26,26,1.0);    /* #1A1A1A */
+    -nothing-on-light-secondary: rgba(74,74,74,1.0);    /* #4A4A4A */
 
-    /* Dark text overrides */
-    -nothing-dark-text-display: rgba(255,255,255,1.0);
-    -nothing-dark-text-primary: rgba(255,255,255,0.90);
-    -nothing-dark-text-secondary: rgba(255,255,255,0.60);
-    -nothing-dark-text-disabled: rgba(255,255,255,0.35);
+    /* ================================================================
+       Accent colors — 10-hue spectrum, default Cyan
+       (overridden at runtime by MonetFX accent override stylesheet)
+       ================================================================ */
+    -nothing-accent-cyan:    #00BCD4;
+    -nothing-accent-blue:    #2196F3;
+    -nothing-accent-indigo:  #5C6BC0;
+    -nothing-accent-teal:    #009688;
+    -nothing-accent-green:   #4AA26F;
+    -nothing-accent-lime:    #7CB342;
+    -nothing-accent-amber:   #FFC107;
+    -nothing-accent-orange:  #FF9800;
+    -nothing-accent-red:     #EF5350;
+    -nothing-accent-magenta: #AB47BC;
 
-    /* Default reference */
-    -nothing-on-surface: -nothing-text-primary;
-    -nothing-on-surface-variant: -nothing-text-secondary;
+    -nothing-accent:            -nothing-accent-cyan;
+    -nothing-accent-fill:       -nothing-accent;
+    -nothing-accent-hover:      #26C6DA;
+    -nothing-accent-active:     #0097A7;
+    -nothing-on-accent:         #FFFFFF;   /* text/icon on accent-filled surfaces */
+    -nothing-accent-bg:         rgba(0,188,212,0.12);
+    -nothing-accent-bg-hover:   rgba(0,188,212,0.18);
+    -nothing-accent-selected-bg: rgba(0,188,212,0.15);
+    -nothing-accent-track-bg:    rgba(0,188,212,0.20);
 
-    /* === Accent Colors === */
-    -nothing-accent-cyan: #00BCD4;
-    -nothing-accent-green: #4CAF50;
-    -nothing-accent-orange: #FF9800;
-    -nothing-accent: -nothing-accent-cyan;
+    /* Pre-computed alpha variants (overridden by MonetFX at runtime) */
+    -nothing-accent-a06: rgba(0,188,212,0.06);
+    -nothing-accent-a08: rgba(0,188,212,0.08);
+    -nothing-accent-a10: rgba(0,188,212,0.10);
+    -nothing-accent-a12: rgba(0,188,212,0.12);
+    -nothing-accent-a20: rgba(0,188,212,0.20);
+    -nothing-accent-a50: rgba(0,188,212,0.50);
+    -nothing-accent-a60: rgba(0,188,212,0.60);
 
-    /* === Error (Red #D71921 — Signal only, not a participant in regular hierarchy) === */
-    -nothing-error: #D71921;
-    -nothing-error-container: rgba(215,25,33,0.12);
-    -nothing-on-error: #FFFFFF;
+    /* ================================================================
+       Status colors — signal only
+       ================================================================ */
+    -nothing-error:           #F44336;
+    -nothing-error-container: rgba(244,67,54,0.12);
+    -nothing-on-error:        #FFFFFF;
+    -nothing-success:         #4AA26F;
+    -nothing-success-container: rgba(74,162,111,0.12);
+    -nothing-warning:         #FF9800;
+    -nothing-warning-container: rgba(255,152,0,0.12);
+    -nothing-info:            #2196F3;
+    -nothing-info-container:  rgba(33,150,243,0.12);
 
-    /* === Success & Warning Data Status Colors === */
-    -nothing-success: #4CAF50;
-    -nothing-warning: #FF9800;
-
-    /* === Outline / Border === */
-    -nothing-outline: rgba(0,0,0,0.12);
-    -nothing-outline-strong: rgba(0,0,0,0.20);
-    -nothing-dark-outline: rgba(255,255,255,0.12);
+    /* ================================================================
+       Outline / Border
+       ================================================================ */
+    -nothing-outline:            rgba(255,255,255,0.10);  /* border-default */
+    -nothing-outline-strong:     rgba(255,255,255,0.16);  /* border-strong */
+    -nothing-border-subtle:      rgba(255,255,255,0.06);
+    -nothing-border-default:     rgba(255,255,255,0.10);
+    -nothing-border-strong:      rgba(255,255,255,0.16);
+    -nothing-border-on-light:    rgba(0,0,0,0.12);
+    -nothing-dark-outline:       rgba(255,255,255,0.12);
     -nothing-dark-outline-strong: rgba(255,255,255,0.20);
 
-    /* === Dynamic Color Tokens (swapped by brightness CSS for dark mode) === */
-    -nothing-ripple-fill: rgba(0,0,0,0.08);
-    -nothing-hover-bg: rgba(0,0,0,0.06);
-    -nothing-scrollbar-thumb: rgba(0,0,0,0.15);
-    -nothing-scrollbar-arrow: rgba(0,0,0,0.30);
-    -nothing-overlay-bg: rgba(245,245,245,0.50);
-    -nothing-card-bg: rgba(245,245,245,0.80);
-    -nothing-bubble-bg: rgba(230,230,230,0.90);
-    -nothing-accent-fill: -nothing-accent;
-    -nothing-accent-selected-bg: rgba(0,188,212,0.15);
-    -nothing-accent-track-bg: rgba(0,188,212,0.20);
-    -nothing-toolbar-bg: -nothing-surface-higher;
-    -nothing-toolbar-second-bg: -nothing-surface-higher;
-    -nothing-toolbar-second-label: -nothing-on-surface;
+    /* ================================================================
+       Dynamic tokens (dark)
+       ================================================================ */
+    -nothing-ripple-fill:       rgba(255,255,255,0.08);
+    -nothing-hover-bg:          rgba(255,255,255,0.06);
+    -nothing-scrollbar-thumb:   rgba(255,255,255,0.20);
+    -nothing-scrollbar-arrow:   rgba(255,255,255,0.40);
+    -nothing-overlay-bg:        rgba(9,9,9,0.50);
+    -nothing-card-bg:           rgba(20,20,20,0.80);
+    -nothing-bubble-bg:         rgba(37,37,37,0.90);
+    -nothing-toolbar-bg:        rgba(0,188,212,0.10);
+    -nothing-toolbar-second-bg: rgba(0,188,212,0.10);
+    -nothing-toolbar-second-label: -nothing-accent;
+    -nothing-accent-track-bg:   rgba(255,255,255,0.06);
 
-    /* === Corner Radius (2px default, 4px overlays) === */
-    -nothing-radius-sm: 2px;
-    -nothing-radius-md: 4px;
+    /* ================================================================
+       Shape — subtle corner radius
+       ================================================================ */
+    -nothing-radius-none: 0px;
+    -nothing-radius-sm:   2px;   /* default: buttons, cards, inputs */
+    -nothing-radius-md:   4px;   /* dialogs, menus, tooltips */
+    -nothing-radius-full: 9999px; /* pills, badges, spinner */
 
-    /* === Spacing (4px base grid) === */
-    -nothing-spacing-xs: 4px;
-    -nothing-spacing-sm: 8px;
-    -nothing-spacing-md: 12px;
-    -nothing-spacing-lg: 16px;
-    -nothing-spacing-xl: 20px;
+    /* ================================================================
+       Spacing — 4px base grid
+       ================================================================ */
+    -nothing-spacing-xs:  4px;
+    -nothing-spacing-sm:  8px;
+    -nothing-spacing-md:  12px;
+    -nothing-spacing-lg:  16px;
+    -nothing-spacing-xl:  20px;
     -nothing-spacing-2xl: 24px;
     -nothing-spacing-3xl: 32px;
     -nothing-spacing-4xl: 40px;
 
-    /* === Component Heights === */
-    -nothing-height-btn: 32px;
-    -nothing-height-list-item: 32px;
+    /* ================================================================
+       Component heights
+       ================================================================ */
+    -nothing-height-btn:              32px;
+    -nothing-height-list-item:        32px;
     -nothing-height-list-item-compact: 28px;
-    -nothing-height-tab: 36px;
-    -nothing-height-search: 32px;
-    -nothing-height-status-bar: 28px;
-    -nothing-height-progress: 4px;
-    -nothing-height-scrollbar: 6px;
+    -nothing-height-tab:              36px;
+    -nothing-height-search:           32px;
+    -nothing-height-status-bar:       28px;
+    -nothing-height-progress:         4px;
+    -nothing-height-scrollbar:        6px;
 
-    /* === Transition (≤200ms, no bounce, no spring) === */
-    -nothing-transition-fast: 100ms;
-    -nothing-transition-normal: 150ms;
-    -nothing-transition-slow: 200ms;
-    -nothing-easing-standard: linear;
-    -nothing-easing-decelerate: linear;
-    -nothing-easing-accelerate: linear;
+    /* ================================================================
+       Motion — duration ≤400ms
+       ================================================================ */
+    -nothing-transition-fast:   180ms;  /* micro-interaction */
+    -nothing-transition-normal: 250ms;  /* standard transition */
+    -nothing-transition-slow:   350ms;  /* overlay/focus blur */
+    -nothing-transition-max:    400ms;  /* page switch / max cap */
+    -nothing-easing-standard:   cubic-bezier(0.2, 0, 0, 1);
+    -nothing-easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
+    -nothing-easing-accelerate: cubic-bezier(0.2, 0, 0, 1);
 
-    /* === Shadow System (5 levels, no blur for subtle layers) === */
-    -nothing-shadow-1: dropshadow(gaussian, rgba(0,0,0,0.40), 2, 0, 0, 1);
-    -nothing-shadow-2: dropshadow(gaussian, rgba(0,0,0,0.35), 4, 0, 0, 2);
-    -nothing-shadow-3: dropshadow(gaussian, rgba(0,0,0,0.30), 6, 0, 0, 4);
-    -nothing-shadow-4: dropshadow(gaussian, rgba(0,0,0,0.25), 8, 0, 0, 6);
-    -nothing-shadow-5: dropshadow(gaussian, rgba(0,0,0,0.20), 12, 0, 0, 8);
+    /* ================================================================
+       Shadow system — 20 levels (NUI2)
+       ================================================================ */
+    -nothing-shadow-0:  none;
+    -nothing-shadow-1:  dropshadow(gaussian, rgba(0,0,0,0.33), 2, 0, 0, 1);
+    -nothing-shadow-2:  dropshadow(gaussian, rgba(0,0,0,0.36), 4, 0, 0, 2);
+    -nothing-shadow-3:  dropshadow(gaussian, rgba(0,0,0,0.39), 6, 0, 0, 3);
+    -nothing-shadow-4:  dropshadow(gaussian, rgba(0,0,0,0.37), 4, 0, 0, 2), dropshadow(gaussian, rgba(0,0,0,0.17), 8, 0, 0, 2);
+    -nothing-shadow-5:  dropshadow(gaussian, rgba(0,0,0,0.39), 5, 0, 0, 2), dropshadow(gaussian, rgba(0,0,0,0.19), 10, 0, 0, 4);
+    -nothing-shadow-6:  dropshadow(gaussian, rgba(0,0,0,0.41), 6, 0, 0, 3), dropshadow(gaussian, rgba(0,0,0,0.21), 12, 0, 0, 6);
+    -nothing-shadow-7:  dropshadow(gaussian, rgba(0,0,0,0.43), 7, 0, 0, 4), dropshadow(gaussian, rgba(0,0,0,0.23), 14, 0, 0, 8);
+    -nothing-shadow-8:  dropshadow(gaussian, rgba(0,0,0,0.42), 8, 0, 0, 2), dropshadow(gaussian, rgba(0,0,0,0.22), 16, 0, 0, 4), dropshadow(gaussian, rgba(0,0,0,0.11), 24, 0, 0, 6);
+    -nothing-shadow-9:  dropshadow(gaussian, rgba(0,0,0,0.44), 9, 0, 0, 3), dropshadow(gaussian, rgba(0,0,0,0.24), 18, 0, 0, 6), dropshadow(gaussian, rgba(0,0,0,0.12), 27, 0, 0, 9);
+    -nothing-shadow-10: dropshadow(gaussian, rgba(0,0,0,0.46), 10, 0, 0, 4), dropshadow(gaussian, rgba(0,0,0,0.26), 20, 0, 0, 8), dropshadow(gaussian, rgba(0,0,0,0.13), 30, 0, 0, 12);
+    -nothing-shadow-11: dropshadow(gaussian, rgba(0,0,0,0.48), 11, 0, 0, 5), dropshadow(gaussian, rgba(0,0,0,0.28), 22, 0, 0, 10), dropshadow(gaussian, rgba(0,0,0,0.14), 33, 0, 0, 15);
+    -nothing-shadow-12: dropshadow(gaussian, rgba(0,0,0,0.50), 12, 0, 0, 6), dropshadow(gaussian, rgba(0,0,0,0.30), 24, 0, 0, 12), dropshadow(gaussian, rgba(0,0,0,0.15), 36, 0, 0, 18);
+    -nothing-shadow-13: dropshadow(gaussian, rgba(0,0,0,0.47), 13, 0, 0, 3), dropshadow(gaussian, rgba(0,0,0,0.27), 26, 0, 0, 6), dropshadow(gaussian, rgba(0,0,0,0.16), 39, 0, 0, 12);
+    -nothing-shadow-14: dropshadow(gaussian, rgba(0,0,0,0.48), 14, 0, 0, 4), dropshadow(gaussian, rgba(0,0,0,0.28), 28, 0, 0, 8), dropshadow(gaussian, rgba(0,0,0,0.17), 42, 0, 0, 16);
+    -nothing-shadow-15: dropshadow(gaussian, rgba(0,0,0,0.49), 15, 0, 0, 5), dropshadow(gaussian, rgba(0,0,0,0.29), 30, 0, 0, 10), dropshadow(gaussian, rgba(0,0,0,0.18), 45, 0, 0, 20);
+    -nothing-shadow-16: dropshadow(gaussian, rgba(0,0,0,0.51), 16, 0, 0, 6), dropshadow(gaussian, rgba(0,0,0,0.31), 32, 0, 0, 12), dropshadow(gaussian, rgba(0,0,0,0.19), 48, 0, 0, 24);
+    -nothing-shadow-17: dropshadow(gaussian, rgba(0,0,0,0.53), 17, 0, 0, 7), dropshadow(gaussian, rgba(0,0,0,0.33), 34, 0, 0, 14), dropshadow(gaussian, rgba(0,0,0,0.20), 51, 0, 0, 28);
+    -nothing-shadow-18: dropshadow(gaussian, rgba(0,0,0,0.54), 18, 0, 0, 8), dropshadow(gaussian, rgba(0,0,0,0.34), 36, 0, 0, 16), dropshadow(gaussian, rgba(0,0,0,0.21), 54, 0, 0, 32);
+    -nothing-shadow-19: dropshadow(gaussian, rgba(0,0,0,0.56), 19, 0, 0, 9), dropshadow(gaussian, rgba(0,0,0,0.35), 38, 0, 0, 18), dropshadow(gaussian, rgba(0,0,0,0.22), 57, 0, 0, 36);
 
-    /* === Typography Scale (11px-24px, never >24px for titles) === */
-    -nothing-font-display: 24px;
-    -nothing-font-title: 18px;
+    /* ================================================================
+       Typography scale (11px-24px)
+       ================================================================ */
+    -nothing-font-display:  24px;
+    -nothing-font-title:    18px;
     -nothing-font-headline: 16px;
-    -nothing-font-body: 14px;
-    -nothing-font-label: 13px;
-    -nothing-font-caption: 12px;
+    -nothing-font-body:     14px;
+    -nothing-font-label:    13px;
+    -nothing-font-caption:  12px;
     -nothing-font-overline: 11px;
 }

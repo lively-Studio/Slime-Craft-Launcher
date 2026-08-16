@@ -1,33 +1,66 @@
-/* NOTHING-UI-1 Light Mode */
+/* NOTHING-UI-2 Light Mode (legacy compatibility)
+   NUI2 is dark-first & dark-unique by design; this light variant is kept
+   only to preserve the launcher's existing light/dark toggle feature.
+   It overrides the dark-first tokens with a light surface/text/outline set
+   so the UI stays legible under the light theme. */
 * {
-    /* Surface */
-    -nothing-surface: #F5F5F5;
-    -nothing-surface-higher: #EEEEEE;
-    -nothing-surface-card: #E8E8E8;
-    -nothing-surface-elevated: #E0E0E0;
-    -nothing-surface-overlay: #DADADA;
+    /* ---- Light surface gradient (high L*, slight descent with elevation) ---- */
+    -nothing-surface-0:  #F5F5F5;
+    -nothing-surface-1:  #EEEEEE;
+    -nothing-surface-2:  #E8E8E8;
+    -nothing-surface-3:  #E0E0E0;
+    -nothing-surface-4:  #DADADA;
+    -nothing-surface-5:  #D4D4D4;
+    -nothing-surface-6:  #CECECE;
+    -nothing-surface-7:  #C8C8C8;
+    -nothing-surface-8:  #C2C2C2;
+    -nothing-surface-9:  #BCBCBC;
+    -nothing-surface-10: #B6B6B6;
+    -nothing-surface-11: #B0B0B0;
+    -nothing-surface-12: #AAAAAA;
+    -nothing-surface-13: #A4A4A4;
+    -nothing-surface-14: #9E9E9E;
+    -nothing-surface-15: #989898;
+    -nothing-surface-16: #929292;
+    -nothing-surface-17: #8C8C8C;
+    -nothing-surface-18: #868686;
+    -nothing-surface-19: #808080;
+    /* Dialog/decoration root (lightest) */
+    -nothing-surface-two: #FAFAFA;
 
-    /* Text */
-    -nothing-on-surface: rgba(0,0,0,0.90);
+    /* Backward-compatible aliases (mirror the gradient above) */
+    -nothing-surface:          #F5F5F5;
+    -nothing-surface-higher:   #EEEEEE;
+    -nothing-surface-card:     #E8E8E8;
+    -nothing-surface-elevated: #E0E0E0;
+    -nothing-surface-overlay:  #DADADA;
+
+    /* ---- Text hierarchy (light bg → dark text) ---- */
+    -nothing-text-display:   rgba(0,0,0,1.0);
+    -nothing-text-primary:   rgba(0,0,0,0.87);
+    -nothing-text-secondary: rgba(0,0,0,0.60);
+    -nothing-text-tertiary:  rgba(0,0,0,0.38);
+    -nothing-text-disabled:  rgba(0,0,0,0.38);
+    /* -nothing-on-surface / -nothing-on-surface-variant alias to the above. */
+    -nothing-on-surface:         rgba(0,0,0,0.90);
     -nothing-on-surface-variant: rgba(0,0,0,0.60);
 
-    /* Outline */
-    -nothing-outline: rgba(0,0,0,0.12);
+    /* ---- Outline / Border (dark on light) ---- */
+    -nothing-outline:        rgba(0,0,0,0.12);
     -nothing-outline-strong: rgba(0,0,0,0.20);
 
-    /* Dynamic tokens */
-    -nothing-ripple-fill: rgba(0,0,0,0.08);
-    -nothing-hover-bg: rgba(0,0,0,0.06);
-    -nothing-scrollbar-thumb: rgba(0,0,0,0.15);
-    -nothing-scrollbar-arrow: rgba(0,0,0,0.30);
-    -nothing-overlay-bg: rgba(245,245,245,0.50);
-    -nothing-card-bg: rgba(245,245,245,0.80);
-    -nothing-bubble-bg: rgba(230,230,230,0.90);
-    -nothing-toolbar-bg: -nothing-surface-higher;
+    /* ---- Dynamic tokens (dark-based ripples/hover/scrollbar on light) ---- */
+    -nothing-ripple-fill:       rgba(0,0,0,0.08);
+    -nothing-hover-bg:          rgba(0,0,0,0.06);
+    -nothing-scrollbar-thumb:   rgba(0,0,0,0.20);
+    -nothing-scrollbar-arrow:   rgba(0,0,0,0.40);
+    -nothing-overlay-bg:        rgba(245,245,245,0.50);
+    -nothing-card-bg:           rgba(255,255,255,0.92);
+    -nothing-bubble-bg:         rgba(255,255,255,0.96);
+    -nothing-toolbar-bg:        -nothing-surface-higher;
     -nothing-toolbar-second-bg: -nothing-surface-higher;
     -nothing-toolbar-second-label: -nothing-on-surface;
-
-    -nothing-accent-track-bg: rgba(0,0,0,0.06);
+    -nothing-accent-track-bg:   rgba(0,0,0,0.06);
 }
 
 .hint {
@@ -44,8 +77,8 @@
     -fixed-log-info-background: #F5F5F5;
     -fixed-log-warn-background: rgba(255,152,0,0.08);
     -fixed-log-warn-text-fill: #E65100;
-    -fixed-log-error-background: rgba(215,25,33,0.06);
+    -fixed-log-error-background: rgba(244,67,54,0.06);
     -fixed-log-error-text-fill: #C62828;
-    -fixed-log-fatal-background: rgba(215,25,33,0.12);
+    -fixed-log-fatal-background: rgba(244,67,54,0.12);
     -fixed-log-selected: #E0E0E0;
 }

@@ -225,7 +225,7 @@ public final class ModpackFileSelectionPage extends BorderPane implements Wizard
             }
             if (TRANSLATION.containsKey(basePath)) {
                 Label comment = new Label(TRANSLATION.get(basePath));
-                comment.setStyle("-fx-text-fill: #707070;");
+                comment.setStyle("-fx-text-fill: -nothing-text-tertiary;");
                 comment.setMouseTransparent(true);
                 graphic.getChildren().add(comment);
             }
