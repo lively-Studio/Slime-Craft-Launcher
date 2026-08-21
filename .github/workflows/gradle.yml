@@ -61,6 +61,7 @@ jobs:
       run: ./gradlew build --no-daemon --parallel
       env:
         MICROSOFT_AUTH_ID: ${{ secrets.MICROSOFT_AUTH_ID }}
+        CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
 
     - name: Check if release already exists
       id: check_release

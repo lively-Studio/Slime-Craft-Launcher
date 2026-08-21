@@ -78,6 +78,7 @@ jobs:
         run: ./gradlew :SCL:shadowJar --no-daemon --parallel
         env:
           MICROSOFT_AUTH_ID: ${{ secrets.MICROSOFT_AUTH_ID }}
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
 
       # ============== Cross: download target-arch Zulu FX JDK zip ==============
       - name: Download Zulu FX JDK 17 for ${{ matrix.arch }} Windows (cross build)

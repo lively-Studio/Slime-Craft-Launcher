@@ -10,12 +10,13 @@
     "themeId": "2021-08-26"
   },
   "themeAppearanceOverrides": [
+    "themeBrightnessMode",
     "titleBarTransparent",
-    "background",
-    "themeBrightnessMode"
+    "themeColor",
+    "background"
   ],
   "themeBrightnessMode": "light",
-  "customThemeColor": "#5C6BC0",
+  "customThemeColor": "#4AA26F",
   "themeColorType": "CUSTOM",
   "titleBarTransparent": true,
   "windowTransparent": false,

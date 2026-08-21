@@ -73,6 +73,7 @@ jobs:
         run: ./gradlew :SCL:shadowJar --no-daemon --parallel
         env:
           MICROSOFT_AUTH_ID: ${{ secrets.MICROSOFT_AUTH_ID }}
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
 
       # ============== Cross: download x64 Zulu FX JDK ==============
       # 下载 x64 Zulu FX JDK，后续通过 Rosetta 2 (arch -x86_64) 运行其 jpackage，
